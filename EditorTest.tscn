@@ -1,0 +1,14 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://EditorTest.st" type="Script" id=1]
+[ext_resource path="res://Provider.gd" type="Script" id=2]
+
+[node name="EditorTest" type="Node2D"]
+script = ExtResource( 1 )
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 2000.0
+margin_bottom = 2000.0
+
+[node name="Provider" type="Node" parent="."]
+script = ExtResource( 2 )
