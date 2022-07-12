@@ -14,7 +14,7 @@ GDSCreateImageFormTextureNode >> createTextureForForm: form inTexture: texture t
 	writer := arr write.
 	arrptr := arr writeAccessPtrWrite: writer.
 	self memcpyDest: arrptr src: bitmap count: bitmap byteSize.
-	"image createFromDataWidth: form width height: form height useMipmaps: false format: 5 data: arr."
+	image createFromDataWidth: form width height: form height useMipmaps: false format: 5 data: arr.
 	texture createFromImage: image.
 
 	"arr writeAccessDestroyWrite: writer."
