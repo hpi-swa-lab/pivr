@@ -35,13 +35,16 @@ func buildBlock(blockStructure):
 				if childBlock:
 					addChildBlock(childBlock, block)
 			idToBlock[block.id] = block
+			block.connect("gui_input", get_parent(), "blockInput_on_", [block.id])
 			return block
 		'text':
 			var text = preload("res://TSText/TSText.tscn").instance()
+			text.id = int(blockStructure['id'])
 			text.contents = blockStructure['contents']
 			text.rect_position.x = blockStructure["bounds"][0]
 			text.rect_position.y = blockStructure["bounds"][1]
 			text.add_color_override("font_color", Color(blockStructure['color']))
+			idToBlock[text.id] = text
 			return text
 		'hardLineBreak':
 			return null
@@ -59,6 +62,14 @@ func insertNewBlock(blockJson, index, containerId):
 	addChildBlock(block, container)
 	container.move_child(block, index - 1)
 	get_owner().syncLayout()
+
+func removeBlockWithId(id):
+	var block = idToBlock[id]
+	block.get_parent().remove_child(block)
+	get_parent().syncLayout()
+
+func setTextBlockContent(content, textBlockId):
+	idToBlock[textBlockId].text = content
 
 func syncLayout(structuresJson):
 	var structures = JSON.parse(structuresJson).result
@@ -78,8 +89,7 @@ func syncLayout(structuresJson):
 func correctChildPositions(block):
 	for child in block.get_children():
 		correctChildPositions(child)
-		if !(child is TSText):
-			child.rect_position -= block.rect_position
+		child.rect_position -= block.rect_position
 
 func _ready():
 	$"../Blocks".scale = Vector2.ONE * block_scale

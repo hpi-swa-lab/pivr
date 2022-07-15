@@ -3,9 +3,7 @@ Extension { #name : #SBDeleteCommand }
 { #category : #'*Sandblocks-TreeSitter-VR' }
 SBDeleteCommand >> vrDo [
 
-	| vrNode |
-	vrNode := target sandblockEditor treeRegistry treeFor: target.
-	vrNode getParent removeChild: vrNode
+	SBVREditor current godotProvider removeBlockWithId: target vrId.
 ]
 
 { #category : #'*Sandblocks-TreeSitter-VR' }

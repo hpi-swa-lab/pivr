@@ -5,6 +5,17 @@ Class {
 }
 
 { #category : #behavior }
+GDSEditorTest >> blockInput: event on: targetId [
+
+	| command target |
+	event class = GodotInputEventMouseButton ifFalse: [^ self].
+	
+	target := SBVREditor current morphAtVrId: targetId.
+	command := target parentSandblock deleteCommandFor: target.
+	command ifNotNil: [SBVREditor current do: command].
+]
+
+{ #category : #behavior }
 GDSEditorTest >> physicsProcess: delta [
 	
 	^ nil
