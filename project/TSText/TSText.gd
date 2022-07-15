@@ -1,3 +1,5 @@
+class_name TSText
+
 extends Label
 
 

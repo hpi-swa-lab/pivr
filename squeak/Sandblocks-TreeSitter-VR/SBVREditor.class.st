@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'commandQueue',
 		'godotProvider',
-		'currentId'
+		'currentId',
+		'vrIdToMorph'
 	],
 	#classVars : [
 		'Instance'
@@ -53,7 +54,21 @@ SBVREditor >> initialize [
 	super initialize.
 	
 	currentId := 0.
-	commandQueue := OrderedCollection new
+	commandQueue := OrderedCollection new.
+	
+	vrIdToMorph := Dictionary new.
+]
+
+{ #category : #'as yet unclassified' }
+SBVREditor >> morphAtVrId: vrId [
+
+	^ vrIdToMorph at: vrId
+]
+
+{ #category : #'as yet unclassified' }
+SBVREditor >> registerMorph: aMorph atVrId: aNumber [
+
+	vrIdToMorph at: aNumber put: aMorph
 ]
 
 { #category : #'as yet unclassified' }
@@ -61,4 +76,10 @@ SBVREditor >> vrDoQueuedCommands [
 
 	commandQueue do: [:command | command vrDo].
 	commandQueue removeAll
+]
+
+{ #category : #'as yet unclassified' }
+SBVREditor >> vrIds [
+
+	^ vrIdToMorph keys
 ]

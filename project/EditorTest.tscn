@@ -10,8 +10,8 @@ script = ExtResource( 1 )
 margin_right = 2000.0
 margin_bottom = 2000.0
 
+[node name="Blocks" type="Node2D" parent="."]
+
 [node name="Provider" type="Node" parent="."]
 script = ExtResource( 2 )
-block_scale = 3.0
-
-[node name="Blocks" type="Node2D" parent="."]
+block_scale = 3.576
