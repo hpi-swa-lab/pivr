@@ -1,6 +1,6 @@
 Class {
 	#name : #GDSEditorTest,
-	#superclass : #GodotNode2D,
+	#superclass : #GodotSpatial,
 	#category : #'Godot-Scripts'
 }
 

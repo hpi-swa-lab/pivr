@@ -9,7 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Label",
+"base": "Spatial",
 "class": "TSText",
 "language": "GDScript",
 "path": "res://TSText/TSText.gd"
