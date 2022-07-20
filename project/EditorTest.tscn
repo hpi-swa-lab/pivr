@@ -20,5 +20,4 @@ block_scale = 0.01
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
-fov = 115.313
 script = ExtResource( 3 )

@@ -10,11 +10,17 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Spatial",
+"class": "TSBlock",
+"language": "GDScript",
+"path": "res://TSBlock/TSBlock.gd"
+}, {
+"base": "Spatial",
 "class": "TSText",
 "language": "GDScript",
 "path": "res://TSText/TSText.gd"
 } ]
 _global_script_class_icons={
+"TSBlock": "",
 "TSText": ""
 }
 

@@ -1,8 +1,9 @@
 extends Node
 
 export(float, 0, 5) var block_scale = 1 setget set_block_scale
-export(float, 0, 1) var child_z_offset = 0.5
-export(float, 0, 1) var block_thickness = 0.5
+export(float, 0, 1) var child_z_offset = 0.1
+export(float, 0, 1) var text_z_offset = 0.001
+export(float, 0, 1) var block_thickness = 0.1
 
 var idToBlock = {}
 
@@ -17,6 +18,7 @@ func test_func():
 func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	var blockStructure = JSON.parse(structureOfBlockJson).result
 	var block = buildBlock(blockStructure)
+	block.color = Color.white
 	$"../Blocks".add_child(block)
 #	block.rect_position.x = 0
 #	block.rect_position.y = 0
@@ -41,8 +43,9 @@ func buildBlock(blockStructure):
 			var text = preload("res://TSText/TSText.tscn").instance()
 			text.id = int(blockStructure['id'])
 			text.contents = blockStructure['contents']
-			text.transform.origin = Vector3(blockStructure["bounds"][0] * block_scale, blockStructure["bounds"][1] * block_scale, child_z_offset)
-			text.set_block_scale(Vector3(0.01, 0.01, block_thickness))
+			text.color = Color(blockStructure["color"])
+			text.transform.origin = Vector3(blockStructure["bounds"][0] * block_scale, blockStructure["bounds"][1] * block_scale, block_thickness / 2 + text_z_offset)
+			text.set_block_scale(Vector3(blockStructure["bounds"][2] * block_scale, blockStructure["bounds"][3] * block_scale, block_thickness))
 #			text.add_color_override("font_color", Color(blockStructure['color']))
 			idToBlock[text.id] = text
 			return text
@@ -54,8 +57,9 @@ func buildBlock(blockStructure):
 
 func addChildBlock(child, parent):
 	parent.add_child(child)
-	child.transform.origin.x -= parent.transform.origin.x
-	child.transform.origin.y -= parent.transform.origin.y
+	child.transform.origin.x = child.transform.origin.x - parent.transform.origin.x + (child.get_dimensions().x - parent.get_dimensions().x) / 2
+	child.transform.origin.y = child.transform.origin.y - parent.transform.origin.y + (child.get_dimensions().y - parent.get_dimensions().y) / 2
+	child.transform.origin.y *= -1
 
 func insertNewBlock(blockJson, index, containerId):
 	var container = idToBlock[containerId]
