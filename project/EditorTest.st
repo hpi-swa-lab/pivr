@@ -22,6 +22,24 @@ GDSEditorTest >> physicsProcess: delta [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> pickUpBlock: targetId [
+
+	| command target |
+	
+	target := SBVREditor current morphAtVrId: targetId.
+	command := target parentSandblock deleteCommandFor: target.
+	command
+		ifNotNil: [
+			SBVREditor current do: command.
+			SBVREditor current openMorphInView: target.
+			^ targetId]
+		ifNil: [
+			target changeToUnknown.
+			SBVREditor current openMorphInView: target.
+			^ targetId]
+]
+
+{ #category : #behavior }
 GDSEditorTest >> process: delta [
 
 	SBVREditor current vrDoQueuedCommands

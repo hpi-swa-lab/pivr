@@ -14,10 +14,10 @@ flags_transparent = true
 albedo_texture = SubResource( 3 )
 
 [sub_resource type="DynamicFont" id=4]
-size = 64
+size = 80
 font_data = ExtResource( 2 )
 
-[node name="TSText" type="Spatial"]
+[node name="TSText" type="Spatial" groups=["tstext"]]
 script = ExtResource( 1 )
 
 [node name="MeshInstance" type="MeshInstance" parent="."]

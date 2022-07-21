@@ -29,3 +29,6 @@ func get_dimensions():
 	
 func _ready():
 	$Viewport.size = $Viewport/Label.rect_size
+
+func get_block_children():
+	return []
