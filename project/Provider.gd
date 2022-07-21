@@ -20,9 +20,7 @@ func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	var block = buildBlock(blockStructure)
 	block.color = Color.white
 	$"../Blocks".add_child(block)
-#	block.rect_position.x = 0
-#	block.rect_position.y = 0
-#	$"../Blocks".position = -block.rect_position
+	block.transform.origin = Vector3.ZERO
 
 func buildBlock(blockStructure):
 	match blockStructure['class']:
