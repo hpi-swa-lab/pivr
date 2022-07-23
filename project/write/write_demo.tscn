@@ -1,0 +1,47 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://write/label.tscn" type="PackedScene" id=1]
+[ext_resource path="res://addons/godot-openxr/scenes/first_person_controller_vr.tscn" type="PackedScene" id=2]
+[ext_resource path="res://write/airwrite.tscn" type="PackedScene" id=3]
+[ext_resource path="res://write/letters.svg" type="Texture" id=4]
+[ext_resource path="res://write/write_instructions.tscn" type="PackedScene" id=5]
+
+[sub_resource type="SphereMesh" id=1]
+radius = 0.01
+height = 0.02
+
+[node name="game" type="Spatial"]
+
+[node name="instructions2" type="Sprite3D" parent="."]
+transform = Transform( 0.570628, 0, -3.21714, 0, 3.26736, 0, 3.21714, 0, 0.570628, 2.67888, 1, -0.432349 )
+pixel_size = 0.001
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 304, 433 )
+
+[node name="instructions3" type="Sprite3D" parent="."]
+transform = Transform( -3.23329, 0, 0.470591, 0, 3.26736, 0, -0.470591, 0, -3.23329, -0.154403, 1, 2.7064 )
+pixel_size = 0.001
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 304, 433 )
+
+[node name="instructions4" type="Sprite3D" parent="."]
+transform = Transform( 0.798023, 0, 3.1684, 0, 3.26736, 0, -3.1684, 0, 0.798023, -3.07722, 0.999999, -0.45547 )
+pixel_size = 0.001
+texture = ExtResource( 4 )
+region_rect = Rect2( 0, 0, 304, 433 )
+
+[node name="FPController" parent="." instance=ExtResource( 2 )]
+
+[node name="MeshInstance" type="MeshInstance" parent="FPController/RightHandController" index="0"]
+mesh = SubResource( 1 )
+material/0 = null
+
+[node name="label" parent="FPController/RightHandController" index="1" instance=ExtResource( 1 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.03, 0 )
+
+[node name="airwrite" parent="FPController" instance=ExtResource( 3 )]
+
+[node name="instructions" parent="." instance=ExtResource( 5 )]
+transform = Transform( 3.26736, 0, 0, 0, 3.26736, 0, 0, 0, 3.26736, 0.21205, 1, -2.83958 )
+
+[editable path="FPController"]

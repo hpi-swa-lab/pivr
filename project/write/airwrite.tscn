@@ -1,0 +1,30 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://write/airwrite.gd" type="Script" id=1]
+
+[sub_resource type="Curve3D" id=1]
+bake_interval = 0.01
+_data = {
+"points": PoolVector3Array( 0, 0, 0, 0, 0, 0, -0.0156749, 0.0219449, 0, 0, 0, 0, 0, 0, 0, -0.0718198, 0.124579, 0.053722 ),
+"tilts": PoolRealArray( 0, 0 )
+}
+
+[node name="airwrite" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="Path" type="Path" parent="."]
+curve = SubResource( 1 )
+
+[node name="CSGPolygon" type="CSGPolygon" parent="."]
+polygon = PoolVector2Array( -0.005, -0.005, -0.005, 0.005, 0.005, 0.005, 0.005, -0.005 )
+mode = 2
+path_node = NodePath("../Path")
+path_interval_type = 0
+path_interval = 0.01
+path_simplify_angle = 0.0
+path_rotation = 2
+path_local = true
+path_continuous_u = true
+path_u_distance = 0.71
+path_joined = false
+smooth_faces = true

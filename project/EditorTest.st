@@ -10,9 +10,26 @@ GDSEditorTest >> blockInput: event on: targetId [
 	| command target |
 	event class = GodotInputEventMouseButton ifFalse: [^ self].
 	
-	target := SBVREditor current morphAtVrId: targetId.
-	command := target parentSandblock deleteCommandFor: target.
-	command ifNotNil: [SBVREditor current do: command].
+	self do: [
+		target := SBVREditor current morphAtVrId: targetId.
+		command := target parentSandblock deleteCommandFor: target.
+		command ifNotNil: [SBVREditor current do: command]]
+]
+
+{ #category : #behavior }
+GDSEditorTest >> do: aBlock [
+
+	Project current addDeferredUIMessage: aBlock
+]
+
+{ #category : #behavior }
+GDSEditorTest >> performInsertAtId: aNumber from: aBlockId [
+
+	| command |
+	command := SBVREditor current insertCommandAtId: aNumber.
+	self do: [
+		SBVREditor current do: command.
+		(SBVREditor current morphAtVrId: aBlockId) deleteBlock]
 ]
 
 { #category : #behavior }
@@ -27,16 +44,18 @@ GDSEditorTest >> pickUpBlock: targetId [
 	| command target |
 	
 	target := SBVREditor current morphAtVrId: targetId.
-	command := target parentSandblock deleteCommandFor: target.
-	command
-		ifNotNil: [
-			SBVREditor current do: command.
-			SBVREditor current openMorphInView: target.
-			^ targetId]
-		ifNil: [
-			target changeToUnknown.
-			SBVREditor current openMorphInView: target.
-			^ targetId]
+	SBVREditor current showInsertPositionsFor: target.
+	
+	self do: [
+		command := target parentSandblock deleteCommandFor: target.
+		command
+			ifNotNil: [
+				SBVREditor current do: command.
+				SBVREditor current openMorphInView: target]
+			ifNil: [
+				target changeToUnknown.
+				SBVREditor current openMorphInView: target]].
+	^ targetId
 ]
 
 { #category : #behavior }

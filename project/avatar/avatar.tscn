@@ -1,7 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://addons/godot-openxr/scenes/first_person_controller_vr.tscn" type="PackedScene" id=1]
 [ext_resource path="res://grabber/grabber.tscn" type="PackedScene" id=2]
+[ext_resource path="res://write/airwrite.tscn" type="PackedScene" id=3]
+[ext_resource path="res://write/label.tscn" type="PackedScene" id=4]
+[ext_resource path="res://write/touchwrite.tscn" type="PackedScene" id=5]
 
 [sub_resource type="CylinderMesh" id=3]
 top_radius = 0.01
@@ -20,13 +23,26 @@ visible = true
 [node name="RightHandController" parent="FPController" index="3"]
 visible = true
 
-[node name="MeshInstance" type="MeshInstance" parent="FPController/RightHandController" index="0"]
-transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 5.96046e-08, 0.0210842, 0 )
+[node name="label" parent="FPController/RightHandController" index="0" instance=ExtResource( 4 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0508409, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="FPController/RightHandController" index="1"]
+transform = Transform( 1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 0.0195595, -0.0195595 )
 mesh = SubResource( 3 )
 material/0 = SubResource( 2 )
 
 [node name="Grabber" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -4.76837e-07, 0.0921461, 0 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0936968, 1.19209e-07 )
+
+[node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
+transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0246019, 0.0253952 )
+label_node = NodePath("../label")
+controller_node = NodePath("..")
+
+[node name="airwrite" parent="FPController" instance=ExtResource( 3 )]
+label_node = NodePath("../RightHandController/label")
+controller_node = NodePath("../RightHandController")
+grabber = NodePath("../RightHandController/MeshInstance/Grabber")
 
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_pressed"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_release"]

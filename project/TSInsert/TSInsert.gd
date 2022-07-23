@@ -1,6 +1,6 @@
 extends Spatial
 
-class_name TSBlock
+class_name TSInsert
 
 var color = Color.white setget set_color
 var id
@@ -14,18 +14,21 @@ func get_provider():
 	return get_editor().get_node("Provider")
 
 func on_hover_in():
-	highlight(true)
+	highlight()
 
 func on_hover_out():
-	unhighlight(true)
+	unhighlight()
 
 func on_grab():
-#	if !is_root_block():
-	return get_editor().pickUpBlock_(id) != null
+	pass
 
 func on_release():
 #	get_parent().remove_child(self)
-	get_provider().clearInsertHighlights()
+	#get_provider().clearInsertHighlights()
+	pass
+
+func on_drop(object):
+	get_editor().performInsertAtId_from_(id, object.id)
 
 func set_block_scale(s):
 	$Scaled.scale = s
@@ -43,19 +46,11 @@ func set_color(value):
 		if child.is_in_group("tsblock"):
 			child.color = color.darkened(.1)
 
-func highlight(highlight_children = false):
+func highlight():
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = preload("res://TSBlock/HighlightMaterial.tres")
-	if highlight_children:
-		for child in get_children():
-			if child.is_in_group("tsblock"):
-				child.highlight(true)
 
-func unhighlight(unhighlight_children = false):
+func unhighlight():
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = null
-	if unhighlight_children:
-		for child in get_children():
-			if child.is_in_group("tsblock"):
-				child.unhighlight(true)
 
 func get_block_children():
 	var children = []

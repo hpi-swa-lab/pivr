@@ -6,6 +6,7 @@ export(float, 0, 1) var text_z_offset = 0.001
 export(float, 0, 1) var block_thickness = 0.03
 
 var idToBlock = {}
+var currentInsertHighlights = []
 
 func set_block_scale(value):
 	block_scale = value
@@ -43,7 +44,6 @@ func buildBlock(blockStructure):
 				if childBlock:
 					addChildBlock(childBlock, block)
 			idToBlock[block.id] = block
-			block.connect("gui_input", get_parent(), "blockInput_on_", [block.id])
 			return block
 		'text':
 			var text = preload("res://TSText/TSText.tscn").instance()
@@ -112,6 +112,32 @@ func correctChildPositions(block):
 		child.transform.origin.x = child.transform.origin.x - block.transform.origin.x + (child.get_dimensions().x - block.get_dimensions().x) / 2
 		child.transform.origin.y = child.transform.origin.y - block.transform.origin.y + (child.get_dimensions().y - block.get_dimensions().y) / 2
 		child.transform.origin.y *= -1
+
+func showInsertPositions(data):
+	var list = JSON.parse(data).result
+	currentInsertHighlights = []
+	var extra_scale = 0.005
+	for position in list:
+		var insertPosition = preload("res://TSInsert/TSInsert.tscn").instance()
+		insertPosition.id = int(position['id'])
+		insertPosition.transform.origin = Vector3(position["bounds"][0] * block_scale, position["bounds"][1] * block_scale, child_z_offset * position['depth'])
+		insertPosition.set_block_scale(Vector3(position["bounds"][2] * block_scale, position["bounds"][3] * block_scale, block_thickness))
+		
+		var containerBlock = idToBlock[int(position['floatId'])]
+		containerBlock.add_child(insertPosition)
+		
+		insertPosition.transform.origin.x += (insertPosition.get_dimensions().x - containerBlock.get_dimensions().x) / 2
+		insertPosition.transform.origin.y += (insertPosition.get_dimensions().y - containerBlock.get_dimensions().y) / 2
+		insertPosition.transform.origin.y *= -1
+		
+		# now that is properly positioned, expand from center to enlarge
+		insertPosition.set_block_scale(Vector3(position["bounds"][2] * block_scale + extra_scale, position["bounds"][3] * block_scale + extra_scale, block_thickness + extra_scale))
+		
+		currentInsertHighlights.append(insertPosition)
+
+func clearInsertHighlights():
+	for h in currentInsertHighlights:
+		h.queue_free()
 
 func _ready():
 #	$"../Blocks".scale = Vector2.ONE * block_scale

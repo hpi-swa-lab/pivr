@@ -15,13 +15,25 @@ _global_script_classes=[ {
 "path": "res://TSBlock/TSBlock.gd"
 }, {
 "base": "Spatial",
+"class": "TSInsert",
+"language": "GDScript",
+"path": "res://TSInsert/TSInsert.gd"
+}, {
+"base": "Spatial",
 "class": "TSText",
 "language": "GDScript",
 "path": "res://TSText/TSText.gd"
+}, {
+"base": "Node",
+"class": "Write",
+"language": "GDScript",
+"path": "res://write/write.gd"
 } ]
 _global_script_class_icons={
 "TSBlock": "",
-"TSText": ""
+"TSInsert": "",
+"TSText": "",
+"Write": ""
 }
 
 [application]

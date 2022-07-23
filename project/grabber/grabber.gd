@@ -9,22 +9,21 @@ func best_colliding_object():
 	var best = null
 	for object in get_overlapping_areas():
 		# TODO
-		if object.is_in_group("grabbable"):
+		if object.is_in_group("drop" if grabbed_node else "grabbable"):
 			best = object
 	return best
 
 func _process(_delta):
-	if grabbed_node == null:
-		var best = best_colliding_object()
-		var hovered_node = null
-		if best != null:
-			hovered_node = best.get_grabbed_node()
-		if hovered_node != null and hovered_node.has_method("on_hover_in"):
-			hovered_node.on_hover_in()
-		if hovered_node != last_hovered_node:
-			if last_hovered_node != null and last_hovered_node.has_method("on_hover_out"):
-				last_hovered_node.on_hover_out()
-			last_hovered_node = hovered_node
+	var best = best_colliding_object()
+	var hovered_node = null
+	if best != null:
+		hovered_node = best.get_grabbed_node()
+	if hovered_node != null and hovered_node.has_method("on_hover_in"):
+		hovered_node.on_hover_in()
+	if hovered_node != last_hovered_node:
+		if last_hovered_node != null and last_hovered_node.has_method("on_hover_out"):
+			last_hovered_node.on_hover_out()
+		last_hovered_node = hovered_node
 
 func is_grabbing():
 	return grabbed_node != null
@@ -38,19 +37,14 @@ func _on_button_pressed(button):
 		return
 	grabbed_node = best.get_grabbed_node()
 	
+	var delta_transform = global_transform.inverse() * grabbed_node.global_transform
 	if grabbed_node.has_method("on_grab"):
 		if not grabbed_node.on_grab():
 			grabbed_node = null
 			return
-
-	var position_offset = to_local(grabbed_node.global_transform.origin) - transform.origin
-	$RemoteTransform.transform.origin = position_offset
-
-	var rotation_offset = Basis(global_transform.basis.get_rotation_quat().inverse() * grabbed_node.global_transform.basis.get_rotation_quat())
-	$RemoteTransform.transform.basis = rotation_offset
-
+	
+	$RemoteTransform.transform = delta_transform
 	$RemoteTransform.remote_path = grabbed_node.get_path()
-
 
 func _on_button_release(button):
 	if button != INDEX_TRIGGER: # trigger
@@ -60,4 +54,6 @@ func _on_button_release(button):
 		$RemoteTransform.remote_path = ""
 		if grabbed_node.has_method("on_release"):
 			grabbed_node.on_release()
+			if last_hovered_node and last_hovered_node.has_method("on_drop"):
+				last_hovered_node.on_drop(grabbed_node)
 		grabbed_node = null
