@@ -69,7 +69,13 @@ func addChildBlock(child, parent):
 
 func insertNewBlock(blockJson, index, containerId):
 	var container = idToBlock[containerId]
-	var block = buildBlock(JSON.parse(blockJson).result)
+	var blockStructure = JSON.parse(blockJson).result
+	var block = idToBlock.get(int(blockStructure["id"]))
+	if block != null:
+		block.transform.basis = Basis()
+		block.get_parent().remove_child(block)
+	else:
+		block = buildBlock(blockStructure)
 	addChildBlock(block, container)
 	container.move_child(block, index - 1)
 	get_owner().syncLayout()

@@ -35,9 +35,15 @@ material/0 = SubResource( 2 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0936968, 1.19209e-07 )
 
 [node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
-transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0246019, 0.0253952 )
+transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0154266, 0.015284 )
 label_node = NodePath("../label")
 controller_node = NodePath("..")
+
+[node name="AirwritePos" type="Position3D" parent="FPController/RightHandController" index="3"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0904074, -0.0901359 )
+__meta__ = {
+"_edit_group_": true
+}
 
 [node name="airwrite" parent="FPController" instance=ExtResource( 3 )]
 label_node = NodePath("../RightHandController/label")

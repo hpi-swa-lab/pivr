@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Node",
+"class": "OneEuroFilter",
+"language": "GDScript",
+"path": "res://one_euro_filter.gd"
+}, {
 "base": "Spatial",
 "class": "TSBlock",
 "language": "GDScript",
@@ -30,6 +35,7 @@ _global_script_classes=[ {
 "path": "res://write/write.gd"
 } ]
 _global_script_class_icons={
+"OneEuroFilter": "",
 "TSBlock": "",
 "TSInsert": "",
 "TSText": "",

@@ -48,9 +48,11 @@ func set_color(value):
 
 func highlight():
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = preload("res://TSBlock/HighlightMaterial.tres")
+	$Pointer/Sphere.get_surface_material(0).next_pass = preload("res://TSBlock/HighlightMaterial.tres")
 
 func unhighlight():
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = null
+	$Pointer/Sphere.get_surface_material(0).next_pass = null
 
 func get_block_children():
 	var children = []

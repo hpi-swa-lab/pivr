@@ -11,7 +11,11 @@ func _ready():
 	$Path.curve.clear_points()
 
 func get_controller_position():
-	return get_node(controller_node).global_transform.origin
+	var node = get_node(controller_node)
+	var pos_node = node.get_node("AirwritePos")
+	if pos_node != null:
+		node = pos_node
+	return node.global_transform.origin
 
 func get_controller_active():
 	var use_touchpad = false

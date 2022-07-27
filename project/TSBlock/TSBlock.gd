@@ -26,6 +26,17 @@ func on_grab():
 func on_release():
 #	get_parent().remove_child(self)
 	get_provider().clearInsertHighlights()
+	fix_orientation()
+
+func fix_orientation():
+	if is_root_block():
+		var angles = global_transform.basis.get_euler()
+		angles.z = 0
+		var dest_basis = Basis(angles)
+		$Tween.interpolate_property(self, "global_transform:basis", global_transform.basis, dest_basis, .3, Tween.TRANS_CUBIC, Tween.EASE_OUT)
+		$Tween.start()
+	else:
+		get_parent().fix_orientation()
 
 func set_block_scale(s):
 	$Scaled.scale = s
