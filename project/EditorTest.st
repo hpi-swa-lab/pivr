@@ -5,6 +5,17 @@ Class {
 }
 
 { #category : #behavior }
+GDSEditorTest >> appendText: text toNodeWithId: id [
+
+	| block |
+	block := (SBVREditor current morphAtVrId: id).
+	block startInputAtEnd.
+	text do: [:char |
+		SBVREditor current handle: (SBTest keyboardEvent: char)].
+	SBVREditor current cursor moveCursorDown
+]
+
+{ #category : #behavior }
 GDSEditorTest >> blockInput: event on: targetId [
 
 	| command target |

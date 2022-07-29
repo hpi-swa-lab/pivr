@@ -5,8 +5,6 @@ extends Spatial
 var contents setget set_contents
 var color setget set_color
 
-var text
-
 var id
 
 func set_color(value):
@@ -15,7 +13,6 @@ func set_color(value):
 
 func set_contents(aString):
 	contents = aString
-	text = contents
 	$Viewport/Label.text = contents
 	if get_tree() != null:
 		yield(get_tree(), "idle_frame")

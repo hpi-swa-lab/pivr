@@ -1,12 +1,14 @@
 extends Node
 
 export(float, 0, 5) var block_scale = 1 setget set_block_scale
-export(float, 0, 1) var child_z_offset = 0.03
+export(float, 0, 1) var child_z_offset = 0.01
 export(float, 0, 1) var text_z_offset = 0.001
-export(float, 0, 1) var block_thickness = 0.03
+export(float, 0, 1) var block_thickness = 0.01
 
 var idToBlock = {}
 var currentInsertHighlights = []
+
+var testBlock
 
 func set_block_scale(value):
 	block_scale = value
@@ -30,6 +32,7 @@ func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	block.color = Color.white
 	$"../Blocks".add_child(block)
 	block.transform.origin = Vector3.ZERO
+	testBlock.get_parent().append_text("testtesttesttest")
 
 func buildBlock(blockStructure):
 	match blockStructure['class']:
@@ -44,6 +47,8 @@ func buildBlock(blockStructure):
 				if childBlock:
 					addChildBlock(childBlock, block)
 			idToBlock[block.id] = block
+			if blockStructure["highlight"].ends_with(".part"):
+				block.set_flat(true)
 			return block
 		'text':
 			var text = preload("res://TSText/TSText.tscn").instance()
@@ -54,6 +59,8 @@ func buildBlock(blockStructure):
 			text.set_block_scale(Vector3(blockStructure["bounds"][2] * block_scale, blockStructure["bounds"][3] * block_scale, block_thickness))
 #			text.add_color_override("font_color", Color(blockStructure['color']))
 			idToBlock[text.id] = text
+			if blockStructure["contents"] == "Transcript":
+				testBlock = text
 			return text
 		'hardLineBreak':
 			return null
@@ -89,7 +96,8 @@ func removeBlockWithId(id):
 	get_parent().syncLayout()
 
 func setTextBlockContent(content, textBlockId):
-	idToBlock[textBlockId].text = content
+	idToBlock[textBlockId].contents = content
+	get_parent().syncLayout()
 
 var root_block_positions
 func syncLayout(structuresJson):
@@ -105,7 +113,10 @@ func syncLayout(structuresJson):
 			block.transform.origin = Vector3(blockStructure["bounds"][0] * block_scale, blockStructure["bounds"][1] * block_scale, child_z_offset)
 			block.set_block_scale(Vector3(blockStructure["bounds"][2] * block_scale, blockStructure["bounds"][3] * block_scale, block_thickness))
 		elif blockClass == "text":
-			block.transform.origin = Vector3(blockStructure["bounds"][0] * block_scale, blockStructure["bounds"][1] * block_scale, block_thickness / 2 + text_z_offset)
+#			block.transform.origin = Vector3(blockStructure["bounds"][0] * block_scale, blockStructure["bounds"][1] * block_scale, block_thickness / 2 + text_z_offset)
+			var x = Vector3(blockStructure["bounds"][0] * block_scale, blockStructure["bounds"][1] * block_scale, block_thickness / 2 + text_z_offset)
+			block.transform.origin.x = x.x
+			block.transform.origin.y = x.y
 			block.set_block_scale(Vector3(blockStructure["bounds"][2] * block_scale, blockStructure["bounds"][3] * block_scale, block_thickness))
 	for block in $"../Blocks".get_children():
 		correctChildPositions(block)

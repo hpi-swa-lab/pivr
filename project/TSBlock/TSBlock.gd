@@ -5,6 +5,15 @@ class_name TSBlock
 var color = Color.white setget set_color
 var id
 
+func set_flat(is_flat):
+	$Scaled/MeshInstance.visible = !is_flat
+	$Scaled/Area.monitorable = !is_flat
+	for child in get_children():
+		if child.is_in_group("tsblock"):
+			child.transform.origin.z = 0 if is_flat else 0.005
+		if child.is_in_group("tstext"):
+			child.transform.origin.z = -0.0049 if is_flat else 0.0051
+
 func get_editor():
 	for node in get_tree().get_nodes_in_group("editor"):
 		return node
@@ -74,3 +83,6 @@ func get_block_children():
 		if child.is_in_group("tsblock") or child.is_in_group("tstext"):
 			children.append(child)
 	return children
+
+func append_text(new_text):
+	get_editor().appendText_toNodeWithId_(new_text, id)
