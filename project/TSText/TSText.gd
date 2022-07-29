@@ -7,6 +7,31 @@ var color setget set_color
 
 var id
 
+var morph_position
+var morph_extent
+
+func build_from_structure(structure):
+	id = int(structure["id"])
+	set_contents(structure["contents"])
+	set_color(Color(structure["color"]))
+	
+	var morph_bounds = structure["bounds"]
+	morph_position = Vector2(morph_bounds[0], morph_bounds[1])
+	morph_extent = Vector2(morph_bounds[2], morph_bounds[3])
+
+func adjust_to_parent():
+	# assumption: parent is a TSBlock
+	var parent = get_parent().get_parent()
+	
+	var origin = Vector3()
+	origin.x = morph_position.x - parent.morph_position.x + (morph_extent.x - parent.morph_extent.x) / 2
+	origin.y = morph_position.y - parent.morph_position.y + (morph_extent.y - parent.morph_extent.y) / 2
+	origin *= parent.block_scale
+	origin.z = parent.block_thickness / 2 + 0.0001
+	transform.origin = origin
+	
+	$MeshInstance.scale = Vector3(morph_extent.x * parent.block_scale, morph_extent.y * parent.block_scale, parent.block_thickness)
+
 func set_color(value):
 	color = value
 	$Viewport/Label.add_color_override("font_color", color)

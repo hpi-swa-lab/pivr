@@ -31,5 +31,7 @@ SBTSBlock >> exportStructure [
 		#class -> #block.
 		#bounds -> (self bounds in: [:r | {r left. r top. r width. r height}]).
 		#type -> self type.
-		#id -> self vrId} as: Dictionary
+		#id -> self vrId.
+		#highlight -> self highlight.
+		#color -> self drawnColor asHTMLColor} as: Dictionary
 ]

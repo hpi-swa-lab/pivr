@@ -24,15 +24,19 @@ func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	if id in idToBlock:
 		var existing = idToBlock[id]
 		$"../Blocks".add_child(existing)
-		# existing.transform.origin = Vector3.ZERO
 		get_owner().syncLayout()
 		return existing
 	
-	var block = buildBlock(blockStructure)
+#	var block = buildBlock(blockStructure)
+	var block = preload("res://TSBlock/TSBlock.tscn").instance()
+	block.block_scale = block_scale
+	block.block_thickness = block_thickness
+	block.build_from_structure(blockStructure)
+	block.apply_block_scale()
 	block.color = Color.white
 	$"../Blocks".add_child(block)
 	block.transform.origin = Vector3.ZERO
-	testBlock.get_parent().append_text("testtesttesttest")
+#	testBlock.get_parent().append_text("testtesttesttest")
 
 func buildBlock(blockStructure):
 	match blockStructure['class']:

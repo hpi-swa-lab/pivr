@@ -30,3 +30,5 @@ script = ExtResource( 2 )
 shape = SubResource( 3 )
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="Blocks" type="Spatial" parent="."]

@@ -85,7 +85,7 @@ SBVREditor >> insertPositionsFor: aBlock [
 						#floatId -> pos container containingFloat vrId})]].
 			(pos isSelect and: [pos block isUnknown]) ifTrue: [ | id |
 				id := self getNextId.
-				tempInsertRegistry at: id put: (SBReplaceCommand new target: pos block replacer: aBlock).
+				tempInsertRegistry at: id put: (SBReplaceCommand new target: pos block replacer: aBlock copyBlock).
 				stream nextPut: (Dictionary newFrom: {
 					#id -> id.
 					#depth -> pos block blockDepth.
