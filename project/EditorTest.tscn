@@ -1,8 +1,9 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://EditorTest.st" type="Script" id=1]
 [ext_resource path="res://Provider.gd" type="Script" id=2]
 [ext_resource path="res://addons/simple-free-look-camera-13dfef73af258bffe1ecc95343cda2d075fe8388/camera.gd" type="Script" id=3]
+[ext_resource path="res://avatar/avatar.tscn" type="PackedScene" id=4]
 [ext_resource path="res://write/write_instructions.tscn" type="PackedScene" id=5]
 
 [node name="EditorTest" type="Spatial" groups=["editor"]]
@@ -14,7 +15,7 @@ margin_right = 2000.0
 margin_bottom = 2000.0
 
 [node name="Blocks" type="Spatial" parent="."]
-transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.643938, 1.32662, -0.198326 )
+transform = Transform( -4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -0.247012, 1.32662, -0.198326 )
 
 [node name="Provider" type="Node" parent="."]
 script = ExtResource( 2 )
@@ -22,8 +23,9 @@ block_scale = 0.003
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
-current = true
 script = ExtResource( 3 )
 
 [node name="instructions" parent="." instance=ExtResource( 5 )]
 transform = Transform( 3.26736, 0, 0, 0, 3.26736, 0, 0, 0, 3.26736, 0.21205, 1, -1.60501 )
+
+[node name="Avatar" parent="." instance=ExtResource( 4 )]

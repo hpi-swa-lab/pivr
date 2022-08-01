@@ -13,9 +13,7 @@ var morph_extent
 export(float) var block_scale
 export(float) var block_thickness
 
-func build_from_structure(structure):
-	id = int(structure["id"])
-	
+func assume_structure(structure):
 	var morph_bounds = structure["bounds"]
 	morph_position = Vector2(morph_bounds[0], morph_bounds[1])
 	morph_extent = Vector2(morph_bounds[2], morph_bounds[3])
@@ -25,6 +23,11 @@ func build_from_structure(structure):
 	is_flat = structure["highlight"].ends_with(".part")
 	$Scaled/MeshInstance.visible = !is_flat
 	$Scaled/Area.monitorable = !is_flat
+
+func build_from_structure(structure):
+	id = int(structure["id"])
+	
+	assume_structure(structure)
 	
 	for child_structure in structure["children"]:
 		var child = null
@@ -44,7 +47,7 @@ func build_from_structure(structure):
 
 func adjust_to_parent():
 	# assumption: parent is a TSBlock
-	var parent = get_parent().get_parent()
+	var parent = get_parent_block()
 	block_scale = parent.block_scale
 	block_thickness = 0 if is_flat else parent.block_thickness
 	
@@ -64,14 +67,52 @@ func adjust_to_parent():
 func apply_block_scale():
 	$Scaled.scale = Vector3(morph_extent.x * block_scale, morph_extent.y * block_scale, block_thickness)
 
-func set_flat(is_flat):
-	$Scaled/MeshInstance.visible = !is_flat
-	$Scaled/Area.monitorable = !is_flat
-	for child in get_children():
-		if child.is_in_group("tsblock"):
-			child.transform.origin.z = 0 if is_flat else 0.005
-		if child.is_in_group("tstext"):
-			child.transform.origin.z = -0.0049 if is_flat else 0.0051
+func register_self_and_children_if_necessary():
+	if !get_provider().idToBlock.has(id):
+		get_provider().idToBlock[id] = self
+	for child in $Blocks.get_children():
+		child.register_self_and_children_if_necessary()
+
+func add_child_block(block, index):
+	$Blocks.add_child(block)
+	$Blocks.move_child(block, index)
+	block.adjust_to_parent()
+
+func remove_child_block(block):
+	$Blocks.remove_child(block)
+
+func sync_layout():
+	print("attempting to layout ", id)
+	get_editor().syncLayoutForBlockWithId_(id)
+
+func sync_to_layout_structure(structure):
+	print("received layout structure for ", id)
+	
+	assume_structure(structure)
+	if !is_root_block():
+		adjust_to_parent()
+	else:
+		apply_block_scale()
+	
+	for child_structure in structure["children"]:
+		if child_structure["class"] in ["block", "text"]:
+			var child = get_child_block_with_id(int(child_structure["id"]))
+			child.sync_to_layout_structure(child_structure)
+
+func get_child_block_with_id(id):
+	for child in $Blocks.get_children():
+		if child.id == id:
+			return child
+	return null
+
+func get_root_block():
+	if is_root_block():
+		return self
+	else:
+		return get_parent_block().get_root_block()
+
+func get_parent_block():
+	return get_parent().get_parent()
 
 func get_editor():
 	for node in get_tree().get_nodes_in_group("editor"):
@@ -110,35 +151,31 @@ func get_dimensions():
 	return $Scaled.scale
 
 func is_root_block():
-	return get_parent() != null and !get_parent().is_in_group("tsblock")
+	return get_parent_block() != null and !get_parent_block().is_in_group("tsblock")
 
 func set_color(value):
 	color = value
 	$Scaled/MeshInstance.get_surface_material(0).albedo_color = color
-	for child in get_children():
-		if child.is_in_group("tsblock"):
-			child.color = color.darkened(.1)
+#	for child in get_block_children():
+#		if child.is_in_group("tsblock"):
+#			child.color = color.darkened(.1)
 
 func highlight(highlight_children = false):
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = preload("res://TSBlock/HighlightMaterial.tres")
 	if highlight_children:
-		for child in get_children():
+		for child in get_block_children():
 			if child.is_in_group("tsblock"):
 				child.highlight(true)
 
 func unhighlight(unhighlight_children = false):
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = null
 	if unhighlight_children:
-		for child in get_children():
+		for child in get_block_children():
 			if child.is_in_group("tsblock"):
 				child.unhighlight(true)
 
 func get_block_children():
-	var children = []
-	for child in get_children():
-		if child.is_in_group("tsblock") or child.is_in_group("tstext"):
-			children.append(child)
-	return children
+	return $Blocks.get_children()
 
 func append_text(new_text):
 	get_editor().appendText_toNodeWithId_(new_text, id)

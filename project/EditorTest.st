@@ -56,7 +56,6 @@ GDSEditorTest >> pickUpBlock: targetId [
 	
 	target := SBVREditor current morphAtVrId: targetId.
 	SBVREditor current showInsertPositionsFor: target.
-	
 	self do: [
 		command := target parentSandblock deleteCommandFor: target.
 		command
@@ -84,12 +83,10 @@ GDSEditorTest >> ready [
 ]
 
 { #category : #behavior }
-GDSEditorTest >> syncLayout [
+GDSEditorTest >> syncLayoutForBlockWithId: id [
 
-	| editor structures |
+	| editor |
 	editor := SBVREditor current.
-	structures := (editor vrIds collect: [:id | | morph |
-		morph := editor morphAtVrId: id.
-		id asString -> (morph exportStructure)]) as: Dictionary.
-	editor godotProvider syncLayout: structures asJsonString
+	editor godotProvider syncLayout:
+		(editor morphAtVrId: id) exportStructure asJsonString.
 ]

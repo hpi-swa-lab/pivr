@@ -114,8 +114,10 @@ SBVREditor >> showInsertPositionsFor: aBlock [
 { #category : #'action helpers' }
 SBVREditor >> vrDoQueuedCommands [
 
-	commandQueue do: [:command | command vrDo].
-	commandQueue removeAll
+	commandQueue ifNotEmpty: [
+		commandQueue do: [:command | command vrDo].
+		commandQueue removeAll.
+		godotProvider syncLayoutForAll.]
 ]
 
 { #category : #'id mapping' }

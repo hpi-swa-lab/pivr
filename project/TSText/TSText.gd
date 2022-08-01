@@ -12,6 +12,13 @@ var morph_extent
 
 func build_from_structure(structure):
 	id = int(structure["id"])
+	assume_structure(structure)
+
+func sync_to_layout_structure(structure):
+	assume_structure(structure)
+	adjust_to_parent()
+
+func assume_structure(structure):
 	set_contents(structure["contents"])
 	set_color(Color(structure["color"]))
 	
@@ -43,6 +50,10 @@ func set_contents(aString):
 		yield(get_tree(), "idle_frame")
 		$Viewport.size = $Viewport/Label.rect_size
 
+func register_self_and_children_if_necessary():
+	if !get_provider().idToBlock.has(id):
+		get_provider().idToBlock[id] = self
+
 func set_block_scale(s):
 	$MeshInstance.scale = s
 
@@ -54,3 +65,11 @@ func _ready():
 
 func get_block_children():
 	return []
+
+func get_editor():
+	for node in get_tree().get_nodes_in_group("editor"):
+		return node
+	return null
+
+func get_provider():
+	return get_editor().get_node("Provider")
