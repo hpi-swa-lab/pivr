@@ -20,7 +20,7 @@ func _process(_delta):
 	
 	if pos == null:
 		if not points.empty():
-			write.detect_chars(points, funcref(self, 'direction_of_stroke'), get_node(label_node), THIN_THRESHOLD)
+			write.detect_chars(points, funcref(self, 'direction_of_stroke'), funcref(self, 'handle_result_char'), THIN_THRESHOLD)
 			points = []
 	else:
 		points.append(pos)
@@ -60,3 +60,10 @@ func direction_of_stroke(p1, p2):
 		return 'l' if p1.x > p2.x else 'r'
 	else:
 		return 'u' if p1.y > p2.y else 'd'
+
+func handle_result_char(character):
+	var label = get_node(label_node)
+	if character == '\b':
+		label.text = label.text.substr(0, label.text.length() - 1)
+	else:
+		label.text += character

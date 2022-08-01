@@ -31,7 +31,8 @@ func get_my_origin():
 func _process(delta):
 	if not get_controller_active():
 		if not points.empty():
-			write.detect_chars(points, funcref(self, 'direction_of_stroke'), get_node(label_node), 0.03)
+#			write.detect_chars(points, funcref(self, 'direction_of_stroke'), get_node(label_node), 0.03)
+			write.detect_chars(points, funcref(self, 'direction_of_stroke'), funcref(self, "handle_result_char"), 0.03)
 			points = []
 			$Path.curve.clear_points()
 		return
@@ -50,3 +51,16 @@ func direction_of_stroke(p1: Vector3, p2: Vector3):
 		return 'l' if Vector2(a.x, a.z).angle_to(Vector2(b.x, b.z)) < 0 else 'r'
 	else:
 		return 'u' if p2.y > p1.y else 'd'
+
+func get_editor():
+	for node in get_tree().get_nodes_in_group("editor"):
+		return node
+	return null
+
+func handle_result_char(character):
+#	var label = get_node(label_node)
+#	if character == '\b':
+#		label.text = label.text.substr(0, label.text.length() - 1)
+#	else:
+#		label.text += character
+	get_editor().sendKeyStroke_(character)

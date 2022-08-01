@@ -83,6 +83,29 @@ GDSEditorTest >> ready [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> selectCursorInBlockWithId: id at: pos [
+
+	| block |
+	block := SBVREditor current morphAtVrId: id.
+	SBVREditor current cursor select: block.
+]
+
+{ #category : #behavior }
+GDSEditorTest >> sendKeyStroke: character [
+
+	| cursorPosition index |
+	character do: [:char | | editor block |
+		editor := SBVREditor current.
+		editor handle: (SBTest keyboardEvent: char).
+		cursorPosition := editor cursor cursorPosition.
+		block := cursorPosition block.
+		index := cursorPosition block currentTextMorph cursor.
+		cursorPosition applyCommandIn: editor.
+		editor cursor select: block.
+		editor cursor selectedBlock currentTextMorph moveCursorTo: index].
+]
+
+{ #category : #behavior }
 GDSEditorTest >> syncLayoutForBlockWithId: id [
 
 	| editor |

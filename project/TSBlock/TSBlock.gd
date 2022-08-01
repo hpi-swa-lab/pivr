@@ -99,6 +99,13 @@ func sync_to_layout_structure(structure):
 			var child = get_child_block_with_id(int(child_structure["id"]))
 			child.sync_to_layout_structure(child_structure)
 
+func selectCursorAt(global_point):
+	# abort if not a leaf block
+	for child in get_block_children():
+		if child.is_in_group("tsblock"):
+			return
+	get_editor().selectCursorInBlockWithId_at_(id, Vector2())
+
 func get_child_block_with_id(id):
 	for child in $Blocks.get_children():
 		if child.id == id:

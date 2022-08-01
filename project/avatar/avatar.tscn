@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://addons/godot-openxr/scenes/first_person_controller_vr.tscn" type="PackedScene" id=1]
 [ext_resource path="res://grabber/grabber.tscn" type="PackedScene" id=2]
 [ext_resource path="res://write/airwrite.tscn" type="PackedScene" id=3]
 [ext_resource path="res://write/label.tscn" type="PackedScene" id=4]
 [ext_resource path="res://write/touchwrite.tscn" type="PackedScene" id=5]
+[ext_resource path="res://cursor_selector/cursor_selector.tscn" type="PackedScene" id=6]
 
 [sub_resource type="CylinderMesh" id=3]
 top_radius = 0.01
@@ -34,6 +35,9 @@ material/0 = SubResource( 2 )
 [node name="Grabber" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 2 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0936968, 1.19209e-07 )
 
+[node name="CursorSelector" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 0, 0 )
+
 [node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0154266, 0.015284 )
 label_node = NodePath("../label")
@@ -51,6 +55,7 @@ controller_node = NodePath("../RightHandController")
 grabber = NodePath("../RightHandController/MeshInstance/Grabber")
 
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_pressed"]
+[connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/CursorSelector" method="_on_button_pressed"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_release"]
 
 [editable path="FPController"]

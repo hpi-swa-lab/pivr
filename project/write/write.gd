@@ -84,7 +84,7 @@ func check_letters(directions):
 			return key
 	return null
 
-func detect_chars(points, direction_func, label, thin_threshold):
+func detect_chars(points, direction_func, result_func, thin_threshold):
 	points = thin_points(points, thin_threshold)
 	var directions = ''
 	var last_p
@@ -96,10 +96,7 @@ func detect_chars(points, direction_func, label, thin_threshold):
 		last_p = p
 	var l = check_letters(directions)
 	if l:
-		if l == '\b':
-			label.text = label.text.substr(0, label.text.length() - 1)
-		else:
-			label.text += l
+		result_func.call_func(l)
 
 func thin_points(list, threshold):
 	var output = [list[0]]
