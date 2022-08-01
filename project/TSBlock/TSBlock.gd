@@ -82,11 +82,9 @@ func remove_child_block(block):
 	$Blocks.remove_child(block)
 
 func sync_layout():
-	print("attempting to layout ", id)
 	get_editor().syncLayoutForBlockWithId_(id)
 
 func sync_to_layout_structure(structure):
-	print("received layout structure for ", id)
 	
 	assume_structure(structure)
 	if !is_root_block():
@@ -99,12 +97,15 @@ func sync_to_layout_structure(structure):
 			var child = get_child_block_with_id(int(child_structure["id"]))
 			child.sync_to_layout_structure(child_structure)
 
-func selectCursorAt(global_point):
-	# abort if not a leaf block
+func add_cursor_at(global_point):
 	for child in get_block_children():
-		if child.is_in_group("tsblock"):
-			return
-	get_editor().selectCursorInBlockWithId_at_(id, Vector2())
+		if child.is_in_group("tstext"):
+			child.add_cursor_at(global_point)
+#	# abort if not a leaf block
+#	for child in get_block_children():
+#		if child.is_in_group("tsblock"):
+#			return
+#	get_editor().selectCursorInBlockWithId_at_(id, Vector2())
 
 func get_child_block_with_id(id):
 	for child in $Blocks.get_children():

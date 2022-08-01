@@ -63,4 +63,5 @@ func handle_result_char(character):
 #		label.text = label.text.substr(0, label.text.length() - 1)
 #	else:
 #		label.text += character
-	get_editor().sendKeyStroke_(character)
+#	get_editor().sendKeyStroke_(character)
+	get_tree().call_group("cursor", "write_character", character)

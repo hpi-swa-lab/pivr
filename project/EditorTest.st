@@ -71,7 +71,8 @@ GDSEditorTest >> pickUpBlock: targetId [
 { #category : #behavior }
 GDSEditorTest >> process: delta [
 
-	SBVREditor current vrDoQueuedCommands
+	SBVREditor current vrDoQueuedCommands.
+	SBVREditor current godotProvider syncLayoutForAll. "WARNING DIRTY DIRTY HACK VERY TEMPORARY UGH"
 ]
 
 { #category : #behavior }
@@ -112,4 +113,17 @@ GDSEditorTest >> syncLayoutForBlockWithId: id [
 	editor := SBVREditor current.
 	editor godotProvider syncLayout:
 		(editor morphAtVrId: id) exportStructure asJsonString.
+]
+
+{ #category : #behavior }
+GDSEditorTest >> writeCharacter: character at: index inBlockWithId: id [
+
+	| block editor |
+	editor := SBVREditor current.
+	block := editor morphAtVrId: id.
+	character do: [:char |
+		editor cursor select: block.
+		editor cursor selectedBlock currentTextMorph moveCursorTo: index.
+		editor handle: (SBTest keyboardEvent: char).
+		editor cursor cursorPosition applyCommandIn: editor.].
 ]

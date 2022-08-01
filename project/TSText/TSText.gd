@@ -17,6 +17,9 @@ func build_from_structure(structure):
 func sync_to_layout_structure(structure):
 	assume_structure(structure)
 	adjust_to_parent()
+	for child in $CursorContainer.get_children():
+		# trigger repositioning
+		child.index = child.index
 
 func assume_structure(structure):
 	set_contents(structure["contents"])
@@ -28,7 +31,7 @@ func assume_structure(structure):
 
 func adjust_to_parent():
 	# assumption: parent is a TSBlock
-	var parent = get_parent().get_parent()
+	var parent = get_parent_block()
 	
 	var origin = Vector3()
 	origin.x = morph_position.x - parent.morph_position.x + (morph_extent.x - parent.morph_extent.x) / 2
@@ -38,6 +41,35 @@ func adjust_to_parent():
 	transform.origin = origin
 	
 	$MeshInstance.scale = Vector3(morph_extent.x * parent.block_scale, morph_extent.y * parent.block_scale, parent.block_thickness)
+	$CursorContainer.transform.origin.x = -$MeshInstance.scale.x / 2
+	for child in $CursorContainer.get_children():
+		child.x_range = $MeshInstance.scale.x
+
+func get_parent_block():
+	return get_parent().get_parent()
+
+func add_cursor_at(global_point):
+	get_tree().call_group("cursor", "remove")
+	var cursor = preload("res://cursor/cursor.tscn").instance()
+	$CursorContainer.add_child(cursor)
+	cursor.set_cursor_height($MeshInstance.scale.y)
+	cursor.transform.origin.z = cursor.get_depth() / 2
+	cursor.x_range = $MeshInstance.scale.x
+	cursor.label = $Viewport/Label
+	cursor.block = get_parent_block()
+	
+	var local_point = to_local(global_point)
+	var width = $MeshInstance.scale.x
+	var distance_percentage = (local_point.x + width / 2) / width
+	var label_width = $Viewport/Label.rect_size.x
+	var threshold_width = label_width * distance_percentage
+	var font = $Viewport/Label.get_font("font")
+	for i in range(1, contents.length() + 1):
+		var s = contents.substr(0, i)
+		var string_width = font.get_string_size(s).x
+		if string_width >= threshold_width:
+			cursor.index = i
+			break
 
 func set_color(value):
 	color = value

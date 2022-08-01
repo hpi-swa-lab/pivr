@@ -26,12 +26,12 @@ transparent_bg = true
 render_target_v_flip = true
 
 [node name="Label" type="Label" parent="Viewport"]
-margin_right = 40.0
-margin_bottom = 14.0
+margin_bottom = 94.0
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 custom_fonts/font = SubResource( 4 )
-text = "test"
 
 [node name="MeshInstance" type="MeshInstance" parent="."]
 mesh = SubResource( 1 )
 material/0 = SubResource( 2 )
+
+[node name="CursorContainer" type="Spatial" parent="."]
