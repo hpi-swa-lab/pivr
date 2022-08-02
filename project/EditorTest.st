@@ -72,7 +72,6 @@ GDSEditorTest >> pickUpBlock: targetId [
 GDSEditorTest >> process: delta [
 
 	SBVREditor current vrDoQueuedCommands.
-	SBVREditor current godotProvider syncLayoutForAll. "WARNING DIRTY DIRTY HACK VERY TEMPORARY UGH"
 ]
 
 { #category : #behavior }
@@ -88,42 +87,48 @@ GDSEditorTest >> selectCursorInBlockWithId: id at: pos [
 
 	| block |
 	block := SBVREditor current morphAtVrId: id.
-	SBVREditor current cursor select: block.
+	self do: [SBVREditor current cursor select: block]
 ]
 
 { #category : #behavior }
 GDSEditorTest >> sendKeyStroke: character [
 
 	| cursorPosition index |
-	character do: [:char | | editor block |
-		editor := SBVREditor current.
-		editor handle: (SBTest keyboardEvent: char).
-		cursorPosition := editor cursor cursorPosition.
-		block := cursorPosition block.
-		index := cursorPosition block currentTextMorph cursor.
-		cursorPosition applyCommandIn: editor.
-		editor cursor select: block.
-		editor cursor selectedBlock currentTextMorph moveCursorTo: index].
+	self do: [
+		character do: [:char | | editor block |
+			editor := SBVREditor current.
+			editor handle: (SBTest keyboardEvent: char).
+			cursorPosition := editor cursor cursorPosition.
+			block := cursorPosition block.
+			index := cursorPosition block currentTextMorph cursor.
+			cursorPosition applyCommandIn: editor.
+			editor cursor select: block.
+			editor cursor selectedBlock currentTextMorph moveCursorTo: index]]
 ]
 
 { #category : #behavior }
 GDSEditorTest >> syncLayoutForBlockWithId: id [
 
-	| editor |
+	| editor block |
 	editor := SBVREditor current.
-	editor godotProvider syncLayout:
-		(editor morphAtVrId: id) exportStructure asJsonString.
+	block := (editor morphAtVrId: id).
+	self do: [block layoutChanged;
+		fullBounds].
+	self flag: #performance. "doOneCycle per block probably wasterful"
+	editor world doOneCycleNow.
+	editor godotProvider syncLayout: block exportStructure asJsonString.
 ]
 
 { #category : #behavior }
 GDSEditorTest >> writeCharacter: character at: index inBlockWithId: id [
 
 	| block editor |
-	editor := SBVREditor current.
-	block := editor morphAtVrId: id.
-	character do: [:char |
+	self do: [
+		editor := SBVREditor current.
+		block := editor morphAtVrId: id.
+		character do: [:char |
 		editor cursor select: block.
 		editor cursor selectedBlock currentTextMorph moveCursorTo: index.
 		editor handle: (SBTest keyboardEvent: char).
-		editor cursor cursorPosition applyCommandIn: editor.].
+		editor cursor cursorPosition applyCommandIn: editor.]]
 ]

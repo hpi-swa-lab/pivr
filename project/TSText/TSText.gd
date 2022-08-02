@@ -78,9 +78,7 @@ func set_color(value):
 func set_contents(aString):
 	contents = aString
 	$Viewport/Label.text = contents
-	if get_tree() != null:
-		yield(get_tree(), "idle_frame")
-		$Viewport.size = $Viewport/Label.rect_size
+	$Viewport.size = $Viewport/Label.get_font("font").get_string_size(contents)
 
 func register_self_and_children_if_necessary():
 	if !get_provider().idToBlock.has(id):

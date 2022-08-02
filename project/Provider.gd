@@ -16,6 +16,7 @@ func set_block_scale(value):
 func test_func():
 	print("Hellol")
 
+# todo: syncing should also sync the cursor position from sandblocks (ie tsblock+index)
 func syncLayoutForAll():
 	for child in $"../Blocks".get_children():
 		child.sync_layout()

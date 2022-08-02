@@ -1,7 +1,7 @@
 extends Spatial
 
 var block
-var index setget set_index
+var index: int setget set_index
 var label
 var x_range
 
@@ -16,12 +16,13 @@ func get_depth():
 
 func set_index(value):
 	index = value
+	var font = label.get_font("font")
 	
-	var string_width = label.get_font("font").get_string_size(label.text.substr(0, index)).x
-	if label.rect_size.x == 0:
+	var string_width = font.get_string_size(label.text.substr(0, index)).x
+	if label.text.empty():
 		transform.origin.x = 0
 	else:
-		transform.origin.x = x_range * string_width / label.rect_size.x
+		transform.origin.x = x_range * string_width / font.get_string_size(label.text).x
 
 func get_editor():
 	for node in get_tree().get_nodes_in_group("editor"):
