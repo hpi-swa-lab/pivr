@@ -54,13 +54,20 @@ func add_cursor_at_position(global_point, preview=false):
 	var label_width = $Viewport/Label.rect_size.x
 	var threshold_width = label_width * distance_percentage
 	var font = $Viewport/Label.get_font("font")
+	var prev_width = 0
 	for i in range(1, contents.length() + 1):
 		var s = contents.substr(0, i)
 		var string_width = font.get_string_size(s).x
 		if string_width >= threshold_width:
-			var cursor = add_cursor_at_index(i, preview)
+			var index = i
+			var character_width = string_width - prev_width
+			if threshold_width < string_width - character_width / 2:
+				index -= 1
+			
+			var cursor = add_cursor_at_index(index, preview)
 			cursor.set_in_sandblocks()
 			return cursor
+		prev_width = string_width
 	
 
 func add_cursor_at_index(index, preview=false):
