@@ -97,10 +97,10 @@ func sync_to_layout_structure(structure):
 			var child = get_child_block_with_id(int(child_structure["id"]))
 			child.sync_to_layout_structure(child_structure)
 
-func add_cursor_at(global_point):
+func add_cursor_at_position(global_point):
 	for child in get_block_children():
 		if child.is_in_group("tstext"):
-			child.add_cursor_at(global_point)
+			child.add_cursor_at_position(global_point)
 #	# abort if not a leaf block
 #	for child in get_block_children():
 #		if child.is_in_group("tsblock"):

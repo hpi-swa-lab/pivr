@@ -1,6 +1,7 @@
 extends Spatial
 
 var block
+var text_block
 var index: int setget set_index
 var label
 var x_range
@@ -31,7 +32,6 @@ func get_editor():
 
 func write_character(character):
 	get_editor().writeCharacter_at_inBlockWithId_(character, index + 1, block.id)
-	if character == "\b":
-		index = index - 1
-	else:
-		index = index + 1
+
+func set_in_sandblocks():
+	get_editor().startInputAt_inTextWithId_(index + 1, text_block.id)

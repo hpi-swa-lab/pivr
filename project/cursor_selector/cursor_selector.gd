@@ -8,4 +8,4 @@ func _on_button_pressed(button):
 	
 	if $RayCast.is_colliding():
 		var block = $RayCast.get_collider().get_grabbed_node()
-		block.add_cursor_at($RayCast.get_collision_point())
+		block.add_cursor_at_position($RayCast.get_collision_point())

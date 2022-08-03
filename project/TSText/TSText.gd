@@ -48,16 +48,7 @@ func adjust_to_parent():
 func get_parent_block():
 	return get_parent().get_parent()
 
-func add_cursor_at(global_point):
-	get_tree().call_group("cursor", "remove")
-	var cursor = preload("res://cursor/cursor.tscn").instance()
-	$CursorContainer.add_child(cursor)
-	cursor.set_cursor_height($MeshInstance.scale.y)
-	cursor.transform.origin.z = cursor.get_depth() / 2
-	cursor.x_range = $MeshInstance.scale.x
-	cursor.label = $Viewport/Label
-	cursor.block = get_parent_block()
-	
+func add_cursor_at_position(global_point):
 	var local_point = to_local(global_point)
 	var width = $MeshInstance.scale.x
 	var distance_percentage = (local_point.x + width / 2) / width
@@ -68,8 +59,23 @@ func add_cursor_at(global_point):
 		var s = contents.substr(0, i)
 		var string_width = font.get_string_size(s).x
 		if string_width >= threshold_width:
-			cursor.index = i
+			var cursor = add_cursor_at_index(i)
+			cursor.set_in_sandblocks()
 			break
+	
+
+func add_cursor_at_index(index):
+	get_tree().call_group("cursor", "remove")
+	var cursor = preload("res://cursor/cursor.tscn").instance()
+	$CursorContainer.add_child(cursor)
+	cursor.set_cursor_height($MeshInstance.scale.y)
+	cursor.transform.origin.z = cursor.get_depth() / 2
+	cursor.x_range = $MeshInstance.scale.x
+	cursor.label = $Viewport/Label
+	cursor.block = get_parent_block()
+	cursor.text_block = self
+	cursor.index = index
+	return cursor
 
 func set_color(value):
 	color = value

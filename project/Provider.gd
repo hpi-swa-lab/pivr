@@ -16,10 +16,15 @@ func set_block_scale(value):
 func test_func():
 	print("Hellol")
 
-# todo: syncing should also sync the cursor position from sandblocks (ie tsblock+index)
 func syncLayoutForAll():
 	for child in $"../Blocks".get_children():
 		child.sync_layout()
+	
+	var cursor_info_json = get_editor().getCursorInfo()
+	if cursor_info_json != null:
+		var cursor_info = JSON.parse(cursor_info_json).result
+		var text = idToBlock[int(cursor_info["textId"])]
+		text.add_cursor_at_index(int(cursor_info["index"]) - 1)
 
 func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	var blockStructure = JSON.parse(structureOfBlockJson).result

@@ -23,6 +23,14 @@ SBVREditor class >> current [
 	^ Instance := Instance ifNil: [self new openInWindow; yourself]
 ]
 
+{ #category : #'insert commands' }
+SBVREditor >> batchedChangeStep: block [
+
+	super batchedChangeStep: block.
+	godotProvider syncLayoutForAll.
+	Transcript showln: 'here'.
+]
+
 { #category : #'action helpers' }
 SBVREditor >> do: aCommand [
 

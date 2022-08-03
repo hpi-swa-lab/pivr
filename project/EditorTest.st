@@ -34,6 +34,12 @@ GDSEditorTest >> do: aBlock [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> getCursorInfo [
+
+	^ SBVREditor current cursor exportInfo ifNil: [nil] ifNotNil: [:info | info asJsonString]
+]
+
+{ #category : #behavior }
 GDSEditorTest >> performInsertAtId: aNumber from: aBlockId [
 
 	| command |
@@ -107,6 +113,18 @@ GDSEditorTest >> sendKeyStroke: character [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> startInputAt: index inTextWithId: id [
+
+	self do: [ | textMorph |
+		textMorph := SBVREditor current morphAtVrId: id.
+		SBVREditor current
+			startInput: textMorph containingSandblock
+			at: index
+			replacingContents: false
+			in: textMorph]
+]
+
+{ #category : #behavior }
 GDSEditorTest >> syncLayoutForBlockWithId: id [
 
 	| editor block |
@@ -130,5 +148,5 @@ GDSEditorTest >> writeCharacter: character at: index inBlockWithId: id [
 		editor cursor select: block.
 		editor cursor selectedBlock currentTextMorph moveCursorTo: index.
 		editor handle: (SBTest keyboardEvent: char).
-		editor cursor cursorPosition applyCommandIn: editor.]]
+		"editor cursor cursorPosition applyCommandIn: editor."]]
 ]
