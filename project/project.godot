@@ -48,6 +48,10 @@ config/name="Vr-and-squeak-test"
 run/main_scene="res://EditorTest.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+Logger="*res://logger/logger.gd"
+
 [display]
 
 window/size/width=2000

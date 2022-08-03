@@ -97,6 +97,8 @@ func detect_chars(points, direction_func, result_func, thin_threshold):
 	var l = check_letters(directions)
 	if l:
 		result_func.call_func(l)
+	else:
+		Logger.log("Character detection failed")
 
 func thin_points(list, threshold):
 	var output = [list[0]]

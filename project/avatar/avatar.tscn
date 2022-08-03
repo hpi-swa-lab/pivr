@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://addons/godot-openxr/scenes/first_person_controller_vr.tscn" type="PackedScene" id=1]
 [ext_resource path="res://grabber/grabber.tscn" type="PackedScene" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://write/label.tscn" type="PackedScene" id=4]
 [ext_resource path="res://write/touchwrite.tscn" type="PackedScene" id=5]
 [ext_resource path="res://cursor_selector/cursor_selector.tscn" type="PackedScene" id=6]
+[ext_resource path="res://log_display/log_display.tscn" type="PackedScene" id=7]
 
 [sub_resource type="CylinderMesh" id=3]
 top_radius = 0.01
@@ -49,6 +50,10 @@ __meta__ = {
 "_edit_group_": true
 }
 
+[node name="LogDisplay" parent="FPController/RightHandController" index="4" instance=ExtResource( 7 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.338062, -0.665004 )
+visible = false
+
 [node name="airwrite" parent="FPController" instance=ExtResource( 3 )]
 label_node = NodePath("../RightHandController/label")
 controller_node = NodePath("../RightHandController")
@@ -56,6 +61,8 @@ grabber = NodePath("../RightHandController/MeshInstance/Grabber")
 
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_pressed"]
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/CursorSelector" method="_on_button_pressed"]
+[connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/LogDisplay" method="_on_button_pressed"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_release"]
+[connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/LogDisplay" method="_on_button_release"]
 
 [editable path="FPController"]
