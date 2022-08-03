@@ -14,6 +14,8 @@ visible = false
 margin_right = 2000.0
 margin_bottom = 2000.0
 
+[node name="Avatar" parent="." instance=ExtResource( 4 )]
+
 [node name="Blocks" type="Spatial" parent="."]
 transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.416691, 1.32662, 0.495207 )
 
@@ -27,5 +29,3 @@ script = ExtResource( 3 )
 
 [node name="instructions" parent="." instance=ExtResource( 5 )]
 transform = Transform( 3.26736, 0, 0, 0, 3.26736, 0, 0, 0, 3.26736, 0.21205, 1, -1.60501 )
-
-[node name="Avatar" parent="." instance=ExtResource( 4 )]

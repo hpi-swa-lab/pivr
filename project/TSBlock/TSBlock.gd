@@ -97,15 +97,21 @@ func sync_to_layout_structure(structure):
 			var child = get_child_block_with_id(int(child_structure["id"]))
 			child.sync_to_layout_structure(child_structure)
 
-func add_cursor_at_position(global_point):
+func add_cursor_at_position(global_point, preview=false):
+#	Logger.log(get_cursor_infos_for_global_position(global_point))
 	for child in get_block_children():
 		if child.is_in_group("tstext"):
-			child.add_cursor_at_position(global_point)
-#	# abort if not a leaf block
-#	for child in get_block_children():
-#		if child.is_in_group("tsblock"):
-#			return
-#	get_editor().selectCursorInBlockWithId_at_(id, Vector2())
+			return child.add_cursor_at_position(global_point, preview)
+
+func get_cursor_infos_for_global_position(global_point):
+	var morphic_point = local_point_to_morphic(to_local(global_point)) 
+	return get_editor().getCursorInfosForBlockWithId_atPoint_(id, morphic_point)
+
+func local_point_to_morphic(point):
+	# assumption: point is on surface of block, so we can ignore the z axis
+	point = Vector2(point.x, -point.y)
+	var morphic_point = (point / block_scale) + morph_extent / 2 + morph_position
+	return morphic_point
 
 func get_child_block_with_id(id):
 	for child in $Blocks.get_children():

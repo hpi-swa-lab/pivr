@@ -7,6 +7,8 @@ const INDEX_TRIGGER = 15
 export(float) var minimum_distance = 0.08
 export(float) var maximum_distance = 0.15
 
+var current_preview_cursor
+
 func above_max_distance():
 	return !$RayCast.is_colliding()
 
@@ -23,8 +25,11 @@ func _on_button_pressed(button):
 		return
 	
 	if is_pointing_at_selectable():
-		var block = $RayCast.get_collider().get_grabbed_node()
+		var block = get_colliding_block()
 		block.add_cursor_at_position($RayCast.get_collision_point())
+
+func get_colliding_block():
+	return $RayCast.get_collider().get_grabbed_node()
 
 func init_detection():
 	$RayCast.cast_to = Vector3.FORWARD * maximum_distance
@@ -38,6 +43,10 @@ func _process(_delta):
 		init_detection()
 		return
 	
+	if current_preview_cursor != null:
+		current_preview_cursor.remove()
+		current_preview_cursor = null
+	
 	if is_pointing_at_selectable():
 		$RayViz.visible = true
 		var start_point = global_transform.origin
@@ -48,5 +57,8 @@ func _process(_delta):
 		var n1 = (Vector3.UP if Vector3.UP.angle_to(up) > 0.1 else Vector3.RIGHT).cross(up).normalized()
 		var n2 = up.cross(n1).normalized()
 		$RayViz.global_transform.basis = Basis(n1, up, n2)
+		
+		var block = get_colliding_block()
+		current_preview_cursor = block.add_cursor_at_position(end_point, true)
 	else:
 		$RayViz.visible = false

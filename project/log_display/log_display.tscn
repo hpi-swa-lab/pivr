@@ -11,7 +11,9 @@ viewport_path = NodePath("LogViewport")
 
 [sub_resource type="SpatialMaterial" id=3]
 resource_local_to_scene = true
+render_priority = 9
 flags_unshaded = true
+flags_no_depth_test = true
 albedo_texture = SubResource( 2 )
 
 [node name="LogDisplay" type="Spatial"]

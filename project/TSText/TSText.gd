@@ -41,14 +41,13 @@ func adjust_to_parent():
 	transform.origin = origin
 	
 	$MeshInstance.scale = Vector3(morph_extent.x * parent.block_scale, morph_extent.y * parent.block_scale, parent.block_thickness)
-	$CursorContainer.transform.origin.x = -$MeshInstance.scale.x / 2
 	for child in $CursorContainer.get_children():
 		child.x_range = $MeshInstance.scale.x
 
 func get_parent_block():
 	return get_parent().get_parent()
 
-func add_cursor_at_position(global_point):
+func add_cursor_at_position(global_point, preview=false):
 	var local_point = to_local(global_point)
 	var width = $MeshInstance.scale.x
 	var distance_percentage = (local_point.x + width / 2) / width
@@ -59,13 +58,15 @@ func add_cursor_at_position(global_point):
 		var s = contents.substr(0, i)
 		var string_width = font.get_string_size(s).x
 		if string_width >= threshold_width:
-			var cursor = add_cursor_at_index(i)
+			var cursor = add_cursor_at_index(i, preview)
 			cursor.set_in_sandblocks()
-			break
+			return cursor
 	
 
-func add_cursor_at_index(index):
-	get_tree().call_group("cursor", "remove")
+func add_cursor_at_index(index, preview=false):
+	if !preview:
+		get_tree().call_group("normal_cursor", "remove")
+	
 	var cursor = preload("res://cursor/cursor.tscn").instance()
 	$CursorContainer.add_child(cursor)
 	cursor.set_cursor_height($MeshInstance.scale.y)
@@ -75,6 +76,7 @@ func add_cursor_at_index(index):
 	cursor.block = get_parent_block()
 	cursor.text_block = self
 	cursor.index = index
+	cursor.is_preview = preview
 	return cursor
 
 func set_color(value):

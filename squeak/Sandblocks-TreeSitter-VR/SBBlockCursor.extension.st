@@ -6,6 +6,6 @@ SBBlockCursor >> exportInfo [
 	cursorPosition class = SBCursorText ifFalse: [^ nil].
 	^ {
 		#textId -> cursorPosition textMorph vrId.
-		#index -> cursorPosition textMorph cursor. ":)"
+		#index -> cursorPosition textMorph cursor.
 	} as: Dictionary
 ]

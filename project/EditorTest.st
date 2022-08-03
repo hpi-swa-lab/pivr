@@ -40,6 +40,18 @@ GDSEditorTest >> getCursorInfo [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> getCursorInfosForBlockWithId: id atPoint: gdVector2 [
+
+	| block cursorPositions editor point |
+	editor := SBVREditor current.
+	block := editor morphAtVrId: id.
+	point := gdVector2 x @ gdVector2 y.
+	cursorPositions := editor cursor cursorsForBlock: block at: point.
+	^ (cursorPositions collect: [:pos | pos exportInfo]) asJsonString
+	
+]
+
+{ #category : #behavior }
 GDSEditorTest >> performInsertAtId: aNumber from: aBlockId [
 
 	| command |
