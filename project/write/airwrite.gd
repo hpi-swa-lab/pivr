@@ -18,6 +18,11 @@ func get_controller_position():
 	return node.global_transform.origin
 
 func get_controller_active():
+	# we cannot activate if we are too close.
+	# however, if we have already started writing and get too close, we continue 
+	if !owner.may_airwrite() and points.empty():
+		return false
+	
 	var use_touchpad = false
 	var ctrl = get_node(controller_node)
 	if use_touchpad:

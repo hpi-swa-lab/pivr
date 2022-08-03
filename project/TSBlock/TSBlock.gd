@@ -187,3 +187,9 @@ func get_block_children():
 
 func append_text(new_text):
 	get_editor().appendText_toNodeWithId_(new_text, id)
+
+func is_selectable():
+	for child in get_block_children():
+		if child.is_in_group("tstext"):
+			return true
+	return false

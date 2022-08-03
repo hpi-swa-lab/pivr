@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://addons/godot-openxr/scenes/first_person_controller_vr.tscn" type="PackedScene" id=1]
 [ext_resource path="res://grabber/grabber.tscn" type="PackedScene" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://write/touchwrite.tscn" type="PackedScene" id=5]
 [ext_resource path="res://cursor_selector/cursor_selector.tscn" type="PackedScene" id=6]
 [ext_resource path="res://log_display/log_display.tscn" type="PackedScene" id=7]
+[ext_resource path="res://avatar/avatar.gd" type="Script" id=8]
 
 [sub_resource type="CylinderMesh" id=3]
 top_radius = 0.01
@@ -16,6 +17,7 @@ height = 0.2
 [sub_resource type="SpatialMaterial" id=2]
 
 [node name="Avatar" type="Spatial"]
+script = ExtResource( 8 )
 
 [node name="FPController" parent="." instance=ExtResource( 1 )]
 
@@ -37,7 +39,9 @@ material/0 = SubResource( 2 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0936968, 1.19209e-07 )
 
 [node name="CursorSelector" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 6 )]
-transform = Transform( 1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 0, 0 )
+transform = Transform( 1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 0.1, 0 )
+minimum_distance = 0.039
+maximum_distance = 0.15
 
 [node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0154266, 0.015284 )
@@ -53,6 +57,7 @@ __meta__ = {
 [node name="LogDisplay" parent="FPController/RightHandController" index="4" instance=ExtResource( 7 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.338062, -0.665004 )
 visible = false
+horizontal_resolution = 500
 
 [node name="airwrite" parent="FPController" instance=ExtResource( 3 )]
 label_node = NodePath("../RightHandController/label")

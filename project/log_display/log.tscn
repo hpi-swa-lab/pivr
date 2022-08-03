@@ -11,6 +11,10 @@ size_flags_vertical = 3
 theme = ExtResource( 1 )
 script = ExtResource( 2 )
 
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+
 [node name="Header" type="Control" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
@@ -24,15 +28,17 @@ text = "Output"
 fit_content_height = true
 scroll_active = false
 
-[node name="Time" type="Label" parent="Header"]
+[node name="Time" type="RichTextLabel" parent="Header"]
 margin_left = 72.0
-margin_right = 112.0
+margin_right = 157.0
 margin_bottom = 19.0
 text = "[00:00:00]"
+scroll_active = false
 
 [node name="Content" type="RichTextLabel" parent="."]
 margin_top = 25.0
 margin_right = 138.0
 margin_bottom = 94.0
+bbcode_enabled = true
 scroll_active = false
 scroll_following = true

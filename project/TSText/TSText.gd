@@ -85,6 +85,7 @@ func set_contents(aString):
 	contents = aString
 	$Viewport/Label.text = contents
 	$Viewport.size = $Viewport/Label.get_font("font").get_string_size(contents)
+	$Viewport.size.x = max(1, $Viewport.size.x)
 
 func register_self_and_children_if_necessary():
 	if !get_provider().idToBlock.has(id):
