@@ -98,6 +98,10 @@ GDSEditorTest >> ready [
 	SBVREditor current
 		godotProvider: (self getNodePath: 'Provider');
 		openMorphInView: (SBTSSmalltalk parseToplevel: 'myMethod (1 to: 4) do: [:n | Transcript showln: n]' asString)
+		"openMorphInView: (SBTSSmalltalk parseToplevel:
+			((GDSBouncingBall compiledMethodAt: #process:) getSource string findTokens joinSeparatedBy: ' '))"
+		"openMorphInView: (SBTSSmalltalk parseToplevel: 'process
+self print: ''i am bouncy''' asString)"
 ]
 
 { #category : #behavior }

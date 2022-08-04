@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://EditorTest.st" type="Script" id=1]
 [ext_resource path="res://Provider.gd" type="Script" id=2]
 [ext_resource path="res://addons/simple-free-look-camera-13dfef73af258bffe1ecc95343cda2d075fe8388/camera.gd" type="Script" id=3]
 [ext_resource path="res://avatar/avatar.tscn" type="PackedScene" id=4]
 [ext_resource path="res://write/write_instructions.tscn" type="PackedScene" id=5]
+[ext_resource path="res://bouncing_ball/bouncing_ball.tscn" type="PackedScene" id=6]
 
 [node name="EditorTest" type="Spatial" groups=["editor"]]
 script = ExtResource( 1 )
@@ -29,3 +30,6 @@ script = ExtResource( 3 )
 
 [node name="instructions" parent="." instance=ExtResource( 5 )]
 transform = Transform( 3.26736, 0, 0, 0, 3.26736, 0, 0, 0, 3.26736, 0.21205, 1, -1.60501 )
+
+[node name="BouncingBall" parent="." instance=ExtResource( 6 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.36381, 1.12499, 4.50512 )
