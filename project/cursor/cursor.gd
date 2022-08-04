@@ -42,6 +42,10 @@ func get_editor():
 	return null
 
 func write_character(character):
+	# guard against some default sandblocks behaviour that we don't want
+	if (index == 0 and character == '\b') or character == ' ':
+		return
+	
 	get_editor().writeCharacter_at_inBlockWithId_(character, index + 1, block.id)
 
 func set_in_sandblocks():
