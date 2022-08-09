@@ -1,7 +1,14 @@
 extends Area
 
-const INDEX_TRIGGER = 15
-const INDEX_GRIP = 2
+enum Button {
+	NONE,
+	INDEX_TRIGGER = 15,
+	INDEX_GRIP = 2,
+}
+
+export(Dictionary) var highlight_args = {}
+export(Button) var activation_button = Button.INDEX_TRIGGER
+export(bool) var grab_root = false
 
 var grabbed_node
 var last_hovered_node
@@ -19,8 +26,10 @@ func _process(_delta):
 	var hovered_node = null
 	if best != null:
 		hovered_node = best.get_grabbed_node()
+		if grab_root and hovered_node.has_method("get_root_block"):
+			hovered_node = hovered_node.get_root_block()
 	if hovered_node != null and hovered_node.has_method("on_hover_in"):
-		hovered_node.on_hover_in()
+		hovered_node.on_hover_in(highlight_args)
 	if hovered_node != last_hovered_node:
 		if last_hovered_node != null and last_hovered_node.has_method("on_hover_out"):
 			last_hovered_node.on_hover_out()
@@ -30,13 +39,15 @@ func is_grabbing():
 	return grabbed_node != null
 
 func _on_button_pressed(button):
-	if button != INDEX_TRIGGER:
+	if button != activation_button:
 		return
 	
 	var best = best_colliding_object()
 	if best == null:
 		return
 	grabbed_node = best.get_grabbed_node()
+	if grab_root and grabbed_node.has_method("get_root_block"):
+		grabbed_node = grabbed_node.get_root_block()
 	
 	var delta_transform = global_transform.inverse() * grabbed_node.global_transform
 	if grabbed_node.has_method("on_grab"):
@@ -48,7 +59,7 @@ func _on_button_pressed(button):
 	$RemoteTransform.remote_path = grabbed_node.get_path()
 
 func _on_button_release(button):
-	if button != INDEX_TRIGGER: # trigger
+	if button != activation_button:
 		return
 
 	if grabbed_node != null:

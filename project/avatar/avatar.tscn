@@ -9,7 +9,7 @@
 [ext_resource path="res://log_display/log_display.tscn" type="PackedScene" id=7]
 [ext_resource path="res://avatar/avatar.gd" type="Script" id=8]
 [ext_resource path="res://debug_tool/debug_tool.tscn" type="PackedScene" id=9]
-[ext_resource path="res://mover/mover.tscn" type="PackedScene" id=10]
+[ext_resource path="res://grabber/mover.tscn" type="PackedScene" id=10]
 
 [sub_resource type="CylinderMesh" id=3]
 top_radius = 0.01
@@ -46,6 +46,9 @@ minimum_distance = 0.039
 maximum_distance = 0.15
 
 [node name="Mover" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 10 )]
+highlight_args = {
+"highlight_color_name": "blue"
+}
 
 [node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0154266, 0.015284 )
