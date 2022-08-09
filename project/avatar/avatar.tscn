@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://addons/godot-openxr/scenes/first_person_controller_vr.tscn" type="PackedScene" id=1]
 [ext_resource path="res://grabber/grabber.tscn" type="PackedScene" id=2]
@@ -8,6 +8,8 @@
 [ext_resource path="res://cursor_selector/cursor_selector.tscn" type="PackedScene" id=6]
 [ext_resource path="res://log_display/log_display.tscn" type="PackedScene" id=7]
 [ext_resource path="res://avatar/avatar.gd" type="Script" id=8]
+[ext_resource path="res://debug_tool/debug_tool.tscn" type="PackedScene" id=9]
+[ext_resource path="res://mover/mover.tscn" type="PackedScene" id=10]
 
 [sub_resource type="CylinderMesh" id=3]
 top_radius = 0.01
@@ -43,6 +45,8 @@ transform = Transform( 1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 0.1, 0
 minimum_distance = 0.039
 maximum_distance = 0.15
 
+[node name="Mover" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 10 )]
+
 [node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0154266, 0.015284 )
 label_node = NodePath("../label")
@@ -59,6 +63,8 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.338062, -0.665004 )
 visible = false
 horizontal_resolution = 500
 
+[node name="DebugTool" parent="FPController/RightHandController" index="5" instance=ExtResource( 9 )]
+
 [node name="airwrite" parent="FPController" instance=ExtResource( 3 )]
 label_node = NodePath("../RightHandController/label")
 controller_node = NodePath("../RightHandController")
@@ -66,8 +72,11 @@ grabber = NodePath("../RightHandController/MeshInstance/Grabber")
 
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_pressed"]
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/CursorSelector" method="_on_button_pressed"]
+[connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Mover" method="_on_button_pressed"]
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/LogDisplay" method="_on_button_pressed"]
+[connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/DebugTool" method="_on_button_pressed"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_release"]
+[connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Mover" method="_on_button_release"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/LogDisplay" method="_on_button_release"]
 
 [editable path="FPController"]

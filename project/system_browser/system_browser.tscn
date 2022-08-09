@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://system_browser/system_browser.gd" type="Script" id=1]
+[ext_resource path="res://system_browser/browser_list.tscn" type="PackedScene" id=2]
+
+[node name="SystemBrowser" type="Spatial"]
+script = ExtResource( 1 )
+
+[node name="CategoryList" parent="." instance=ExtResource( 2 )]
+item_width = 0.4
+item_height = 0.05
+
+[node name="ClassList" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.45, 0, 0 )
+item_width = 0.4
+item_height = 0.05
+
+[node name="MethodList" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0.9, 0, 0 )
+item_width = 0.4
+item_height = 0.05
+
+[connection signal="selected" from="CategoryList" to="." method="_on_CategoryList_selected"]
+[connection signal="selected" from="ClassList" to="." method="_on_ClassList_selected"]
+[connection signal="selected" from="MethodList" to="." method="_on_MethodList_selected"]

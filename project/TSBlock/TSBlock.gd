@@ -6,6 +6,7 @@ var color = Color.white setget set_color
 var is_flat
 
 var id
+var is_method_root
 
 var morph_position
 var morph_extent
@@ -20,9 +21,12 @@ func assume_structure(structure):
 	
 	set_color(Color(structure["color"]))
 	
-	is_flat = structure["highlight"].ends_with(".part")
+	if structure.has("highlight"):
+		is_flat = structure["highlight"].ends_with(".part")
 	$Scaled/MeshInstance.visible = !is_flat
 	$Scaled/Area.monitorable = !is_flat
+	
+	is_method_root = structure["type"] == "methodRoot"
 
 func build_from_structure(structure):
 	id = int(structure["id"])
@@ -97,6 +101,9 @@ func sync_to_layout_structure(structure):
 			var child = get_child_block_with_id(int(child_structure["id"]))
 			child.sync_to_layout_structure(child_structure)
 
+func select_at(global_point):
+	add_cursor_at_position(global_point)
+
 func add_cursor_at_position(global_point, preview=false):
 #	Logger.log(get_cursor_infos_for_global_position(global_point))
 	for child in get_block_children():
@@ -136,19 +143,20 @@ func get_editor():
 func get_provider():
 	return get_editor().get_node("Provider")
 
-func on_hover_in():
-	highlight(true)
+func on_hover_in(args = {}):
+	highlight(true, args.get("highlight_color_name", "green"))
 
 func on_hover_out():
 	unhighlight(true)
 
 func on_grab():
 #	if !is_root_block():
-	return get_editor().pickUpBlock_(id) != null
+	return get_editor().pickUpBlock_showingInsertPositions_(id, !is_method_root) != null
 
 func on_release():
 #	get_parent().remove_child(self)
-	get_provider().clearInsertHighlights()
+	if !is_method_root:
+		get_provider().clearInsertHighlights()
 	fix_orientation()
 
 func fix_orientation():
@@ -159,7 +167,7 @@ func fix_orientation():
 		$Tween.interpolate_property(self, "global_transform:basis", global_transform.basis, dest_basis, .3, Tween.TRANS_CUBIC, Tween.EASE_OUT)
 		$Tween.start()
 	else:
-		get_parent().fix_orientation()
+		get_parent_block().fix_orientation()
 
 func get_dimensions():
 	return $Scaled.scale
@@ -174,12 +182,15 @@ func set_color(value):
 #		if child.is_in_group("tsblock"):
 #			child.color = color.darkened(.1)
 
-func highlight(highlight_children = false):
-	$Scaled/MeshInstance.get_surface_material(0).next_pass = preload("res://TSBlock/HighlightMaterial.tres")
+func highlight(highlight_children = false, color_name = "green"):
+	$Scaled/MeshInstance.get_surface_material(0).next_pass = {
+		"green": preload("res://TSBlock/HighlightMaterial.tres"),
+		"blue": preload("res://TSBlock/HighlightMaterialBlue.tres"),
+	}[color_name]
 	if highlight_children:
 		for child in get_block_children():
 			if child.is_in_group("tsblock"):
-				child.highlight(true)
+				child.highlight(true, color_name)
 
 func unhighlight(unhighlight_children = false):
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = null
@@ -199,3 +210,17 @@ func is_selectable():
 		if child.is_in_group("tstext"):
 			return true
 	return false
+
+func compile():
+	if is_root_block():
+		if is_method_root:
+			Logger.log("Attempting to compile...")
+			var success = get_editor().compileBlockWithId_(id)
+			if success:
+				Logger.log("Compilation successful")
+			else:
+				Logger.error("Compilation failed")
+		else:
+			Logger.error(["attempted to compile non-method root (id :", id, ")"])
+	else:
+		get_root_block().compile()

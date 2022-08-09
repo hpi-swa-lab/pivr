@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://system_browser/Area.gd" type="Script" id=1]
+[ext_resource path="res://system_browser/browser_button.gd" type="Script" id=2]
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 0.1, 0.1, 0.01 )
+
+[sub_resource type="BoxShape" id=2]
+margin = 0.001
+extents = Vector3( 0.05, 0.05, 0.005 )
+
+[node name="BrowserButton" type="MeshInstance"]
+mesh = SubResource( 1 )
+material/0 = null
+script = ExtResource( 2 )
+
+[node name="Sprite3D" type="Sprite3D" parent="."]
+transform = Transform( 0.0015625, 0, 0, 0, 0.0015625, 0, 0, 0, 1, 0, 0, 0.006 )
+pixel_size = 1.0
+
+[node name="Area" type="Area" parent="."]
+collision_layer = 3
+script = ExtResource( 1 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+shape = SubResource( 2 )

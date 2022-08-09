@@ -1,6 +1,9 @@
 Class {
 	#name : #GDSEditorTest,
 	#superclass : #GodotSpatial,
+	#instVars : [
+		'tempMorph'
+	],
 	#category : #'Godot-Scripts'
 }
 
@@ -28,9 +31,30 @@ GDSEditorTest >> blockInput: event on: targetId [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> compileBlockWithId: id [
+
+	| block |
+	block := SBVREditor current morphAtVrId: id.
+	[block saveTryFixing: false quick: false] on: Error do: [^ false].
+	^ true
+]
+
+{ #category : #behavior }
 GDSEditorTest >> do: aBlock [
 
 	Project current addDeferredUIMessage: aBlock
+]
+
+{ #category : #behavior }
+GDSEditorTest >> getCategoryStrings [
+
+	^ (SystemOrganization categories select: [:cat | 'Godot-*' match: cat]) asJsonString
+]
+
+{ #category : #behavior }
+GDSEditorTest >> getClassStrings: aCategory [
+
+	^ ((SystemOrganization classesIn: aCategory) collect: [:class | class asString]) asJsonString
 ]
 
 { #category : #behavior }
@@ -49,6 +73,23 @@ GDSEditorTest >> getCursorInfosForBlockWithId: id atPoint: gdVector2 [
 	cursorPositions := editor cursor cursorsForBlock: block at: point.
 	^ (cursorPositions collect: [:pos | pos exportInfo]) asJsonString
 	
+]
+
+{ #category : #behavior }
+GDSEditorTest >> getMethodStrings: aClassString [
+
+	^ ((Smalltalk classNamed: aClassString) selectors) asJsonString
+]
+
+{ #category : #behavior }
+GDSEditorTest >> openMethod: aMethodName inClass: aClassName [
+
+	| class morph method |
+	self do: [
+		class := Smalltalk classNamed: aClassName.
+		method := (class compiledMethodAt: aMethodName asSymbol).
+		morph := SBTSStMethod for: method.
+		SBVREditor current openMorphInView: morph.]
 ]
 
 { #category : #behavior }
@@ -71,9 +112,27 @@ GDSEditorTest >> physicsProcess: delta [
 GDSEditorTest >> pickUpBlock: targetId [
 
 	| command target |
-	
 	target := SBVREditor current morphAtVrId: targetId.
 	SBVREditor current showInsertPositionsFor: target.
+	self do: [
+		command := target parentSandblock deleteCommandFor: target.
+		command
+			ifNotNil: [
+				SBVREditor current do: command.
+				SBVREditor current openMorphInView: target]
+			ifNil: [
+				target changeToUnknown.
+				SBVREditor current openMorphInView: target]].
+	^ targetId
+]
+
+{ #category : #behavior }
+GDSEditorTest >> pickUpBlock: targetId showingInsertPositions: showInsertPositions [
+
+	| command target |
+	target := SBVREditor current morphAtVrId: targetId.
+	showInsertPositions ifTrue:
+		[SBVREditor current showInsertPositionsFor: target].
 	self do: [
 		command := target parentSandblock deleteCommandFor: target.
 		command
@@ -95,13 +154,13 @@ GDSEditorTest >> process: delta [
 { #category : #behavior }
 GDSEditorTest >> ready [
 
-	SBVREditor current
-		godotProvider: (self getNodePath: 'Provider');
-		openMorphInView: (SBTSSmalltalk parseToplevel: 'myMethod (1 to: 4) do: [:n | Transcript showln: n]' asString)
+	self do: [
+		SBVREditor current godotProvider: (self getNodePath: 'Provider')
+		"openMorphInView: (SBTSSmalltalk parseToplevel: 'myMethod (1 to: 4) do: [:n | Transcript showln: n]' asString)"
 		"openMorphInView: (SBTSSmalltalk parseToplevel:
-			((GDSBouncingBall compiledMethodAt: #process:) getSource string findTokens joinSeparatedBy: ' '))"
+			((GDSBouncingBall compiledMethodAt: #bounce:gravity:maxSpeed:) getSource string))"
 		"openMorphInView: (SBTSSmalltalk parseToplevel: 'process
-self print: ''i am bouncy''' asString)"
+self print: ''i am bouncy''' asString)"]
 ]
 
 { #category : #behavior }
@@ -151,6 +210,14 @@ GDSEditorTest >> syncLayoutForBlockWithId: id [
 	self flag: #performance. "doOneCycle per block probably wasterful"
 	editor world doOneCycleNow.
 	editor godotProvider syncLayout: block exportStructure asJsonString.
+]
+
+{ #category : #behavior }
+GDSEditorTest >> tempCompileMethod [
+
+	^ false
+	"[GDSBouncingBall compile: tempMorph sourceString] on: Error do: [^ false].
+	^ true"
 ]
 
 { #category : #behavior }

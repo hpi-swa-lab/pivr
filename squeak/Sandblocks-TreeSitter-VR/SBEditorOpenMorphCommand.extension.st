@@ -3,5 +3,6 @@ Extension { #name : #SBEditorOpenMorphCommand }
 { #category : #'*Sandblocks-TreeSitter-VR' }
 SBEditorOpenMorphCommand >> vrDo [
 
-	editor godotProvider doOpenEditorMorphCommand: morph exportStructure asJsonString
+	morph width: 500.
+	editor godotProvider doOpenEditorMorphCommand: morph exportStructure asJsonString.
 ]

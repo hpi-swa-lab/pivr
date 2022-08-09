@@ -22,7 +22,7 @@ SBTSBlock >> exportStructure [
 			self
 				cursorPositionsDo: [:pos |
 					"pos isInsert ifTrue: [stream nextPut: ({#class -> #insert. #bounds -> (pos bounds in: [:r | {r left. r top. r width. r height}]). #horizontal -> pos hasHorizontalLayout. #type -> pos command element type} as: Dictionary)]."
-					pos isText ifTrue: [stream nextPut: pos block currentTextMorph exportStructure].
+					pos isText ifTrue: [stream nextPut: pos textMorph exportStructure].
 					(pos isSelect and: [pos block ~= self]) ifTrue: [
 						previous ifNotNil: [(pos block factory hardLineBreakBetween: previous and: pos block) ifTrue: [stream nextPut: ({#class -> #hardLineBreak} as: Dictionary)]].
 						stream nextPut: pos block exportStructure.

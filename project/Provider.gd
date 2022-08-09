@@ -28,7 +28,7 @@ func syncLayoutForAll():
 
 func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	var blockStructure = JSON.parse(structureOfBlockJson).result
-	var id = int(blockStructure['id'])
+	var id = int(blockStructure['id']) 
 	if id in idToBlock:
 		var existing = idToBlock[id]
 		$"../Blocks".add_child(existing)
