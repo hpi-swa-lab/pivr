@@ -13,7 +13,7 @@ func get_editor():
 func get_provider():
 	return get_editor().get_node("Provider")
 
-func on_hover_in():
+func on_hover_in(_args):
 	highlight()
 
 func on_hover_out():

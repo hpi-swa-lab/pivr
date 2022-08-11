@@ -15,7 +15,7 @@ albedo_color = Color( 1, 0, 1, 1 )
 script = ExtResource( 1 )
 
 [node name="Scaled" type="Spatial" parent="."]
-transform = Transform( 0.005, 0, 0, 0, 0.05, 0, 0, 0, 0.005, 0, 0, 0 )
+transform = Transform( 0.002, 0, 0, 0, 0.05, 0, 0, 0, 0.002, 0, 0, 0 )
 
 [node name="MeshInstance" type="MeshInstance" parent="Scaled"]
 mesh = SubResource( 1 )

@@ -18,13 +18,12 @@ func get_depth():
 
 func set_index(value):
 	index = value
-	var font = label.get_font("font")
 	
-	var string_width = font.get_string_size(label.text.substr(0, index)).x
+	var string_width = label.font.get_string_size(label.text.substr(0, index)).x
 	if label.text.empty():
 		transform.origin.x = 0
 	else:
-		transform.origin.x = x_range * string_width / font.get_string_size(label.text).x - x_range / 2
+		transform.origin.x = x_range * string_width / label.font.get_string_size(label.text).x - x_range / 2
 
 func set_is_preview(value):
 	is_preview = value

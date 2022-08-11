@@ -21,7 +21,6 @@ transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0.41669
 
 [node name="Provider" type="Node" parent="."]
 script = ExtResource( 2 )
-block_scale = 0.003
 
 [node name="Camera" type="Camera" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )

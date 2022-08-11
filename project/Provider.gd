@@ -1,9 +1,9 @@
 extends Node
 
-export(float, 0, 5) var block_scale = 1 setget set_block_scale
+export(float, 0, 5) var block_scale = 0.0008 setget set_block_scale
 export(float, 0, 1) var child_z_offset = 0.01
 export(float, 0, 1) var text_z_offset = 0.001
-export(float, 0, 1) var block_thickness = 0.01
+export(float, 0, 1) var block_thickness = 0.003
 
 var idToBlock = {}
 var currentInsertHighlights = []

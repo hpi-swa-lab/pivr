@@ -46,9 +46,6 @@ minimum_distance = 0.039
 maximum_distance = 0.15
 
 [node name="Mover" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 10 )]
-highlight_args = {
-"highlight_color_name": "blue"
-}
 
 [node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0154266, 0.015284 )
@@ -79,6 +76,7 @@ grabber = NodePath("../RightHandController/MeshInstance/Grabber")
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/LogDisplay" method="_on_button_pressed"]
 [connection signal="button_pressed" from="FPController/RightHandController" to="FPController/RightHandController/DebugTool" method="_on_button_pressed"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Grabber" method="_on_button_release"]
+[connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/CursorSelector" method="_on_button_release"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/MeshInstance/Mover" method="_on_button_release"]
 [connection signal="button_release" from="FPController/RightHandController" to="FPController/RightHandController/LogDisplay" method="_on_button_release"]
 

@@ -1,7 +1,7 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://system_browser/browser_item.gd" type="Script" id=1]
-[ext_resource path="res://text_quad/text_quad.tscn" type="PackedScene" id=2]
+[ext_resource path="res://TSText/DejaVuSans.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://system_browser/Area.gd" type="Script" id=3]
 
 [sub_resource type="CubeMesh" id=1]
@@ -10,6 +10,10 @@ size = Vector3( 1, 1, 1 )
 [sub_resource type="BoxShape" id=2]
 margin = 0.001
 extents = Vector3( 0.5, 0.5, 0.005 )
+
+[sub_resource type="DynamicFont" id=3]
+size = 32
+font_data = ExtResource( 2 )
 
 [node name="BrowserItem" type="Spatial"]
 script = ExtResource( 1 )
@@ -20,7 +24,6 @@ script = ExtResource( 1 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 0.01, 0, 0, 0 )
 mesh = SubResource( 1 )
 skeleton = NodePath("../..")
-material/0 = null
 
 [node name="Area" type="Area" parent="Scaled"]
 collision_layer = 3
@@ -29,5 +32,8 @@ script = ExtResource( 3 )
 [node name="CollisionShape" type="CollisionShape" parent="Scaled/Area"]
 shape = SubResource( 2 )
 
-[node name="TextQuad" parent="." instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.011 )
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.006 )
+modulate = Color( 0, 0, 0, 1 )
+font = SubResource( 3 )
+horizontal_alignment = 0

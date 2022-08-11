@@ -8,7 +8,8 @@ const INDEX_A = JOY_BUTTON_7
 export(float) var minimum_distance = 0.08
 export(float) var maximum_distance = 0.15
 
-var current_preview_cursor
+var last_placed_cursor
+var button_is_pressed = false
 
 func above_max_distance():
 	return !$RayCast.is_colliding()
@@ -25,6 +26,9 @@ func is_pointing_at_selectable():
 func _on_button_pressed(button):
 	if button != INDEX_TRIGGER and button != INDEX_A:
 		return
+	
+	button_is_pressed = true
+	
 	if !is_pointing_at_selectable():
 		return
 	
@@ -33,6 +37,12 @@ func _on_button_pressed(button):
 			$RayCast.get_collider().get_grabbed_node().select_at($RayCast.get_collision_point())
 		INDEX_A:
 			$RayCast.get_collider().get_grabbed_node().compile()
+
+func _on_button_release(button):
+	if button != INDEX_TRIGGER and button != INDEX_A:
+		return
+	
+	button_is_pressed = false
 
 func get_colliding_block():
 	return $RayCast.get_collider().get_grabbed_node()
@@ -49,9 +59,10 @@ func _process(_delta):
 		init_detection()
 		return
 	
-	if current_preview_cursor != null:
-		current_preview_cursor.remove()
-		current_preview_cursor = null
+	if last_placed_cursor != null:
+		if button_is_pressed or last_placed_cursor.is_preview:
+			last_placed_cursor.remove()
+		last_placed_cursor = null
 	
 	if is_pointing_at_selectable():
 		$RayViz.visible = true
@@ -66,7 +77,7 @@ func _process(_delta):
 		
 		var block = get_colliding_block()
 		if block.has_method("add_cursor_at_position"):
-			current_preview_cursor = block.add_cursor_at_position(end_point, true)
+			last_placed_cursor = block.add_cursor_at_position(end_point, !button_is_pressed)
 		elif block.has_method("hover_select_at"):
 			block.hover_select_at(end_point)
 	else:

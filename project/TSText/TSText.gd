@@ -10,6 +10,8 @@ var id
 var morph_position
 var morph_extent
 
+var plane_scale
+
 func build_from_structure(structure):
 	id = int(structure["id"])
 	assume_structure(structure)
@@ -40,24 +42,24 @@ func adjust_to_parent():
 	origin.z = parent.block_thickness / 2 + 0.0001
 	transform.origin = origin
 	
-	$MeshInstance.scale = Vector3(morph_extent.x * parent.block_scale, morph_extent.y * parent.block_scale, parent.block_thickness)
+	plane_scale = Vector3(morph_extent.x * parent.block_scale, morph_extent.y * parent.block_scale, parent.block_thickness)
+	$Label3D.scale = Vector3.ONE * plane_scale.y
 	for child in $CursorContainer.get_children():
-		child.x_range = $MeshInstance.scale.x
+		child.x_range = plane_scale.x
 
 func get_parent_block():
 	return get_parent().get_parent()
 
 func add_cursor_at_position(global_point, preview=false):
 	var local_point = to_local(global_point)
-	var width = $MeshInstance.scale.x
+	var width = plane_scale.x
 	var distance_percentage = (local_point.x + width / 2) / width
-	var label_width = $Viewport/Label.rect_size.x
+	var label_width = $Label3D.font.get_string_size(contents).x
 	var threshold_width = label_width * distance_percentage
-	var font = $Viewport/Label.get_font("font")
 	var prev_width = 0
 	for i in range(1, contents.length() + 1):
 		var s = contents.substr(0, i)
-		var string_width = font.get_string_size(s).x
+		var string_width = $Label3D.font.get_string_size(s).x
 		if string_width >= threshold_width:
 			var index = i
 			var character_width = string_width - prev_width
@@ -76,10 +78,10 @@ func add_cursor_at_index(index, preview=false):
 	
 	var cursor = preload("res://cursor/cursor.tscn").instance()
 	$CursorContainer.add_child(cursor)
-	cursor.set_cursor_height($MeshInstance.scale.y)
+	cursor.set_cursor_height(plane_scale.y)
 	cursor.transform.origin.z = cursor.get_depth() / 2
-	cursor.x_range = $MeshInstance.scale.x
-	cursor.label = $Viewport/Label
+	cursor.x_range = plane_scale.x
+	cursor.label = $Label3D
 	cursor.block = get_parent_block()
 	cursor.text_block = self
 	cursor.index = index
@@ -88,26 +90,30 @@ func add_cursor_at_index(index, preview=false):
 
 func set_color(value):
 	color = value
-	$Viewport/Label.add_color_override("font_color", color)
+#	$Viewport/Label.add_color_override("font_color", color)
+	$Label3D.modulate = color
 
 func set_contents(aString):
 	contents = aString
-	$Viewport/Label.text = contents
-	$Viewport.size = $Viewport/Label.get_font("font").get_string_size(contents)
-	$Viewport.size.x = max(1, $Viewport.size.x)
+#	$Viewport/Label.text = contents
+#	$Viewport.size = $Viewport/Label.get_font("font").get_string_size(contents)
+#	$Viewport.size.x = max(1, $Viewport.size.x)
+	$Label3D.text = contents
+	$Label3D.pixel_size = 1 / $Label3D.font.get_height()
 
 func register_self_and_children_if_necessary():
 	if !get_provider().idToBlock.has(id):
 		get_provider().idToBlock[id] = self
 
-func set_block_scale(s):
-	$MeshInstance.scale = s
+#func set_block_scale(s):
+#	$MeshInstance.scale = s
 
 func get_dimensions():
 	return $MeshInstance.scale
 	
 func _ready():
-	$Viewport.size = $Viewport/Label.rect_size
+#	$Viewport.size = $Viewport/Label.rect_size
+	pass
 
 func get_block_children():
 	return []
