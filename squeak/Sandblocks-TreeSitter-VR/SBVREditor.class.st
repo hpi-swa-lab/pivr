@@ -6,7 +6,8 @@ Class {
 		'godotProvider',
 		'currentId',
 		'vrIdToMorph',
-		'tempInsertRegistry'
+		'tempInsertRegistry',
+		'dirtyBlockIds'
 	],
 	#classVars : [
 		'Instance'
@@ -21,6 +22,12 @@ Class {
 SBVREditor class >> current [
 
 	^ Instance := Instance ifNil: [self new openInWindow; yourself]
+]
+
+{ #category : #'insert commands' }
+SBVREditor >> addDirtyBlockId: id [
+
+	dirtyBlockIds add: id
 ]
 
 { #category : #'insert commands' }
@@ -64,6 +71,7 @@ SBVREditor >> initialize [
 	
 	currentId := 0.
 	commandQueue := OrderedCollection new.
+	dirtyBlockIds := Set new.
 	
 	vrIdToMorph := Dictionary new.
 ]
@@ -124,8 +132,11 @@ SBVREditor >> vrDoQueuedCommands [
 
 	commandQueue ifNotEmpty: [
 		commandQueue do: [:command | command vrDo].
-		commandQueue removeAll.
-		godotProvider syncLayoutForAll.]
+		commandQueue removeAll].
+	dirtyBlockIds ifNotEmpty: [
+		self godotProvider syncMultipleLayouts:
+			(dirtyBlockIds collect: [:id | (self morphAtVrId: id) exportStructure]) asJsonString.
+		dirtyBlockIds removeAll]
 ]
 
 { #category : #'id mapping' }

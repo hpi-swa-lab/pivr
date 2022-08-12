@@ -7,5 +7,6 @@ SBReplaceCommand >> vrDo [
 
 	SBVREditor current godotProvider insertNewBlock: replacer exportStructure asJsonString
 		at: targetOldIndex
-		inBlockWithId: targetOldOwner vrId
+		inBlockWithId: targetOldOwner vrId.
+	SBVREditor current addDirtyBlockId: replacer containingToplevel vrId
 ]

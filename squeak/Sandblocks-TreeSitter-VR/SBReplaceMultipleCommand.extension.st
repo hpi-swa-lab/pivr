@@ -8,5 +8,6 @@ SBReplaceMultipleCommand >> vrDo [
 	replacers reverseDo: [:morph |
 		SBVREditor current godotProvider insertNewBlock: morph exportStructure asJsonString
 			at: targetOldIndex
-			inBlockWithId: targetOldOwner vrId]
+			inBlockWithId: targetOldOwner vrId.
+		SBVREditor current addDirtyBlockId: morph containingToplevel vrId]
 ]

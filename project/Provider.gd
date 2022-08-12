@@ -16,6 +16,17 @@ func set_block_scale(value):
 func test_func():
 	print("Hellol")
 
+func syncMultipleLayouts(structuresJson):
+	var structures = JSON.parse(structuresJson).result
+	for structure in structures:
+		var id = int(structure["id"])
+		Logger.log(["temp: attempting to layout ", id])
+		var block = idToBlock.get(id)
+		if block == null:
+			Logger.error(["Attempted to sync layout for id ", id, " that wasn't registered"])
+		else:
+			block.sync_to_layout_structure(structure)
+
 func syncLayoutForAll():
 	for child in $"../Blocks".get_children():
 		child.sync_layout()

@@ -16,7 +16,7 @@ func new_message(values, type):
 	else:
 		s = ""
 		for value in values:
-			s += str(value) + " "
+			s += str(value)
 	
 	if output_enabled:
 		print(s)

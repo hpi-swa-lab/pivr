@@ -4,6 +4,8 @@ Extension { #name : #SBDeleteCommand }
 SBDeleteCommand >> vrDo [
 
 	SBVREditor current godotProvider removeBlockWithId: target vrId.
+	oldOwner isSandblock ifTrue: [
+		SBVREditor current addDirtyBlockId: oldOwner containingToplevel vrId]
 ]
 
 { #category : #'*Sandblocks-TreeSitter-VR' }

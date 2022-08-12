@@ -6,5 +6,6 @@ SBTSNodeInsertCommand >> vrDo [
 	morphs reverseDo: [:morph |
 		SBVREditor current godotProvider insertNewBlock: morph exportStructure asJsonString
 			at: index
-			inBlockWithId: container vrId]
+			inBlockWithId: container vrId.
+		SBVREditor current addDirtyBlockId: container containingToplevel vrId]
 ]
