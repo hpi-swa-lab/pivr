@@ -33,7 +33,8 @@ func set_is_preview(value):
 	if is_preview:
 		groups.invert()
 	add_to_group(groups[0])
-	remove_from_group(groups[1])
+	if is_in_group(groups[1]):
+		remove_from_group(groups[1])
 
 func get_editor():
 	for node in get_tree().get_nodes_in_group("editor"):

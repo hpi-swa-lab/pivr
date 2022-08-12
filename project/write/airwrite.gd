@@ -17,6 +17,9 @@ func get_controller_position():
 		node = pos_node
 	return node.global_transform.origin
 
+func is_writing():
+	return get_controller_active()
+
 func get_controller_active():
 	# we cannot activate if we are too close.
 	# however, if we have already started writing and get too close, we continue 

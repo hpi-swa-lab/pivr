@@ -77,7 +77,8 @@ func _process(_delta):
 		
 		var block = get_colliding_block()
 		if block.has_method("add_cursor_at_position"):
-			last_placed_cursor = block.add_cursor_at_position(end_point, !button_is_pressed)
+			if owner.may_place_cursors():
+				last_placed_cursor = block.add_cursor_at_position(end_point, !button_is_pressed)
 		elif block.has_method("hover_select_at"):
 			block.hover_select_at(end_point)
 	else:
