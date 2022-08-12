@@ -12,6 +12,8 @@ func on_log_occurred(message, type):
 	match type:
 		Logger.MessageType.ERROR:
 			color = "#ff4b4b"
+		Logger.MessageType.WARN:
+			color = "#ffab08"
 		Logger.MessageType.LOG, _:
 			color = "#666666"
 	

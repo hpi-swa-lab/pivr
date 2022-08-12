@@ -2,7 +2,8 @@ extends Node
 
 enum MessageType {
 	LOG,
-	ERROR
+	WARN,
+	ERROR,
 }
 
 signal log_occurred
@@ -25,6 +26,9 @@ func new_message(values, type):
 
 func log(values):
 	new_message(values, MessageType.LOG)
+
+func warn(values):
+	new_message(values, MessageType.WARN)
 
 func error(values):
 	new_message(values, MessageType.ERROR)

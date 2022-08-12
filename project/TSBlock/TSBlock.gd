@@ -138,12 +138,19 @@ func get_parent_block():
 	return get_parent().get_parent()
 
 func get_editor():
+	if !is_inside_tree():
+		Logger.warn(["Attempted to get editor in orphaned block with id ", id])
+		return null
 	for node in get_tree().get_nodes_in_group("editor"):
 		return node
 	return null
 
 func get_provider():
-	return get_editor().get_node("Provider")
+	var editor = get_editor()
+	if editor == null:
+		return null
+	else:
+		return get_editor().get_node("Provider")
 
 func on_hover_in(args = {}):
 	highlight(true, args.get("highlight_color_name", "green"))
@@ -170,7 +177,9 @@ func on_grab(mode):
 func on_release():
 #	get_parent().remove_child(self)
 	if !is_method_root:
-		get_provider().clearInsertHighlights()
+		var provider = get_provider()
+		if provider != null:
+			get_provider().clearInsertHighlights()
 	fix_orientation()
 
 func fix_orientation():
@@ -187,6 +196,9 @@ func get_dimensions():
 	return $Scaled.scale
 
 func is_root_block():
+	if get_parent() == null:
+			Logger.warn(["Attempted to determine root block status for orphaned block with id ", id])
+			return self
 	return get_parent_block() != null and !get_parent_block().is_in_group("tsblock")
 
 func set_color(value):
