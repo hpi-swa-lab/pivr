@@ -88,7 +88,7 @@ SBVREditor >> insertPositionsFor: aBlock [
 	tempInsertRegistry := Dictionary new.
 	^ (Array streamContents: [:stream |
 		self cursorPositionsDo: [:pos |
-			((pos block hasOwner: aBlock) or: [aBlock hasOwner: pos block]) ifFalse: [
+			((pos block hasOwner: aBlock) or: [aBlock hasOwner: pos block] or: [aBlock = pos block]) ifFalse: [
 				(pos isInsert and: [pos container isTSBlock]) ifTrue: [ | targetType id |
 					targetType := pos command element.
 					(aBlock adaptSlotFor: (SBTSSlot with: targetType) ifFailed: [nil]) ifNotNil: [:adaptedCopy |
