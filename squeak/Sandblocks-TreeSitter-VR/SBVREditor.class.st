@@ -88,25 +88,26 @@ SBVREditor >> insertPositionsFor: aBlock [
 	tempInsertRegistry := Dictionary new.
 	^ (Array streamContents: [:stream |
 		self cursorPositionsDo: [:pos |
-			(pos isInsert and: [pos container isTSBlock]) ifTrue: [ | targetType id |
-				targetType := pos command element.
-				(aBlock adaptSlotFor: (SBTSSlot with: targetType) ifFailed: [nil]) ifNotNil: [:adaptedCopy |
+			((pos block hasOwner: aBlock) or: [aBlock hasOwner: pos block]) ifFalse: [
+				(pos isInsert and: [pos container isTSBlock]) ifTrue: [ | targetType id |
+					targetType := pos command element.
+					(aBlock adaptSlotFor: (SBTSSlot with: targetType) ifFailed: [nil]) ifNotNil: [:adaptedCopy |
+						id := self getNextId.
+						pos command morphs: {adaptedCopy}.
+						tempInsertRegistry at: id put: pos command.
+						stream nextPut: (Dictionary newFrom: {
+							#id -> id.
+							#depth -> pos container blockDepth.
+							#bounds -> ((pos bounds translateBy: pos container containingFloat position negated) in: [:r | {r left. r top. r width. r height}]).
+							#floatId -> pos container containingFloat vrId})]].
+				(pos isSelect and: [pos block isUnknown]) ifTrue: [ | id |
 					id := self getNextId.
-					pos command morphs: {adaptedCopy}.
-					tempInsertRegistry at: id put: pos command.
+					tempInsertRegistry at: id put: (SBReplaceCommand new target: pos block replacer: aBlock copyBlock).
 					stream nextPut: (Dictionary newFrom: {
 						#id -> id.
-						#depth -> pos container blockDepth.
-						#bounds -> ((pos bounds translateBy: pos container containingFloat position negated) in: [:r | {r left. r top. r width. r height}]).
-						#floatId -> pos container containingFloat vrId})]].
-			(pos isSelect and: [pos block isUnknown]) ifTrue: [ | id |
-				id := self getNextId.
-				tempInsertRegistry at: id put: (SBReplaceCommand new target: pos block replacer: aBlock copyBlock).
-				stream nextPut: (Dictionary newFrom: {
-					#id -> id.
-					#depth -> pos block blockDepth.
-					#bounds -> ((pos block bounds translateBy: pos block containingFloat position negated) in: [:r | {r left. r top. r width. r height}]).
-					#floatId -> pos block containingFloat vrId})]]]) asJsonString
+						#depth -> pos block blockDepth.
+						#bounds -> ((pos block bounds translateBy: pos block containingFloat position negated) in: [:r | {r left. r top. r width. r height}]).
+						#floatId -> pos block containingFloat vrId})]]]]) asJsonString
 ]
 
 { #category : #'id mapping' }
