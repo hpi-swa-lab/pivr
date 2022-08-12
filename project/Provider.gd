@@ -107,7 +107,7 @@ func showInsertPositions(data):
 	for position in list:
 		var insertPosition = preload("res://TSInsert/TSInsert.tscn").instance()
 		insertPosition.id = int(position['id'])
-		insertPosition.transform.origin = Vector3(position["bounds"][0] * block_scale, position["bounds"][1] * block_scale, child_z_offset * position['depth'])
+		insertPosition.transform.origin = Vector3(position["bounds"][0] * block_scale, position["bounds"][1] * block_scale, block_thickness * position['depth'])
 		insertPosition.set_block_scale(Vector3(position["bounds"][2] * block_scale, position["bounds"][3] * block_scale, block_thickness))
 		
 		var containerBlock = idToBlock[int(position['floatId'])]
