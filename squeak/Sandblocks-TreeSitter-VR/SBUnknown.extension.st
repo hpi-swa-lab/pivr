@@ -1,21 +1,18 @@
-Extension { #name : #SBTSStMethod }
+Extension { #name : #SBUnknown }
 
 { #category : #'*Sandblocks-TreeSitter-VR' }
-SBTSStMethod >> exportStructure [
+SBUnknown >> exportStructure [
 
+	"mostly copied from SBTSBlock"
 	| previous |
 	previous := nil.
 	^ {
-		#children -> (Array streamContents: [:stream |
-			self
-				cursorPositionsDo: [:pos |
-					self visibleSubmorphsDo: [:morph |
-						stream nextPut: morph exportStructure]]
-				shallow: true]).
+		#children -> #().
 		#class -> #block.
 		#bounds -> (self bounds in: [:r | {r left. r top. r width. r height}]).
+		#type -> ''.
 		#id -> self vrId.
+		#highlight -> ''.
 		#color -> self drawnColor asHTMLColor.
-		#type -> 'methodRoot'.
 		#vrInteractionAllowed -> false} as: Dictionary
 ]

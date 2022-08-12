@@ -1,9 +1,16 @@
+class_name Grabber
+
 extends Area
 
 enum Button {
 	NONE,
 	INDEX_TRIGGER = 15,
 	INDEX_GRIP = 2,
+}
+
+enum Mode {
+	Move,
+	Interact,
 }
 
 export(Dictionary) var highlight_args = {}
@@ -51,7 +58,7 @@ func _on_button_pressed(button):
 	
 	var delta_transform = global_transform.inverse() * grabbed_node.global_transform
 	if grabbed_node.has_method("on_grab"):
-		if not grabbed_node.on_grab():
+		if not grabbed_node.on_grab(Mode.Move if grab_root else Mode.Interact):
 			grabbed_node = null
 			return
 	

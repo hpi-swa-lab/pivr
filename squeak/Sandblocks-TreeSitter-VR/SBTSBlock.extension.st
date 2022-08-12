@@ -33,5 +33,7 @@ SBTSBlock >> exportStructure [
 		#type -> self type.
 		#id -> self vrId.
 		#highlight -> self highlight.
-		#color -> self drawnColor asHTMLColor} as: Dictionary
+		#color -> self drawnColor asHTMLColor.
+		"for now, interactions are only properly implemented for blocks that inherit from SBTSBlock and some kinds of text"
+		#vrInteractionAllowed -> (self parentSandblock isKindOf: SBTSBlock)} as: Dictionary
 ]

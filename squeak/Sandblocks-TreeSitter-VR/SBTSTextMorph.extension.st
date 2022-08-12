@@ -9,5 +9,6 @@ SBTSTextMorph >> exportStructure [
 		#regex -> ([self slot firstNode regexString] ifError: ['']).
 		#contents -> self contents.
 		#color -> self color asHTMLColor.
-		#id -> self vrId} as: Dictionary
+		#id -> self vrId.
+		#vrInteractionAllowed -> true} as: Dictionary
 ]

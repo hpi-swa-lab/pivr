@@ -7,6 +7,7 @@ var is_flat
 
 var id
 var is_method_root
+var is_vr_interaction_allowed
 
 var morph_position
 var morph_extent
@@ -27,6 +28,7 @@ func assume_structure(structure):
 	$Scaled/Area.monitorable = !is_flat
 	
 	is_method_root = structure["type"] == "methodRoot"
+	is_vr_interaction_allowed = structure["vrInteractionAllowed"]
 
 func build_from_structure(structure):
 	id = int(structure["id"])
@@ -149,9 +151,21 @@ func on_hover_in(args = {}):
 func on_hover_out():
 	unhighlight(true)
 
-func on_grab():
-#	if !is_root_block():
-	return get_editor().pickUpBlock_showingInsertPositions_(id, !is_method_root) != null
+func on_grab(mode):
+	var allow
+	match mode:
+		Grabber.Mode.Move:
+			# we can always safely move blocks in godot space
+			allow = self.is_root_block()
+		Grabber.Mode.Interact:
+			allow = is_vr_interaction_allowed
+		_:
+			Logger.error("TSBlock: unknown grab mode")
+	
+	if allow:
+		return get_editor().pickUpBlock_showingInsertPositions_(id, !is_method_root) != null
+	else:
+		return false
 
 func on_release():
 #	get_parent().remove_child(self)
