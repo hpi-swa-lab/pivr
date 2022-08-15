@@ -25,7 +25,7 @@ func assume_structure(structure):
 	if structure.has("highlight"):
 		is_flat = structure["highlight"].ends_with(".part")
 	$Scaled/MeshInstance.visible = !is_flat
-	$Scaled/Area.monitorable = !is_flat
+	$Area.monitorable = !is_flat
 	
 	is_method_root = structure["type"] == "methodRoot"
 	is_vr_interaction_allowed = structure["vrInteractionAllowed"]
@@ -65,13 +65,22 @@ func adjust_to_parent():
 	origin.z = parent.block_thickness / 2 if is_flat else block_thickness
 	transform.origin = origin
 	
+	$Area.global_transform.origin.z = get_parent_block().block_thickness / 2 if is_flat else 0
+	
 	apply_block_scale()
 	
 	for child in $Blocks.get_children():
 		child.adjust_to_parent()
 
 func apply_block_scale():
-	$Scaled.scale = Vector3(morph_extent.x * block_scale, morph_extent.y * block_scale, block_thickness)
+	var sx = morph_extent.x * block_scale
+	var sy = morph_extent.y * block_scale
+	$Scaled.scale = Vector3(sx, sy, block_thickness)
+	var area_thickness = get_parent_block().block_thickness if has_parent() else block_thickness
+	$Area.scale = Vector3(sx, sy, area_thickness)
+
+func has_parent():
+	return get_parent() != null and get_parent_block() != null
 
 func register_self_and_children_if_necessary():
 	if !get_provider().idToBlock.has(id):

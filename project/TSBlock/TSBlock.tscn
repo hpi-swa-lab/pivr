@@ -23,13 +23,13 @@ mesh = SubResource( 1 )
 skeleton = NodePath("../..")
 material/0 = SubResource( 2 )
 
-[node name="Area" type="Area" parent="Scaled" groups=["grabbable"]]
-collision_layer = 3
-script = ExtResource( 2 )
-
-[node name="CollisionShape" type="CollisionShape" parent="Scaled/Area"]
-shape = SubResource( 3 )
-
 [node name="Tween" type="Tween" parent="."]
 
 [node name="Blocks" type="Spatial" parent="."]
+
+[node name="Area" type="Area" parent="." groups=["grabbable"]]
+collision_layer = 3
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Area"]
+shape = SubResource( 3 )
