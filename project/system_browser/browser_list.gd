@@ -46,7 +46,7 @@ func _ready():
 func _on_button_pressed(is_down):
 	var new_window_position
 	if is_down:
-		new_window_position = min(window_position + window_size, items.size() - window_size)
+		new_window_position = clamp(items.size() - window_size, 0, window_position + window_size)
 	else:
 		new_window_position = max(window_position - window_size, 0)
 	set_window_position(new_window_position)
