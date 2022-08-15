@@ -34,8 +34,14 @@ SBVREditor >> addDirtyBlockId: id [
 SBVREditor >> batchedChangeStep: block [
 
 	super batchedChangeStep: block.
-	godotProvider syncLayoutForAll.
-	Transcript showln: 'here'.
+	self dirtyAllBlocks
+]
+
+{ #category : #'insert commands' }
+SBVREditor >> dirtyAllBlocks [
+
+	self childSandblocksDo: [:block |
+		self addDirtyBlockId: block vrId]
 ]
 
 { #category : #'action helpers' }
@@ -126,6 +132,16 @@ SBVREditor >> registerMorph: aMorph atVrId: aNumber [
 SBVREditor >> showInsertPositionsFor: aBlock [
 
 	self godotProvider showInsertPositions: (self insertPositionsFor: aBlock)
+]
+
+{ #category : #'action helpers' }
+SBVREditor >> syncAllLayouts [
+
+	| structures |
+	structures := Array streamContents: [:stream |
+		self childSandblocksDo: [:block |
+			stream nextPut: block exportStructure]].
+	self godotProvider syncMultipleLayouts: structures asJsonString.
 ]
 
 { #category : #'action helpers' }
