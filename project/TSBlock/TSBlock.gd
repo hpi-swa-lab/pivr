@@ -65,7 +65,7 @@ func adjust_to_parent():
 	origin.z = parent.block_thickness / 2 if is_flat else block_thickness
 	transform.origin = origin
 	
-	$Area.global_transform.origin.z = get_parent_block().block_thickness / 2 if is_flat else 0
+	$Area.transform.origin.z = get_parent_block().block_thickness / 2 if is_flat else 0
 	
 	apply_block_scale()
 	
@@ -76,11 +76,11 @@ func apply_block_scale():
 	var sx = morph_extent.x * block_scale
 	var sy = morph_extent.y * block_scale
 	$Scaled.scale = Vector3(sx, sy, block_thickness)
-	var area_thickness = get_parent_block().block_thickness if has_parent() else block_thickness
+	var area_thickness = get_parent_block().block_thickness if has_parent_block() and is_flat else block_thickness
 	$Area.scale = Vector3(sx, sy, area_thickness)
 
-func has_parent():
-	return get_parent() != null and get_parent_block() != null
+func has_parent_block():
+	return get_parent() != null and get_parent_block() != null and get_parent_block().is_in_group("tsblock")
 
 func register_self_and_children_if_necessary():
 	if !get_provider().idToBlock.has(id):
@@ -208,7 +208,7 @@ func is_root_block():
 	if get_parent() == null:
 			Logger.warn(["Attempted to determine root block status for orphaned block with id ", id])
 			return self
-	return get_parent_block() != null and !get_parent_block().is_in_group("tsblock")
+	return get_parent_block() != null and !has_parent_block()
 
 func set_color(value):
 	color = value
