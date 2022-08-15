@@ -196,8 +196,8 @@ func fix_orientation():
 		var angles = global_transform.basis.get_euler()
 		angles.z = 0
 		var dest_basis = Basis(angles)
-		$Tween.interpolate_property(self, "global_transform:basis", global_transform.basis, dest_basis, .3, Tween.TRANS_CUBIC, Tween.EASE_OUT)
-		$Tween.start()
+		var tween = get_tree().create_tween()
+		tween.tween_property(self, "global_transform:basis", dest_basis, .3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	else:
 		get_parent_block().fix_orientation()
 

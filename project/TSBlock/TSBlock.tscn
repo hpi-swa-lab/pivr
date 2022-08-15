@@ -23,8 +23,6 @@ mesh = SubResource( 1 )
 skeleton = NodePath("../..")
 material/0 = SubResource( 2 )
 
-[node name="Tween" type="Tween" parent="."]
-
 [node name="Blocks" type="Spatial" parent="."]
 
 [node name="Area" type="Area" parent="." groups=["grabbable"]]
