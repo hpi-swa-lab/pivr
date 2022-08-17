@@ -143,5 +143,46 @@ func clearInsertHighlights():
 	for h in currentInsertHighlights:
 		h.queue_free()
 
+var current_vrobject
+
+func spawn_vrobject(vrobject_class):
+	var vrobject = preload("res://vrobject/vrobject.tscn").instance()
+	var script_path = find_script_path_for_vrobject_class(vrobject_class)
+	if script_path == null:
+		Logger.warn(["Did not find script for VRObject ", vrobject_class])
+	else:
+		Logger.log(["Found script path for VRObject class ", vrobject_class, " at ", script_path])
+		var script = load(script_path)
+		vrobject.set_script(script)
+	
+	get_editor().add_child(vrobject)
+	vrobject.transform = get_editor().get_node("VRObjectSpawn").transform
+	
+	if current_vrobject != null:
+		get_editor().remove_child(current_vrobject)
+	current_vrobject = vrobject
+
+func find_script_path_for_vrobject_class(vrobject_class):
+	var dir = Directory.new()
+	dir.open("res://")
+	dir.list_dir_begin(true, true)
+	var script_name = vrobject_class.trim_prefix("GDS") + ".st"
+	return find_script_path_for_script_name_in_directory(script_name, dir)
+
+func find_script_path_for_script_name_in_directory(script_name, directory):
+	while true:
+		var file_name = directory.get_next()
+		if file_name == "":
+			return null
+		if file_name == script_name:
+			return directory.get_current_dir().plus_file(script_name)
+		elif directory.current_is_dir():
+			var subdir = Directory.new()
+			subdir.open(directory.get_current_dir().plus_file(file_name))
+			subdir.list_dir_begin(true, true)
+			var path = find_script_path_for_script_name_in_directory(script_name, subdir)
+			if path != null:
+				return path
+
 func _ready():
 	pass

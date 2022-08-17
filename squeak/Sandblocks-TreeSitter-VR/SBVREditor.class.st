@@ -144,7 +144,7 @@ SBVREditor >> refreshAllInsertPositions [
 				stream nextPut: (Dictionary newFrom: {
 					#id -> id.
 					#parentBlockId -> pos container vrId.
-					#bounds -> ((pos bounds "translateBy: pos container containingFloat position") in: [:r | {r left. r top. r width. r height}]).
+					#bounds -> ((pos bounds) in: [:r | {r left. r top. r width. r height}]).
 				})]]].
 ]
 

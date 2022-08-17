@@ -57,6 +57,7 @@ transform = Transform( 3.26736, 0, 0, 0, 3.26736, 0, 0, 0, 3.26736, 0.21205, 1.6
 
 [node name="BouncingBall" parent="." instance=ExtResource( 6 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.36381, 1.12499, 4.50512 )
+visible = false
 
 [node name="Avatar" parent="." instance=ExtResource( 4 )]
 
@@ -73,3 +74,6 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Floor/StaticBody"]
 shape = SubResource( 4 )
+
+[node name="VRObjectSpawn" type="Position3D" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.51051, 1.38645 )

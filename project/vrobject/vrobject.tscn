@@ -1,0 +1,13 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://vrobject/VRObject.st" type="Script" id=1]
+
+[sub_resource type="SphereMesh" id=1]
+
+[sub_resource type="SpatialMaterial" id=2]
+resource_local_to_scene = true
+
+[node name="VRObject" type="MeshInstance"]
+mesh = SubResource( 1 )
+material/0 = SubResource( 2 )
+script = ExtResource( 1 )

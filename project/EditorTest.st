@@ -31,6 +31,14 @@ GDSEditorTest >> blockInput: event on: targetId [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> classIsVRObject: className [
+
+	^ (Smalltalk classNamed: className)
+		ifNil: [false]
+		ifNotNil: [:class | class includesBehavior: GDSVRObject]
+]
+
+{ #category : #behavior }
 GDSEditorTest >> compileBlockWithId: id [
 
 	| block |

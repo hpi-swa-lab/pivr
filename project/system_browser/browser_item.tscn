@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://system_browser/browser_item.gd" type="Script" id=1]
 [ext_resource path="res://TSText/DejaVuSans.ttf" type="DynamicFontData" id=2]
@@ -6,6 +6,9 @@
 
 [sub_resource type="CubeMesh" id=1]
 size = Vector3( 1, 1, 1 )
+
+[sub_resource type="SpatialMaterial" id=4]
+resource_local_to_scene = true
 
 [sub_resource type="BoxShape" id=2]
 margin = 0.001
@@ -24,6 +27,7 @@ script = ExtResource( 1 )
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 0.01, 0, 0, 0 )
 mesh = SubResource( 1 )
 skeleton = NodePath("../..")
+material/0 = SubResource( 4 )
 
 [node name="Area" type="Area" parent="Scaled"]
 collision_layer = 3
@@ -37,3 +41,5 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.006 )
 modulate = Color( 0, 0, 0, 1 )
 font = SubResource( 3 )
 horizontal_alignment = 0
+
+[node name="Buttons" type="Spatial" parent="."]

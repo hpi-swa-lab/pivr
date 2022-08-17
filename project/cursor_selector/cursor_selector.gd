@@ -98,6 +98,5 @@ func switch_last_hovered_node(new_node = null):
 		last_hovered_node = new_node
 
 func last_hovered_node_exited(node):
-	Logger.log(["here", node])
 	if node == last_hovered_node:
 		last_hovered_node = null

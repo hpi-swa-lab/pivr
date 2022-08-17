@@ -1,7 +1,10 @@
 extends Spatial
 
+var color = Color.white setget set_color
 var value: String setget set_value
 var dimensions = Vector2.ONE setget set_dimensions
+var retrieve_item_buttons_func
+var button_margin = 0.01
 
 signal selected
 
@@ -11,6 +14,11 @@ func set_value(v):
 	$Label3D.pixel_size = 1 / $Label3D.font.get_height()
 	fit_text()
 	update_text_position()
+	update_buttons()
+
+func set_color(value):
+	color = value
+	$Scaled/MeshInstance.get_surface_material(0).albedo_color = color
 
 func set_dimensions(value):
 	dimensions = value
@@ -21,6 +29,7 @@ func set_dimensions(value):
 	$Label3D.scale = Vector3.ONE * dimensions.y
 	fit_text()
 	update_text_position()
+	update_buttons_layout()
 
 func fit_text():
 	if in_world_width(value) <= dimensions.x:
@@ -51,6 +60,21 @@ func update_text_position():
 #	pos.x *= -1
 #	$TextQuad.transform.origin = Vector3(pos.x, pos.y, $TextQuad.transform.origin.z)
 	$Label3D.transform.origin.x = -dimensions.x / 2
+
+func update_buttons():
+	if retrieve_item_buttons_func == null:
+		return
+	
+	var buttons = retrieve_item_buttons_func.call_func(value)
+	for button in buttons:
+		$Buttons.add_child(button)
+	update_buttons_layout()
+
+func update_buttons_layout():
+	var offset = dimensions.x / 2 + button_margin
+	for button in $Buttons.get_children():
+		button.transform.origin.x = offset + button.dimensions.x / 2
+		offset += button.dimensions.x + button_margin
 
 func is_selectable():
 	return true

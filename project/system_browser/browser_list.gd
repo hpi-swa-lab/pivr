@@ -8,6 +8,8 @@ export(float) var item_bottom_margin = 0.01
 
 var window_position = 0 setget set_window_position
 
+var retrieve_item_buttons_func
+
 signal selected
 
 func set_items(value):
@@ -27,6 +29,7 @@ func set_window_position(value):
 	var end = min(items.size(), window_position + window_size)
 	for i in range(window_position, end):
 		var item_node = preload("res://system_browser/browser_item.tscn").instance()
+		item_node.retrieve_item_buttons_func = retrieve_item_buttons_func
 		item_node.value = items[i]
 		item_node.set_dimensions(Vector2(item_width, item_height))
 		item_node.transform.origin.y = y_offset
