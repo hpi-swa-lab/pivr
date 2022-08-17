@@ -4,7 +4,7 @@
 
 [sub_resource type="SphereShape" id=1]
 margin = 0.001
-radius = 0.01
+radius = 0.002
 
 [node name="Grabber" type="Area"]
 script = ExtResource( 1 )

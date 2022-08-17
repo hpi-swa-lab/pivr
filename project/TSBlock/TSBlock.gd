@@ -168,6 +168,10 @@ func on_hover_out():
 	unhighlight(true)
 
 func on_grab(mode):
+	if !is_inside_tree():
+		Logger.warn("Attempted to pick up orphaned block")
+		return false
+	
 	var allow
 	match mode:
 		Grabber.Mode.Move:

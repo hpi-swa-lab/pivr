@@ -88,12 +88,16 @@ func _process(_delta):
 		switch_last_hovered_node()
 
 func switch_last_hovered_node(new_node = null):
-	if last_hovered_node != new_node and last_hovered_node != null and last_hovered_node.has_method("unhover_select"):
-		last_hovered_node.unhover_select()
-	last_hovered_node = new_node
-	if new_node != null:
-		new_node.connect("tree_exited", self, "last_hovered_node_exited", [new_node])
+	if last_hovered_node != new_node:
+		if last_hovered_node != null and last_hovered_node.has_method("unhover_select"):
+			last_hovered_node.unhover_select()
+		
+		if new_node != null:
+			new_node.connect("tree_exiting", self, "last_hovered_node_exited", [new_node])
+		
+		last_hovered_node = new_node
 
-func node_exited(node):
+func last_hovered_node_exited(node):
+	Logger.log(["here", node])
 	if node == last_hovered_node:
 		last_hovered_node = null

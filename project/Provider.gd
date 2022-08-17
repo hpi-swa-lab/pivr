@@ -37,8 +37,12 @@ func sync_cursor_position():
 	var cursor_info_json = get_editor().getCursorInfo()
 	if cursor_info_json != null:
 		var cursor_info = JSON.parse(cursor_info_json).result
-		var text = idToBlock[int(cursor_info["textId"])]
-		text.add_cursor_at_index(int(cursor_info["index"]) - 1)
+		var id = int(cursor_info["textId"])
+		var text = idToBlock.get(id)
+		if text == null:
+			Logger.error(["Cursor positioned synced to unregister block with id ", id, "\n"])
+		else:
+			text.add_cursor_at_index(int(cursor_info["index"]) - 1)
 
 func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	var blockStructure = JSON.parse(structureOfBlockJson).result

@@ -12,7 +12,7 @@
 [ext_resource path="res://grabber/mover.tscn" type="PackedScene" id=10]
 
 [sub_resource type="CylinderMesh" id=3]
-top_radius = 0.01
+top_radius = 0.002
 bottom_radius = 0.01
 height = 0.2
 
@@ -38,7 +38,7 @@ mesh = SubResource( 3 )
 material/0 = SubResource( 2 )
 
 [node name="Grabber" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 2 )]
-transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0936968, 1.19209e-07 )
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0997384, 1.49012e-07 )
 
 [node name="CursorSelector" parent="FPController/RightHandController/MeshInstance" instance=ExtResource( 6 )]
 transform = Transform( 1, 0, 0, 0, -8.9407e-08, -1, 0, 1, -8.9407e-08, 0, 0.1, 0 )
