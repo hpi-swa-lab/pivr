@@ -10,6 +10,7 @@ export(float) var maximum_distance = 0.15
 
 var last_placed_cursor
 var button_is_pressed = false
+var last_hovered_node
 
 func above_max_distance():
 	return !$RayCast.is_colliding()
@@ -81,5 +82,18 @@ func _process(_delta):
 				last_placed_cursor = block.add_cursor_at_position(end_point, !button_is_pressed)
 		elif block.has_method("hover_select_at"):
 			block.hover_select_at(end_point)
+		switch_last_hovered_node(block)
 	else:
 		$RayViz.visible = false
+		switch_last_hovered_node()
+
+func switch_last_hovered_node(new_node = null):
+	if last_hovered_node != new_node and last_hovered_node != null and last_hovered_node.has_method("unhover_select"):
+		last_hovered_node.unhover_select()
+	last_hovered_node = new_node
+	if new_node != null:
+		new_node.connect("tree_exited", self, "last_hovered_node_exited", [new_node])
+
+func node_exited(node):
+	if node == last_hovered_node:
+		last_hovered_node = null

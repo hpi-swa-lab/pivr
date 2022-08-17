@@ -72,4 +72,4 @@ func handle_result_char(character):
 #	else:
 #		label.text += character
 #	get_editor().sendKeyStroke_(character)
-	get_tree().call_group("cursor", "write_character", character)
+	get_tree().call_group("cursor_like", "write_character", character)

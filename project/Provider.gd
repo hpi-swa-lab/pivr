@@ -20,17 +20,20 @@ func syncMultipleLayouts(structuresJson):
 	var structures = JSON.parse(structuresJson).result
 	for structure in structures:
 		var id = int(structure["id"])
-		Logger.log(["temp: attempting to layout ", id])
 		var block = idToBlock.get(id)
 		if block == null:
 			Logger.error(["Attempted to sync layout for id ", id, " that wasn't registered"])
 		else:
 			block.sync_to_layout_structure(structure)
+	refresh_cursor_insert_positions()
+	sync_cursor_position()
 
 func syncLayoutForAll():
 	for child in $"../Blocks".get_children():
 		child.sync_layout()
-	
+	sync_cursor_position()
+
+func sync_cursor_position():
 	var cursor_info_json = get_editor().getCursorInfo()
 	if cursor_info_json != null:
 		var cursor_info = JSON.parse(cursor_info_json).result
@@ -54,6 +57,16 @@ func doOpenEditorMorphCommand(structureOfBlockJson: String):
 	$"../Blocks".add_child(block)
 	block.register_self_and_children_if_necessary()
 	block.transform.origin = Vector3.ZERO
+	
+	refresh_cursor_insert_positions()
+
+func refresh_cursor_insert_positions():
+	get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME, "cursor_insert_position", "remove")
+	var cursor_insert_infos_json = get_editor().refreshAllInsertPositions()
+	var cursor_insert_infos = JSON.parse(cursor_insert_infos_json).result
+	for cursor_insert_info in cursor_insert_infos:
+		var parent_block = idToBlock[int(cursor_insert_info["parentBlockId"])]
+		parent_block.add_cursor_insert_position(cursor_insert_info)
 
 func addChildBlock(child, parent):
 	parent.add_child(child)

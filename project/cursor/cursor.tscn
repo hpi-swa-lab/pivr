@@ -11,7 +11,7 @@ flags_transparent = true
 flags_unshaded = true
 albedo_color = Color( 1, 0, 1, 1 )
 
-[node name="Cursor" type="Spatial" groups=["cursor"]]
+[node name="Cursor" type="Spatial" groups=["cursor", "cursor_like"]]
 script = ExtResource( 1 )
 
 [node name="Scaled" type="Spatial" parent="."]

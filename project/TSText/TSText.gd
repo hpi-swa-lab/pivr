@@ -67,7 +67,8 @@ func add_cursor_at_position(global_point, preview=false):
 				index -= 1
 			
 			var cursor = add_cursor_at_index(index, preview)
-			cursor.set_in_sandblocks()
+			if !preview:
+				cursor.set_in_sandblocks()
 			return cursor
 		prev_width = string_width
 	

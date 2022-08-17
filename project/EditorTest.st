@@ -164,6 +164,12 @@ self print: ''i am bouncy''' asString)"]
 ]
 
 { #category : #behavior }
+GDSEditorTest >> refreshAllInsertPositions [
+
+	^ SBVREditor current refreshAllInsertPositions asJsonString
+]
+
+{ #category : #behavior }
 GDSEditorTest >> selectCursorInBlockWithId: id at: pos [
 
 	| block |
@@ -172,19 +178,22 @@ GDSEditorTest >> selectCursorInBlockWithId: id at: pos [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> selectCursorInsertPosition: cursorId [
+
+	| editor pos |
+	self do: [
+		editor := SBVREditor current.
+		pos := editor insertPositionWithId: cursorId.
+		editor cursor cursorPosition: pos explicitMove: true axis: #none.]
+]
+
+{ #category : #behavior }
 GDSEditorTest >> sendKeyStroke: character [
 
-	| cursorPosition index |
 	self do: [
-		character do: [:char | | editor block |
+		character do: [:char | | editor |
 			editor := SBVREditor current.
-			editor handle: (SBTest keyboardEvent: char).
-			cursorPosition := editor cursor cursorPosition.
-			block := cursorPosition block.
-			index := cursorPosition block currentTextMorph cursor.
-			cursorPosition applyCommandIn: editor.
-			editor cursor select: block.
-			editor cursor selectedBlock currentTextMorph moveCursorTo: index]]
+			editor handle: (SBTest keyboardEvent: char).]]
 ]
 
 { #category : #behavior }

@@ -259,3 +259,19 @@ func compile():
 			Logger.error(["attempted to compile non-method root (id :", id, ")"])
 	else:
 		get_root_block().compile()
+
+func add_cursor_insert_position(cursor_insert_position_info):
+	var cursor_insert_position = preload("res://cursor_insert_position/cursor_insert_position.tscn").instance()
+	cursor_insert_position.cursor_id = int(cursor_insert_position_info["id"])
+	add_child(cursor_insert_position)
+	
+	var bounds = cursor_insert_position_info["bounds"]
+	var cursor_morph_position = Vector2(bounds[0], bounds[1])
+	var cursor_morph_extent = Vector2(bounds[2], bounds[3])
+	
+	var position = cursor_morph_position - morph_position + (cursor_morph_extent - morph_extent) / 2
+	position.y *= -1
+	position *= block_scale
+	cursor_insert_position.transform.origin = Vector3(position.x, position.y, cursor_insert_position.get_depth() / 2)
+	
+	cursor_insert_position.set_dimensions(cursor_morph_extent * block_scale)

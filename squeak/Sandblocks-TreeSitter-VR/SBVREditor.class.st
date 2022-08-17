@@ -7,7 +7,8 @@ Class {
 		'currentId',
 		'vrIdToMorph',
 		'tempInsertRegistry',
-		'dirtyBlockIds'
+		'dirtyBlockIds',
+		'insertPositionRegistry'
 	],
 	#classVars : [
 		'Instance'
@@ -80,12 +81,19 @@ SBVREditor >> initialize [
 	dirtyBlockIds := Set new.
 	
 	vrIdToMorph := Dictionary new.
+	insertPositionRegistry := Dictionary new.
 ]
 
 { #category : #'insert commands' }
 SBVREditor >> insertCommandAtId: aNumber [
 
 	^ tempInsertRegistry at: aNumber
+]
+
+{ #category : #initialization }
+SBVREditor >> insertPositionWithId: id [
+
+	^ insertPositionRegistry at: id
 ]
 
 { #category : #'insert commands' }
@@ -120,6 +128,24 @@ SBVREditor >> insertPositionsFor: aBlock [
 SBVREditor >> morphAtVrId: vrId [
 
 	^ vrIdToMorph at: vrId
+]
+
+{ #category : #'insert commands' }
+SBVREditor >> refreshAllInsertPositions [
+
+	insertPositionRegistry removeAll.
+	
+	^ Array streamContents: [:stream |
+		self cursorPositionsDo: [:pos |
+			(pos isInsert and: [pos container ~~ self]) ifTrue: [ | id |
+				id := self getNextId.
+				insertPositionRegistry at: id put: pos.
+				
+				stream nextPut: (Dictionary newFrom: {
+					#id -> id.
+					#parentBlockId -> pos container vrId.
+					#bounds -> ((pos bounds "translateBy: pos container containingFloat position") in: [:r | {r left. r top. r width. r height}]).
+				})]]].
 ]
 
 { #category : #'id mapping' }

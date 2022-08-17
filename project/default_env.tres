@@ -5,5 +5,9 @@
 [resource]
 background_mode = 2
 background_sky = SubResource( 1 )
+fog_color = Color( 0.839216, 0.917647, 0.980392, 1 )
+fog_depth_begin = 18.9
+fog_depth_end = 42.4
+fog_depth_curve = 0.574351
 ssao_radius = 0.1
 ssao_intensity = 10.42

@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://cursor_insert_position/cursor_insert_position.gd" type="Script" id=1]
+[ext_resource path="res://cursor_insert_position/Area.gd" type="Script" id=2]
+[ext_resource path="res://cursor_insert_position/normal.tres" type="Material" id=3]
+
+[sub_resource type="CubeMesh" id=1]
+size = Vector3( 1, 1, 1 )
+
+[sub_resource type="BoxShape" id=3]
+margin = 0.001
+extents = Vector3( 0.5, 0.5, 0.5 )
+
+[node name="CursorInsertPosition" type="Spatial" groups=["cursor_insert_position", "cursor_like"]]
+script = ExtResource( 1 )
+
+[node name="Scaled" type="Spatial" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 0.01, 0, 0, 0 )
+
+[node name="MeshInstance" type="MeshInstance" parent="Scaled"]
+mesh = SubResource( 1 )
+skeleton = NodePath("../..")
+material/0 = ExtResource( 3 )
+
+[node name="Area" type="Area" parent="Scaled"]
+collision_layer = 3
+script = ExtResource( 2 )
+
+[node name="CollisionShape" type="CollisionShape" parent="Scaled/Area"]
+shape = SubResource( 3 )
