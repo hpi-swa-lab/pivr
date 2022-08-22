@@ -269,11 +269,12 @@ func add_cursor_insert_position(cursor_insert_position_info):
 	cursor_insert_position.cursor_id = int(cursor_insert_position_info["id"])
 	add_child(cursor_insert_position)
 	
-	var bounds = cursor_insert_position_info["bounds"]
+	var bounds = cursor_insert_position_info["localBounds"]
+	# position is in local coordinates, relative to containing block
 	var cursor_morph_position = Vector2(bounds[0], bounds[1])
 	var cursor_morph_extent = Vector2(bounds[2], bounds[3])
 	
-	var position = cursor_morph_position - morph_position + (cursor_morph_extent - morph_extent) / 2
+	var position = cursor_morph_position + (cursor_morph_extent - morph_extent) / 2
 	position.y *= -1
 	position *= block_scale
 	cursor_insert_position.transform.origin = Vector3(position.x, position.y, cursor_insert_position.get_depth() / 2)
