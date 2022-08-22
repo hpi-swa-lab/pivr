@@ -155,11 +155,10 @@ func spawn_vrobject(vrobject_class):
 		var script = load(script_path)
 		vrobject.set_script(script)
 	
-	get_editor().add_child(vrobject)
-	vrobject.transform = get_editor().get_node("VRObjectSpawn").transform
+	get_editor().get_node("VRObjectSpawn").add_child(vrobject)
 	
 	if current_vrobject != null:
-		get_editor().remove_child(current_vrobject)
+		get_editor().get_node("VRObjectSpawn").remove_child(current_vrobject)
 	current_vrobject = vrobject
 
 func find_script_path_for_vrobject_class(vrobject_class):

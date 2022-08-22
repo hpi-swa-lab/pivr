@@ -30,3 +30,9 @@ GDSVRObject >> ready [
 	
 	^ nil
 ]
+
+{ #category : #behavior }
+GDSVRObject >> size: aNumber [
+
+	self scale: (GDVector3 newX: aNumber y: aNumber z: aNumber)
+]

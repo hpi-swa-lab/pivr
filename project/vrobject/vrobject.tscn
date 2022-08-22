@@ -3,6 +3,8 @@
 [ext_resource path="res://vrobject/VRObject.st" type="Script" id=1]
 
 [sub_resource type="SphereMesh" id=1]
+radius = 0.5
+height = 1.0
 
 [sub_resource type="SpatialMaterial" id=2]
 resource_local_to_scene = true

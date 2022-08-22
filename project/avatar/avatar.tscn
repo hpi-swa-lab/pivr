@@ -49,6 +49,7 @@ maximum_distance = 0.15
 
 [node name="touchwrite" parent="FPController/RightHandController" index="2" instance=ExtResource( 5 )]
 transform = Transform( 1, 0, 0, 0, 0.703816, 0.710382, 0, -0.710382, 0.703816, 0, 0.0154266, 0.015284 )
+visible = false
 label_node = NodePath("../label")
 controller_node = NodePath("..")
 
