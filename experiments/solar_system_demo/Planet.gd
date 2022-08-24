@@ -3,9 +3,13 @@ extends Spatial
 export(Color) var color setget set_color
 export(float) var orbit = 10 setget set_orbit
 export(float) var velocity = 10
-export(float) var radius = 1.0
+export(float) var radius = 1.0 setget set_radius
 
 var mesh_instance
+
+func set_radius(new_radius: float):
+	radius = new_radius
+	mesh_instance.get_mesh().radius = new_radius
 
 func set_orbit(new_orbit: float):
 	orbit = new_orbit
