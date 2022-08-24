@@ -27,7 +27,7 @@ func assume_structure(structure):
 	$Scaled/MeshInstance.visible = !is_flat
 	$Area.monitorable = !is_flat
 	
-	is_method_root = structure["type"] == "methodRoot"
+	is_method_root = structure["type"] == "methodRoot" or structure["type"] == "genericRoot"
 	is_vr_interaction_allowed = structure["vrInteractionAllowed"]
 
 func build_from_structure(structure):

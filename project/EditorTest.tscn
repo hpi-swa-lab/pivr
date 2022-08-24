@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://EditorTest.st" type="Script" id=1]
 [ext_resource path="res://Provider.gd" type="Script" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://write/write_instructions.tscn" type="PackedScene" id=5]
 [ext_resource path="res://bouncing_ball/bouncing_ball.tscn" type="PackedScene" id=6]
 [ext_resource path="res://system_browser/system_browser.tscn" type="PackedScene" id=7]
+[ext_resource path="res://suggestions_picker/suggestions_picker.tscn" type="PackedScene" id=8]
 
 [sub_resource type="QuadMesh" id=1]
 
@@ -77,3 +78,6 @@ shape = SubResource( 4 )
 
 [node name="VRObjectSpawn" type="Position3D" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.51051, 1.38645 )
+
+[node name="SuggestionsPicker" parent="." instance=ExtResource( 8 )]
+transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1.48155, 0.118286 )

@@ -6,6 +6,13 @@ signal pressed
 
 export(Texture) var texture setget set_texture
 
+var shown = true setget set_shown
+
+func set_shown(value):
+	shown = value
+	visible = shown
+	$Area/CollisionShape.disabled = !shown
+
 func resize_sprite():
 	var size = Vector2(mesh.size.x, mesh.size.y) / $Sprite3D.texture.get_size()
 	$Sprite3D.scale = Vector3(size.x, size.y, 1)

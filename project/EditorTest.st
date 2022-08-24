@@ -196,6 +196,16 @@ GDSEditorTest >> selectCursorInsertPosition: cursorId [
 ]
 
 { #category : #behavior }
+GDSEditorTest >> selectSuggestionAt: index [
+
+	| suggestion |
+	suggestion := SBVREditor current suggestionMenu suggestionAt: index.
+	SBVREditor current suggestionMenu
+		activeItem: suggestion;
+		useSuggestion.
+]
+
+{ #category : #behavior }
 GDSEditorTest >> sendKeyStroke: character [
 
 	self do: [

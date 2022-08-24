@@ -183,5 +183,9 @@ func find_script_path_for_script_name_in_directory(script_name, directory):
 			if path != null:
 				return path
 
+func updateSuggestions_(suggestions_info_json):
+	var suggestions_info = JSON.parse(suggestions_info_json).result
+	$"../SuggestionsPicker".set_suggestions(suggestions_info)
+
 func _ready():
 	pass

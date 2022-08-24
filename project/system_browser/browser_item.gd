@@ -1,8 +1,10 @@
+tool
+
 extends Spatial
 
 var color = Color.white setget set_color
-var value: String setget set_value
-var dimensions = Vector2.ONE setget set_dimensions
+export var value: String setget set_value
+export var dimensions = Vector2.ONE setget set_dimensions
 var retrieve_item_buttons_func
 var button_margin = 0.01
 

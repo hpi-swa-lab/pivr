@@ -51,7 +51,7 @@ GDSPlanet >> physicsProcess: delta [
 { #category : #behavior }
 GDSPlanet >> process: delta [
 
-	self color: Color blue
+	
 ]
 
 { #category : #behavior }

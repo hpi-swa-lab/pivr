@@ -11,9 +11,11 @@ script = ExtResource( 1 )
 [node name="Items" type="Spatial" parent="."]
 
 [node name="BrowserButtonUp" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.11, 0 )
 texture = ExtResource( 4 )
 
 [node name="BrowserButtonDown" parent="." instance=ExtResource( 2 )]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -7.45058e-10, 0 )
 texture = ExtResource( 3 )
 
 [connection signal="pressed" from="BrowserButtonUp" to="." method="_on_button_pressed" binds= [ false ]]

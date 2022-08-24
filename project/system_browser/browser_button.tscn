@@ -12,7 +12,6 @@ extents = Vector3( 0.05, 0.05, 0.005 )
 
 [node name="BrowserButton" type="MeshInstance"]
 mesh = SubResource( 1 )
-material/0 = null
 script = ExtResource( 2 )
 
 [node name="Sprite3D" type="Sprite3D" parent="."]

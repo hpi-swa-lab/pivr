@@ -1,3 +1,5 @@
+tool
+
 extends Spatial
 
 export(Array, String) var items = [] setget set_items
@@ -5,12 +7,18 @@ export(int) var window_size = 5
 export(float) var item_width = 0.2
 export(float) var item_height = 0.1
 export(float) var item_bottom_margin = 0.01
+export(bool) var show_scroll_buttons = true setget set_show_scroll_buttons
 
 var window_position = 0 setget set_window_position
 
 var retrieve_item_buttons_func
 
 signal selected
+
+func set_show_scroll_buttons(value):
+	show_scroll_buttons = value
+	$BrowserButtonUp.shown = show_scroll_buttons
+	$BrowserButtonDown.shown = show_scroll_buttons
 
 func set_items(value):
 	items = value
