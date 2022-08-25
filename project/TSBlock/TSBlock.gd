@@ -3,6 +3,7 @@ extends Spatial
 class_name TSBlock
 
 var color = Color.white setget set_color
+var display_color setget , get_display_color
 var is_flat
 
 var id
@@ -66,6 +67,10 @@ func adjust_to_parent():
 	transform.origin = origin
 	
 	$Area.transform.origin.z = get_parent_block().block_thickness / 2 if is_flat else 0
+	
+	if color == parent.color:
+		display_color = parent.display_color.darkened(.025)
+		$Scaled/MeshInstance.get_surface_material(0).albedo_color = display_color
 	
 	apply_block_scale()
 	
@@ -220,6 +225,9 @@ func set_color(value):
 #	for child in get_block_children():
 #		if child.is_in_group("tsblock"):
 #			child.color = color.darkened(.1)
+
+func get_display_color():
+	return color if display_color == null else display_color
 
 func highlight(highlight_children = false, color_name = "green"):
 	$Scaled/MeshInstance.get_surface_material(0).next_pass = {
