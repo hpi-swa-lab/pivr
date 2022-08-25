@@ -199,10 +199,11 @@ GDSEditorTest >> selectCursorInsertPosition: cursorId [
 GDSEditorTest >> selectSuggestionAt: index [
 
 	| suggestion |
-	suggestion := SBVREditor current suggestionMenu suggestionAt: index.
-	SBVREditor current suggestionMenu
-		activeItem: suggestion;
-		useSuggestion.
+	self do: [
+		suggestion := SBVREditor current suggestionMenu suggestionAt: index.
+		SBVREditor current suggestionMenu
+			activeItem: suggestion;
+			useSuggestion.]
 ]
 
 { #category : #behavior }

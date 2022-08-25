@@ -54,10 +54,11 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
 script = ExtResource( 3 )
 
 [node name="instructions" parent="." instance=ExtResource( 5 )]
-transform = Transform( 3.26736, 0, 0, 0, 3.26736, 0, 0, 0, 3.26736, 0.21205, 1.61285, -1.60501 )
+transform = Transform( -0.845655, 0, 3.15603, 0, 3.26736, 0, -3.15603, 0, -0.845655, -1.7003, 1.61285, 0.515168 )
 
 [node name="BouncingBall" parent="." instance=ExtResource( 6 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.36381, 1.12499, 4.50512 )
+visible = false
 
 [node name="Avatar" parent="." instance=ExtResource( 4 )]
 

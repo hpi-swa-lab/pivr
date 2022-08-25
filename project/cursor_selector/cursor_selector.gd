@@ -19,10 +19,11 @@ func ray_cast_distance():
 	return $RayCast.get_collision_point().distance_to($RayCast.global_transform.origin)
 
 func is_pointing_at_selectable():
-	return $RayCast.is_colliding() \
-		and ray_cast_distance() >= minimum_distance \
-		and $RayCast.get_collider().get_grabbed_node().has_method("is_selectable") \
-		and $RayCast.get_collider().get_grabbed_node().is_selectable()
+	if $RayCast.is_colliding() and $RayCast.get_collider() != null:
+		var grabbed_node = $RayCast.get_collider().get_grabbed_node()
+		return ray_cast_distance() >= minimum_distance and grabbed_node.has_method("is_selectable") and grabbed_node.is_selectable()
+	else:
+		return false
 
 func _on_button_pressed(button):
 	if button != INDEX_TRIGGER and button != INDEX_A:

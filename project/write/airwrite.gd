@@ -72,4 +72,7 @@ func handle_result_char(character):
 #	else:
 #		label.text += character
 #	get_editor().sendKeyStroke_(character)
+	if Input.is_action_pressed("capitalize"): # right index grip button
+		Logger.log("Capitalizing character")
+		character = character.to_upper()
 	get_tree().call_group("cursor_like", "write_character", character)

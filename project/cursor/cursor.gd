@@ -47,10 +47,11 @@ func get_editor():
 
 func write_character(character):
 	# guard against some default sandblocks behaviour that we don't want
-	if is_preview or (index == 0 and character == '\b') or character == ' ':
+	if is_preview or (index == 0 and character == '\b'):# or character == ' ':
 		return
 	
-	get_editor().writeCharacter_at_inBlockWithId_(character, index + 1, block.id)
+	get_editor().sendKeyStroke_(character)
+#	get_editor().writeCharacter_at_inBlockWithId_(character, index + 1, block.id)
 
 func set_in_sandblocks():
 	get_editor().startInputAt_inTextWithId_(index + 1, text_block.id)
