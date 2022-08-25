@@ -82,6 +82,8 @@ SBVREditor >> initialize [
 	
 	vrIdToMorph := Dictionary new.
 	insertPositionRegistry := Dictionary new.
+	
+	suggestionMenu := SBGodotSuggestionMenu new.
 ]
 
 { #category : #'insert commands' }
@@ -125,9 +127,30 @@ SBVREditor >> insertPositionsFor: aBlock [
 ]
 
 { #category : #'id mapping' }
+SBVREditor >> knowsVrId: aNumber [
+
+	^ vrIdToMorph includesKey: aNumber
+]
+
+{ #category : #'id mapping' }
 SBVREditor >> morphAtVrId: vrId [
 
 	^ vrIdToMorph at: vrId
+]
+
+{ #category : #'as yet unclassified' }
+SBVREditor >> openMorph: aMorph [
+
+	super openMorph: aMorph.
+	aMorph shouldBeInVr ifTrue: [ | changeBlock |
+		changeBlock := [ | s |
+			s := 'SBchanged: ', aMorph vrId, ' bounds: ', aMorph bounds asString.
+			self godotProvider print: s.
+			Transcript showln: s.
+			self addDirtyBlockId: aMorph vrId.
+			self syncDirtyLayouts.].
+		aMorph when: #SBchanged evaluate: changeBlock.
+		self godotProvider doOpenEditorMorphCommand: aMorph exportStructure asJsonString.]
 ]
 
 { #category : #'insert commands' }
@@ -171,15 +194,21 @@ SBVREditor >> syncAllLayouts [
 ]
 
 { #category : #'action helpers' }
+SBVREditor >> syncDirtyLayouts [
+
+	dirtyBlockIds ifNotEmpty: [
+		self godotProvider syncMultipleLayouts:
+			(dirtyBlockIds collect: [:id | (self morphAtVrId: id) exportStructure]) asJsonString.
+		dirtyBlockIds removeAll]
+]
+
+{ #category : #'action helpers' }
 SBVREditor >> vrDoQueuedCommands [
 
 	commandQueue ifNotEmpty: [
 		commandQueue do: [:command | command vrDo].
 		commandQueue removeAll].
-	dirtyBlockIds ifNotEmpty: [
-		self godotProvider syncMultipleLayouts:
-			(dirtyBlockIds collect: [:id | (self morphAtVrId: id) exportStructure]) asJsonString.
-		dirtyBlockIds removeAll]
+	self syncDirtyLayouts.
 ]
 
 { #category : #'id mapping' }
