@@ -1,6 +1,9 @@
 Class {
 	#name : #GDSPlanet,
 	#superclass : #GDSVRObject,
+	#instVars : [
+		'speed'
+	],
 	#category : #'Godot-Scripts'
 }
 
@@ -20,9 +23,9 @@ GDSPlanet >> physicsProcess: delta [
 GDSPlanet >> process: delta [
 
 	| newTranslation |
-	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: (self speed * delta).
-	self print: ('({1}, {2}, {3})' format: {newTranslation getAxis: 0. newTranslation getAxis: 1. newTranslation getAxis: 2}).
-	self translation: newTranslation.
+	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: self speed * delta.
+	"self print: ('({1}, {2}, {3})' format: {newTranslation getAxis: 0. newTranslation getAxis: 1. newTranslation getAxis: 2})."
+	self translation: newTranslation
 ]
 
 { #category : #behavior }
@@ -30,6 +33,7 @@ GDSPlanet >> ready [
 	
 	self color: Color red.
 	self size: 0.1.
+	self speed: 0.1.
 	
 	self distance: 0.5.
 ]
@@ -37,5 +41,11 @@ GDSPlanet >> ready [
 { #category : #behavior }
 GDSPlanet >> speed [
 
-	^ 0.1
+	^ speed
+]
+
+{ #category : #behavior }
+GDSPlanet >> speed: aNumber [
+
+	speed := aNumber
 ]
