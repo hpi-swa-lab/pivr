@@ -188,7 +188,7 @@ func on_grab(mode):
 			Logger.error("TSBlock: unknown grab mode")
 	
 	if allow:
-		return get_editor().pickUpBlock_showingInsertPositions_(id, !is_method_root) != null
+		return get_editor().pickUpBlock_showingInsertPositions_(id, !is_method_root and mode == Grabber.Mode.Interact) != null
 	else:
 		return false
 

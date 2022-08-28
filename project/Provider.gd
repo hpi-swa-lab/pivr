@@ -142,6 +142,7 @@ func showInsertPositions(data):
 func clearInsertHighlights():
 	for h in currentInsertHighlights:
 		h.queue_free()
+	currentInsertHighlights = []
 
 var current_vrobject
 

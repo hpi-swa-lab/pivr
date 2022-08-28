@@ -37,7 +37,8 @@ func on_key_pressed(scan_code_text: String, unicode: int, shift: bool):
 #	# Dispatch the input event
 #	Input.parse_input_event(input)
 
-	get_tree().call_group("cursor_like", "write_character", char(unicode))
+	var c = '\b' if scan_code_text == "BackSpace" else char(unicode)
+	get_tree().call_group("cursor_like", "write_character", c)
 
 	# Pop any temporary shift key
 	if _shift_down:
