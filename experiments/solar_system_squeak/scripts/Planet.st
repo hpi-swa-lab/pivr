@@ -24,9 +24,10 @@ GDSPlanet >> process: delta [
 
 	| newTranslation angle |
 	angle := 90 degreesToRadians.
+	
 	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: angle.
 	"self print: ('({1} {2})' format: {newX. newZ.})."
-	self translate: (newTranslation * delta * self speed ).
+	self translate: newTranslation * delta * self speed
 ]
 
 { #category : #behavior }
@@ -49,4 +50,10 @@ GDSPlanet >> setSpeed: aNumber [
 GDSPlanet >> speed [
 
 	^ speed
+]
+
+{ #category : #behavior }
+GDSPlanet >> speed: aNumber [
+
+	speed := aNumber.
 ]

@@ -8,7 +8,8 @@ Class {
 		'vrIdToMorph',
 		'tempInsertRegistry',
 		'dirtyBlockIds',
-		'insertPositionRegistry'
+		'insertPositionRegistry',
+		'blacklist'
 	],
 	#classVars : [
 		'Instance'
@@ -32,10 +33,28 @@ SBVREditor >> addDirtyBlockId: id [
 ]
 
 { #category : #'insert commands' }
+SBVREditor >> artefactChanged: anArtefact [
+
+	blacklist removeAll
+]
+
+{ #category : #'insert commands' }
 SBVREditor >> batchedChangeStep: block [
 
 	super batchedChangeStep: block.
 	self dirtyAllBlocks
+]
+
+{ #category : #'insert commands' }
+SBVREditor >> blacklist [
+
+	^ blacklist ifNil: [blacklist := Set new]
+]
+
+{ #category : #'insert commands' }
+SBVREditor >> blacklist: aNode [
+
+	self blacklist add: aNode
 ]
 
 { #category : #'insert commands' }
@@ -84,6 +103,8 @@ SBVREditor >> initialize [
 	insertPositionRegistry := Dictionary new.
 	
 	suggestionMenu := SBGodotSuggestionMenu new.
+	
+	self compileTime: #compileOnChange
 ]
 
 { #category : #'insert commands' }
@@ -124,6 +145,12 @@ SBVREditor >> insertPositionsFor: aBlock [
 						#depth -> pos block blockDepth.
 						#bounds -> ((pos block bounds translateBy: pos block containingFloat position negated) in: [:r | {r left. r top. r width. r height}]).
 						#floatId -> pos block containingFloat vrId})]]]]) asJsonString
+]
+
+{ #category : #'action helpers' }
+SBVREditor >> isBlacklisted: aNode [
+
+	^ self blacklist includes: aNode
 ]
 
 { #category : #'id mapping' }

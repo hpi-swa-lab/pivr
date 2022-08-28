@@ -10,7 +10,7 @@ Class {
 { #category : #'as yet unclassified' }
 SBGodotSuggestionMenu >> delete [
 
-	SBVREditor current godotProvider updateSuggestions: #() asJsonString.
+	SBVREditor current godotProvider ifNotNil: [:p | p updateSuggestions: #() asJsonString].
 	super delete.
 ]
 
@@ -25,7 +25,7 @@ SBGodotSuggestionMenu >> suggestions: aCollectionOfSymbols [
 	
 	super suggestions: aCollectionOfSymbols.
 	currentSuggestions := aCollectionOfSymbols.
-	SBVREditor current godotProvider updateSuggestions: self suggestionsInfo asJsonString
+	SBVREditor current godotProvider  ifNotNil: [:p | p updateSuggestions: self suggestionsInfo asJsonString]
 ]
 
 { #category : #'as yet unclassified' }
