@@ -22,10 +22,11 @@ GDSPlanet >> physicsProcess: delta [
 { #category : #behavior }
 GDSPlanet >> process: delta [
 
-	| newTranslation |
-	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: self speed * delta.
-	"self print: ('({1}, {2}, {3})' format: {newTranslation getAxis: 0. newTranslation getAxis: 1. newTranslation getAxis: 2})."
-	self translation: newTranslation
+	| newTranslation angle |
+	angle := 90 degreesToRadians.
+	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: angle.
+	"self print: ('({1} {2})' format: {newX. newZ.})."
+	self translate: (newTranslation * delta * self speed ).
 ]
 
 { #category : #behavior }
@@ -33,7 +34,7 @@ GDSPlanet >> ready [
 	
 	self color: Color red.
 	self size: 0.1.
-	self speed: 0.1.
+	self speed: 1.0.
 	
 	self distance: 0.5.
 ]
@@ -47,5 +48,5 @@ GDSPlanet >> speed [
 { #category : #behavior }
 GDSPlanet >> speed: aNumber [
 
-	speed := aNumber
+	speed := aNumber.
 ]
