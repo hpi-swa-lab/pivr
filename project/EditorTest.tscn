@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://EditorTest.st" type="Script" id=1]
 [ext_resource path="res://Provider.gd" type="Script" id=2]
@@ -8,6 +8,7 @@
 [ext_resource path="res://bouncing_ball/bouncing_ball.tscn" type="PackedScene" id=6]
 [ext_resource path="res://system_browser/system_browser.tscn" type="PackedScene" id=7]
 [ext_resource path="res://suggestions_picker/suggestions_picker.tscn" type="PackedScene" id=8]
+[ext_resource path="res://addons/godot-xr-tools/objects/Virtual_Keyboard.tscn" type="PackedScene" id=9]
 
 [sub_resource type="QuadMesh" id=1]
 
@@ -35,6 +36,14 @@ shader_param/line_color = Color( 0.823529, 0.823529, 0.823529, 1 )
 [sub_resource type="BoxShape" id=4]
 extents = Vector3( 0.5, 0.5, 1 )
 
+[sub_resource type="CylinderMesh" id=5]
+top_radius = 0.25
+bottom_radius = 0.25
+height = 1.0
+
+[sub_resource type="SpatialMaterial" id=6]
+albedo_color = Color( 0.415686, 0.415686, 0.415686, 1 )
+
 [node name="EditorTest" type="Spatial" groups=["editor"]]
 script = ExtResource( 1 )
 
@@ -54,7 +63,7 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3 )
 script = ExtResource( 3 )
 
 [node name="instructions" parent="." instance=ExtResource( 5 )]
-transform = Transform( -0.845655, 0, 3.15603, 0, 3.26736, 0, -3.15603, 0, -0.845655, -1.7003, 1.61285, 0.515168 )
+transform = Transform( -2.31037, 0, -2.31037, 0, 3.26736, 0, 2.31037, 0, -2.31037, 2.35578, 1.61285, 2.80402 )
 
 [node name="BouncingBall" parent="." instance=ExtResource( 6 )]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -1.36381, 1.12499, 4.50512 )
@@ -63,7 +72,7 @@ visible = false
 [node name="Avatar" parent="." instance=ExtResource( 4 )]
 
 [node name="SystemBrowser" parent="." instance=ExtResource( 7 )]
-transform = Transform( 1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0.899146, 1.51264, -0.606489 )
+transform = Transform( 1.31134e-07, 0, -1, 0, 1, 0, 1, 0, 1.31134e-07, 0.912016, 1.51264, -0.177752 )
 
 [node name="Floor" type="MeshInstance" parent="."]
 transform = Transform( 100, 0, 0, 0, -4.37114e-06, 1, 0, -100, -4.37114e-08, 0, 0, 0 )
@@ -75,9 +84,18 @@ transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1 )
 
 [node name="CollisionShape" type="CollisionShape" parent="Floor/StaticBody"]
 shape = SubResource( 4 )
+disabled = true
 
 [node name="VRObjectSpawn" type="Position3D" parent="."]
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.51051, 1.38645 )
 
 [node name="SuggestionsPicker" parent="." instance=ExtResource( 8 )]
-transform = Transform( -1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 1.48155, 0.118286 )
+transform = Transform( -0.397257, 0.0355049, 0.91702, 0.0335129, 0.999146, -0.0241667, -0.917095, 0.0211316, -0.398108, -0.934662, 1.48155, 0.679195 )
+
+[node name="Virtual_Keyboard" parent="." instance=ExtResource( 9 )]
+transform = Transform( -1, -1.86723e-08, -1.36054e-07, -1.14197e-07, 0.663351, 0.748308, 7.62791e-08, 0.748308, -0.663351, 0, 0.528173, 1.00723 )
+
+[node name="MeshInstance" type="MeshInstance" parent="."]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.497135, 0 )
+mesh = SubResource( 5 )
+material/0 = SubResource( 6 )

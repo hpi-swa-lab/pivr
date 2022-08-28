@@ -1,45 +1,13 @@
 Class {
 	#name : #GDSPlanet,
 	#superclass : #GDSVRObject,
-	#instVars : [
-		'distance',
-		'angle',
-		'center'
-	],
 	#category : #'Godot-Scripts'
 }
 
 { #category : #behavior }
-GDSPlanet >> angle [
-
-	^ angle
-]
-
-{ #category : #behavior }
-GDSPlanet >> angle: radians [
-
-	| pos |
-	angle := radians.
-	
-	pos := (GDVector3 newX: self distance y: 0 z: 0)
-		rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0)
-		phi: angle.
-	
-	self setTranslation: pos.
-	
-	
-]
-
-{ #category : #behavior }
-GDSPlanet >> distance [
-
-	^ distance
-]
-
-{ #category : #behavior }
 GDSPlanet >> distance: aNumber [
 
-	distance := aNumber
+	self translation: (GDVector3 newX: aNumber y: 0 z: 0)
 ]
 
 { #category : #behavior }
@@ -51,7 +19,10 @@ GDSPlanet >> physicsProcess: delta [
 { #category : #behavior }
 GDSPlanet >> process: delta [
 
-	
+	| newTranslation |
+	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: (self speed * delta).
+	self print: ('({1}, {2}, {3})' format: {newTranslation getAxis: 0. newTranslation getAxis: 1. newTranslation getAxis: 2}).
+	self translation: newTranslation.
 ]
 
 { #category : #behavior }
@@ -61,11 +32,10 @@ GDSPlanet >> ready [
 	self size: 0.1.
 	
 	self distance: 0.5.
-	self angle: 0.
 ]
 
 { #category : #behavior }
 GDSPlanet >> speed [
 
-	^ 1
+	^ 0.1
 ]
