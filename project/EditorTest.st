@@ -44,6 +44,9 @@ GDSEditorTest >> compileBlockWithId: id [
 	| block |
 	block := SBVREditor current morphAtVrId: id.
 	[block saveTryFixing: false quick: false] on: Error do: [^ false].
+	"temp" [SystemOrganizer default fileOutCategory: 'Godot-Scripts']
+		on: FileExistsException
+		do: [:error | FileDirectory deleteFilePath: error fileName. SystemOrganizer default fileOutCategory: 'Godot-Scripts'].
 	^ true
 ]
 
