@@ -187,5 +187,8 @@ func updateSuggestions_(suggestions_info_json):
 	var suggestions_info = JSON.parse(suggestions_info_json).result
 	$"../SuggestionsPicker".set_suggestions(suggestions_info)
 
+func errorOccurred_methodName_className_(error_text, method_name, class_naem):
+	Logger.error(["[Squeak error in ", class_naem, ">>", method_name, "] ", error_text])
+
 func _ready():
 	pass

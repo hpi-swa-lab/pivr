@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://EditorTest.st" type="Script" id=1]
 [ext_resource path="res://Provider.gd" type="Script" id=2]
@@ -9,6 +9,7 @@
 [ext_resource path="res://system_browser/system_browser.tscn" type="PackedScene" id=7]
 [ext_resource path="res://suggestions_picker/suggestions_picker.tscn" type="PackedScene" id=8]
 [ext_resource path="res://addons/godot-xr-tools/objects/Virtual_Keyboard.tscn" type="PackedScene" id=9]
+[ext_resource path="res://log_display/log_display.tscn" type="PackedScene" id=10]
 
 [sub_resource type="QuadMesh" id=1]
 
@@ -90,7 +91,7 @@ disabled = true
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.51051, 1.38645 )
 
 [node name="SuggestionsPicker" parent="." instance=ExtResource( 8 )]
-transform = Transform( -0.397257, 0.0355049, 0.91702, 0.0335129, 0.999146, -0.0241667, -0.917095, 0.0211316, -0.398108, -0.934662, 1.48155, 0.679195 )
+transform = Transform( -0.397257, 0.0355049, 0.91702, 0.0335129, 0.999146, -0.0241667, -0.917095, 0.0211316, -0.398108, -0.793541, 1.48155, 0.679195 )
 
 [node name="Virtual_Keyboard" parent="." instance=ExtResource( 9 )]
 transform = Transform( -1, -1.86723e-08, -1.36054e-07, -1.14197e-07, 0.663351, 0.748308, 7.62791e-08, 0.748308, -0.663351, 0, 0.528173, 1.00723 )
@@ -99,3 +100,9 @@ transform = Transform( -1, -1.86723e-08, -1.36054e-07, -1.14197e-07, 0.663351, 0
 transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.497135, 0 )
 mesh = SubResource( 5 )
 material/0 = SubResource( 6 )
+
+[node name="LogDisplay" parent="." instance=ExtResource( 10 )]
+transform = Transform( -8.74228e-08, 0, 1, 0, 2, 0, -2, 0, -4.37114e-08, -1.93875, 0.969, -0.218663 )
+filter = "Squeak error in"
+horizontal_resolution = 600
+title = "Errors"

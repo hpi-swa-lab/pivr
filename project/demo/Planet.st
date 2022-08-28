@@ -23,6 +23,7 @@ GDSPlanet >> process: delta [
 	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: (self speed * delta).
 	self print: ('({1}, {2}, {3})' format: {newTranslation getAxis: 0. newTranslation getAxis: 1. newTranslation getAxis: 2}).
 	self translation: newTranslation.
+	self error: 'test error'.
 ]
 
 { #category : #behavior }
@@ -38,4 +39,10 @@ GDSPlanet >> ready [
 GDSPlanet >> speed [
 
 	^ 0.1
+]
+
+{ #category : #behavior }
+GDSPlanet >> speed: aNumber [
+
+	speed := aNumber
 ]

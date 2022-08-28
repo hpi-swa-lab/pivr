@@ -53,3 +53,6 @@ func select_at(_global_point):
 func unselect_cursor():
 	$Scaled/MeshInstance.set_surface_material(0, preload("res://cursor_insert_position/normal.tres").duplicate())
 	is_selected = false
+
+func compile():
+	get_parent().compile()

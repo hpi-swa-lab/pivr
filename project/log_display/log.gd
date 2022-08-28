@@ -1,12 +1,19 @@
 extends Control
 
 var count = 0
+var filter = ""
 
 func set_rect_size(size):
 	rect_size = size
 	$Content.rect_size = Vector2(size.x, size.y - $Content.rect_position.y)
 
+func set_title(title):	
+	$Header/Title.bbcode_text = "[b]" + title + "[/b]"
+
 func on_log_occurred(message, type):
+	if filter != "" and message.find(filter) == -1:
+		return
+	
 	var time = OS.get_datetime()
 	var color
 	match type:
