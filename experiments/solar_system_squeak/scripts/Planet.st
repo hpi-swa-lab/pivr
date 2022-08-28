@@ -34,19 +34,19 @@ GDSPlanet >> ready [
 	
 	self color: Color red.
 	self size: 0.1.
-	self speed: 1.0.
+	self setSpeed: 1.0.
 	
 	self distance: 0.5.
+]
+
+{ #category : #behavior }
+GDSPlanet >> setSpeed: aNumber [
+
+	speed := aNumber.
 ]
 
 { #category : #behavior }
 GDSPlanet >> speed [
 
 	^ speed
-]
-
-{ #category : #behavior }
-GDSPlanet >> speed: aNumber [
-
-	speed := aNumber.
 ]

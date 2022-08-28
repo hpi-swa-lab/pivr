@@ -25,6 +25,7 @@ GDSSolarSystem >> ready [
 		newPlanet := (self getParent) createNewVRObject.
 		self addChildNode: newPlanet.
 		newPlanet distance: i.
-		planetColor := Color r: 255 atRandom / 255 g: 255 atRandom / 255 b: 255 atRandom / 255.
-		newPlanet color: Color yellow.]
+		newPlanet setSpeed: (1 to: 15) atRandom / 15.0.
+		planetColor := Color r: 255 atRandom / 255.0 g: 255 atRandom / 255.0 b: 255 atRandom / 255.0.
+		"newPlanet color: (Color r: 0.5 g: 0.1 b: 1.0)."]
 ]
