@@ -1,6 +1,9 @@
 Class {
 	#name : #GDSSolarSystem,
 	#superclass : #GDSVRObject,
+	#instVars : [
+		'planets'
+	],
 	#category : #'Godot-Scripts'
 }
 
@@ -13,6 +16,7 @@ GDSSolarSystem >> physicsProcess: delta [
 { #category : #behavior }
 GDSSolarSystem >> process: delta [
 
+	planets do: [:planet | planet setSpeed: (self getControllerSpeed * 100)].
 	^ nil
 ]
 
@@ -20,9 +24,11 @@ GDSSolarSystem >> process: delta [
 GDSSolarSystem >> ready [
 	| newPlanet planetColor |
 	
+	planets := OrderedCollection new.
 	"self color: Color yellow."
 	1 to: 10 do: [:i |
 		newPlanet := (self getParent) createNewVRObject.
+		planets add: newPlanet.
 		self addChildNode: newPlanet.
 		newPlanet distance: i.
 		newPlanet setSpeed: (1 to: 15) atRandom / 15.0.
