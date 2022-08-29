@@ -23,11 +23,6 @@ GDSPlanet >> mass [
 
 { #category : #behavior }
 GDSPlanet >> process: delta [
-
-	| newTranslation angle |
-	angle := 90 degreesToRadians.
-	newTranslation := self translation rotatedAxis: (GDVector3 newX: 0 y: 1 z: 0) phi: delta * speed * (self size dotB: self size).
-	self translation: newTranslation
 ]
 
 { #category : #behavior }
@@ -36,7 +31,6 @@ GDSPlanet >> ready [
 	self color: Color green.
 	self setSize: 0.1.
 	self setSpeed: 1.0.
-	
 	self distance: 0.5.
 ]
 
@@ -50,10 +44,4 @@ GDSPlanet >> setSpeed: aNumber [
 GDSPlanet >> speed [
 
 	^ speed
-]
-
-{ #category : #behavior }
-GDSPlanet >> speed: aNumber [
-
-	speed := aNumber.
 ]

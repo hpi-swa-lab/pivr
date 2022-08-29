@@ -13,7 +13,6 @@ GDSVRObject >> color: aColor [
 
 	| mat |
 	mat := self meshInstance getSurfaceMaterialSurface: 0.
-	"col := GDColor newRgbR: aColor red g: aColor green b: aColor blue."
 	mat albedoColor: aColor.
 ]
 

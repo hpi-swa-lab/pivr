@@ -8,11 +8,13 @@ Class {
 }
 
 { #category : #behavior }
-GDSSolarSystem >> process: delta [
+GDSSolarSystem >> planets [
 
-	planets do: [:planet |
-		planet setSpeed: (self getControllerSpeed * 100 * planet mass).
-		planet setSize: (self getControllerTilt).]
+	^ planets
+]
+
+{ #category : #behavior }
+GDSSolarSystem >> process: delta [
 ]
 
 { #category : #behavior }
@@ -20,12 +22,9 @@ GDSSolarSystem >> ready [
 	| newPlanet |
 	
 	planets := OrderedCollection new.
-	1 to: 5 do: [:i | | r |
+	1 to: 5 do: [:i | 
 		newPlanet := (self getParent) createNewVRObject.
 		planets add: newPlanet.
 		self addChildNode: newPlanet.
-		newPlanet distance: i * 0.3.
-		newPlanet setSpeed: (1 to: 15) atRandom / 15.0.
-		r := ThreadSafeRandom next * 0.2 + 0.05.
-		newPlanet scale: (GDVector3 newX: r y: r z: r).]
+		newPlanet distance: i * 0.3.]
 ]
