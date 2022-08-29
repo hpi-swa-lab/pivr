@@ -8,30 +8,24 @@ Class {
 }
 
 { #category : #behavior }
-GDSSolarSystem >> physicsProcess: delta [
-	
-	^ nil
-]
-
-{ #category : #behavior }
 GDSSolarSystem >> process: delta [
 
-	planets do: [:planet | planet setSpeed: (self getControllerSpeed * 100)].
-	^ nil
+	planets do: [:planet |
+		planet setSpeed: (self getControllerSpeed * 100 * planet mass).
+		planet setSize: (self getControllerTilt).]
 ]
 
 { #category : #behavior }
 GDSSolarSystem >> ready [
-	| newPlanet planetColor |
+	| newPlanet |
 	
 	planets := OrderedCollection new.
-	"self color: Color yellow."
-	1 to: 10 do: [:i |
+	1 to: 5 do: [:i | | r |
 		newPlanet := (self getParent) createNewVRObject.
 		planets add: newPlanet.
 		self addChildNode: newPlanet.
-		newPlanet distance: i.
+		newPlanet distance: i * 0.3.
 		newPlanet setSpeed: (1 to: 15) atRandom / 15.0.
-		planetColor := Color r: 255 atRandom / 255.0 g: 255 atRandom / 255.0 b: 255 atRandom / 255.0.
-		"newPlanet color: (Color r: 0.5 g: 0.1 b: 1.0)."]
+		r := ThreadSafeRandom next * 0.2 + 0.05.
+		newPlanet scale: (GDVector3 newX: r y: r z: r).]
 ]
