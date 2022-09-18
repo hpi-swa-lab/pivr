@@ -9,15 +9,15 @@ var http = HTTPRequest.new()
 func _ready():
 	add_child(http)
 	http.connect("request_completed", self, "_on_update_arrived")
-	update()
+	update(true)
 
 func _process(_delta):
 	if not pending_signal_handlers.empty():
 		update()
 
-func update():
+func update(init = false):
 	http.request(
-		"http://localhost:8000/update",
+		"http://localhost:8000/" + ("init" if init else "update"),
 		["Content-Type: application/json"],
 		false,
 		HTTPClient.METHOD_POST,
