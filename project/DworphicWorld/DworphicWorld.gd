@@ -3,12 +3,27 @@ extends Node
 var pending_signal_handlers = []
 
 const root_path = '/root/DworphicWorld/'
+const USE_TCP = false
+enum MessageType {
+	tick_from_godot = 0
+	tick_completed_from_squeak = 1
+	call_from_squeak = 2
+	response_to_call_from_godot = 3
+}
 
-var http = HTTPRequest.new()
+var http: HTTPRequest
+var tcp: StreamPeerTCP
 
 func _ready():
-	add_child(http)
-	http.connect("request_completed", self, "_on_update_arrived")
+	if USE_TCP:
+		tcp = StreamPeerTCP.new()
+		var error = tcp.connect_to_host('127.0.0.1', 8292)
+		if error != OK:
+			print(error)
+	else:
+		http = HTTPRequest.new()
+		add_child(http)
+		http.connect("request_completed", self, "_on_update_arrived")
 	update(true)
 
 func _process(_delta):
@@ -16,16 +31,31 @@ func _process(_delta):
 		update()
 
 func update(init = false):
-	http.request(
-		"http://localhost:8000/" + ("init" if init else "update"),
-		["Content-Type: application/json"],
-		false,
-		HTTPClient.METHOD_POST,
-		JSON.print(pending_signal_handlers))
-	pending_signal_handlers.clear()
+	if USE_TCP:
+		tcp.put_var([MessageType.tick_from_godot, pending_signal_handlers])
+		pending_signal_handlers.clear()
+		while true:
+			var response = tcp.get_var(true)
+			if response:
+				match response[0]:
+					MessageType.tick_completed_from_squeak:
+						apply_updates(response[1])
+						return
+					MessageType.call_from_squeak:
+						var ret = instance_from_id(response[1].object_id).callv(response[2], response[3])
+						tcp.put_var(MessageType.response_to_call_from_godot, ret)
+	else:
+		http.request(
+			"http://localhost:8000/" + ("init" if init else "update"),
+			["Content-Type: application/json"],
+			false,
+			HTTPClient.METHOD_POST,
+			JSON.print(pending_signal_handlers))
+		pending_signal_handlers.clear()
 
-func _on_update_arrived(_result, _response_code, _headers, body):
-	apply_updates(JSON.parse(body.get_string_from_utf8()).result)
+func _on_update_arrived(_result, response_code, _headers, body):
+	if response_code == 200:
+		apply_updates(JSON.parse(body.get_string_from_utf8()).result)
 
 func apply_updates(json):
 	for update in json:
