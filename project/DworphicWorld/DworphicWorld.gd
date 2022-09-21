@@ -3,62 +3,84 @@ extends Node
 var pending_signal_handlers = []
 
 const root_path = '/root/DworphicWorld/'
-const USE_TCP = false
 enum MessageType {
 	tick_from_godot = 0
 	tick_completed_from_squeak = 1
 	call_from_squeak = 2
 	response_to_call_from_godot = 3
+	initialize_session_from_godot = 4
+	initialized_session_from_squeak = 5
+	quit_from_godot = 6
+	property_set_from_squeak = 7
+	property_get_from_squeak = 8
+	bind_refs_from_godot = 9
 }
 
-var http: HTTPRequest
 var tcp: StreamPeerTCP
 
+var session_id
+
 func _ready():
-	if USE_TCP:
-		tcp = StreamPeerTCP.new()
-		var error = tcp.connect_to_host('127.0.0.1', 8292)
-		if error != OK:
-			print(error)
-	else:
-		http = HTTPRequest.new()
-		add_child(http)
-		http.connect("request_completed", self, "_on_update_arrived")
-	update(true)
+	tcp = StreamPeerTCP.new()
+	var error = tcp.connect_to_host('127.0.0.1', 8292)
+	if error != OK:
+		print("Failed to connect: " + str(error))
+	while tcp.get_status() != 2:
+		if tcp.get_status() == 3:
+			print("Failed to connect")
+			return
+	tcp.set_no_delay(true)
+	tcp.put_var([MessageType.initialize_session_from_godot])
+	var response = tcp.get_var(true)
+	assert(response[0] == MessageType.initialized_session_from_squeak)
+	session_id = response[1]
+	update()
 
 func _process(_delta):
-	if not pending_signal_handlers.empty():
+	if not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
 		update()
 
-func update(init = false):
-	if USE_TCP:
-		tcp.put_var([MessageType.tick_from_godot, pending_signal_handlers])
-		pending_signal_handlers.clear()
-		while true:
-			var response = tcp.get_var(true)
-			if response:
-				match response[0]:
-					MessageType.tick_completed_from_squeak:
-						apply_updates(response[1])
-						return
-					MessageType.call_from_squeak:
-						var ret = instance_from_id(response[1].object_id).callv(response[2], response[3])
-						tcp.put_var(MessageType.response_to_call_from_godot, ret)
-	else:
-		http.request(
-			"http://localhost:8000/" + ("init" if init else "update"),
-			["Content-Type: application/json"],
-			false,
-			HTTPClient.METHOD_POST,
-			JSON.print(pending_signal_handlers))
-		pending_signal_handlers.clear()
+func update():
+	tcp.put_var([MessageType.tick_from_godot, session_id, pending_signal_handlers])
+	pending_signal_handlers.clear()
+	while true:
+		var response = tcp.get_var(true)
+		if response:
+			match response[0]:
+				MessageType.tick_completed_from_squeak:
+					apply_updates(response[1][0])
+					bind_refs(response[1][1])
+					return
+				MessageType.call_from_squeak:
+					var ret = object_for(response[1]).callv(response[2], response[3])
+					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
+				MessageType.property_set_from_squeak:
+					object_for(response[1]).set(response[2], response[3])
+					tcp.put_var([MessageType.response_to_call_from_godot, session_id, null])
+				MessageType.property_get_from_squeak:
+					var ret = object_for(response[1]).get(response[2])
+					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
 
-func _on_update_arrived(_result, response_code, _headers, body):
-	if response_code == 200:
-		apply_updates(JSON.parse(body.get_string_from_utf8()).result)
+func object_for(string_or_obj_id):
+	return Engine.get_singleton(string_or_obj_id) if string_or_obj_id is String else instance_from_id(string_or_obj_id.object_id)
 
-func apply_updates(json):
-	for update in json:
+func _notification(what):
+	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
+		tcp.put_var([MessageType.quit_from_godot, session_id])
+		get_tree().quit()
+
+func bind_refs(refs):
+	if refs.empty():
+		return
+	var response = []
+	for ref in refs:
+		var target = get_node_and_resource(root_path + ref)
+		response.append(target[1] if target[1] else target[0])
+	# TODO: only send if objectIds actually changed
+	tcp.put_var([MessageType.bind_refs_from_godot, session_id, response])
+
+func apply_updates(list):
+	for update in list:
 		match update[0]:
 			'add':
 				var parent_path = update[1]
@@ -67,12 +89,13 @@ func apply_updates(json):
 				var gd_class_name = update[4]
 				var props_dictionary = update[5]
 				
-				var instance = ClassDB.instance(gd_class_name)
+				var instance = DworphicVRRoot.new() if gd_class_name == "DworphicVRRoot" else ClassDB.instance(gd_class_name)
 				for key in props_dictionary.keys():
 					apply_prop(instance, key, props_dictionary[key])
 				
 				if is_resource:
-					get_node_and_resource(root_path + parent_path)[0].set(id_or_prop_name, instance)
+					var target = get_node_and_resource(root_path + parent_path)
+					(target[1] if target[1] else target[0]).set(id_or_prop_name, instance)
 				else:
 					instance.name = id_or_prop_name
 					get_node(root_path + parent_path).add_child(instance)
@@ -80,7 +103,8 @@ func apply_updates(json):
 				var path = update[1]
 				var key = update[2]
 				var value = update[3]
-				apply_prop(get_node_and_resource(root_path + path)[0], key, value)
+				var target = get_node_and_resource(root_path + path)
+				apply_prop(target[1] if target[1] else target[0], key, value)
 			'delete':
 				get_node(root_path + update[1]).queue_free()
 			_:
@@ -114,3 +138,7 @@ func note_signal1(arg1, callback_id):
 	pending_signal_handlers.append([callback_id, arg1])
 func note_signal2(arg1, arg2, callback_id):
 	pending_signal_handlers.append([callback_id, arg1, arg2])
+func note_signal3(arg1, arg2, arg3, callback_id):
+	pending_signal_handlers.append([callback_id, arg1, arg2, arg3])
+func note_signal4(arg1, arg2, arg3, arg4, callback_id):
+	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4])
