@@ -20,9 +20,15 @@ var tcp: StreamPeerTCP
 
 var session_id
 
+func ip():
+	if OS.get_cmdline_args().empty():
+		return '127.0.0.1'
+	else:
+		return OS.get_cmdline_args()[0]
+
 func _ready():
 	tcp = StreamPeerTCP.new()
-	var error = tcp.connect_to_host('127.0.0.1', 8292)
+	var error = tcp.connect_to_host(ip(), 8292)
 	if error != OK:
 		print("Failed to connect: " + str(error))
 	while tcp.get_status() != 2:

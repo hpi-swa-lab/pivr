@@ -36,3 +36,6 @@ GDSocketListener start: SBTSGodotExample2D
 * refs are updated one frame too late (trigger a re-render) and generally a bit awkward still
 * putVariantOn: and readVariant is not implemented for all classes yet. Refer to the [Godot source code](https://github.com/godotengine/godot/blob/3.5/core/io/marshalls.cpp) to add those you need.
 
+## VR
+* Run `GDSocketListener start: SBTSVRTest` for the test scene. When pressing any button, your hand gets longer
+* For the Quest, first change the IP address in `GSRoot/GSRoot.gd` to that of the computer where Squeak is running (no better ideas for this just yet)
