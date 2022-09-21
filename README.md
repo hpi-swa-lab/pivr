@@ -38,4 +38,6 @@ GDSocketListener start: SBTSGodotExample2D
 
 ## VR
 * Run `GDSocketListener start: SBTSVRTest` for the test scene. When pressing any button, your hand gets longer
-* For the Quest, first change the IP address in `GSRoot/GSRoot.gd` to that of the computer where Squeak is running (no better ideas for this just yet)
+* For the Quest, either:
+	- change the IP address in `GSRoot/GSRoot.gd` to that of the computer where Squeak is running (no better ideas for this just yet)
+	- map your laptop's port to the device's port if you are connected via cable: `adb reverse tcp:8292 tcp:8292`
