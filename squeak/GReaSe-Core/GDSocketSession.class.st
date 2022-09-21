@@ -30,6 +30,12 @@ GDSocketSession >> callOn: anObject method: aString arguments: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GDSocketSession >> close [
+
+	stream close
+]
+
+{ #category : #'as yet unclassified' }
 GDSocketSession >> get: aString of: anObject [
 
 	| response |

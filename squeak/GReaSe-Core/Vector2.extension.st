@@ -1,6 +1,12 @@
 Extension { #name : #Vector2 }
 
 { #category : #'*GReaSe-Core' }
+Vector2 >> isVector2 [
+
+	^ true
+]
+
+{ #category : #'*GReaSe-Core' }
 Vector2 >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 5.

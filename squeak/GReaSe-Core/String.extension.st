@@ -3,8 +3,14 @@ Extension { #name : #String }
 { #category : #'*GReaSe-Core' }
 String >> putVariantOn: aStream [
 
+	self putVariantOn: aStream skipType: false
+]
+
+{ #category : #'*GReaSe-Core' }
+String >> putVariantOn: aStream skipType: aBoolean [
+
 	| buffer |
-	aStream nextLittleEndianNumber: 4 put: 4.
+	aBoolean ifFalse: [aStream nextLittleEndianNumber: 4 put: 4].
 	buffer := self utf8Encoded.
 	aStream nextLittleEndianNumber: 4 put: buffer size.
 	aStream nextPutAll: buffer.

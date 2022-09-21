@@ -165,7 +165,7 @@ GDSocketListener >> handleConnection: aSocket [
 	stream := SocketStream on: aSocket.
 	stream timeout: 100000.
 	stream binary.
-	[stream peek ifNotNil: [(self handleMessage: stream) ifFalse: [^ self]]] repeat
+	[stream atEnd ifFalse: [(self handleMessage: stream) ifFalse: [^ self]]] repeat
 ]
 
 { #category : #'as yet unclassified' }
