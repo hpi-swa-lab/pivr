@@ -1,5 +1,5 @@
 extends Spatial
-class_name DworphicVRRoot
+class_name GRVRRoot
 
 func _ready():
 	var interface = ARVRServer.find_interface("OpenXR")
