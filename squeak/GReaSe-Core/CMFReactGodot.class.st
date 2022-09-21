@@ -123,51 +123,13 @@ CMFReactGodot >> replaceOldMorphsInWorld: old by: new isRoot: isRoot [
 	isRoot ifTrue: [renderResult := new]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 CMFReactGodot >> session: aSession [
 
 	session := aSession
 ]
 
-{ #category : #communication }
-CMFReactGodot >> startListener [
-
-	self stopListener.
-	
-	server := WebServer new
-		listenOn: 8000;
-		errorHandler: [:ex :req |
-			req sendResponseCode: 500 content: 'internal error' type: 'text/plain' do: [:res | ].
-			self halt.
-			ex signal];
-		addService: '/init'
-			action: [:req |
-				self initAndRender: rootElement.
-				req send200Response: pendingUpdates asJsonString.
-				pendingUpdates := nil]
-			methods: #('POST');
-		addService: '/update'
-			action: [:req | | update currentPending allUpdates |
-				currentPending := (pendingUpdates ifNil: [#()]) copy.
-				pendingUpdates := OrderedCollection new.
-				
-				update := Json readFrom: req getContent readStream.
-				update do: [:callback | (callbacks at: callback first) valueWithArguments: callback allButFirst].
-				
-				allUpdates := currentPending, pendingUpdates.
-				allUpdates do: [:u | Transcript showln: u].
-				req send200Response: allUpdates asJsonString.
-				pendingUpdates := nil]
-			methods: #('POST')
-]
-
-{ #category : #communication }
-CMFReactGodot >> stopListener [
-
-	server ifNotNil: [server destroy]
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #rendering }
 CMFReactGodot >> tick: aCollectionOfPendingCallbacks [
 
 	| currentPending allUpdates currentPendingRefs allPendingRefs |
@@ -199,7 +161,7 @@ CMFReactGodot >> updateFrameDo: aBlock [
 	^ ret
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 CMFReactGodot >> waitingRefs [
 
 	^ waitingRefs

@@ -1,7 +1,7 @@
 Class {
 	#name : #SBTSGrabbedContext,
 	#superclass : #CMFReactContext,
-	#category : #'GReaSe-Components'
+	#category : #'GReaSe-Components-BlockEditor'
 }
 
 { #category : #'as yet unclassified' }

@@ -1,7 +1,7 @@
 Class {
 	#name : #SBTSGrabber3D,
 	#superclass : #CMFReactComponent,
-	#category : #'GReaSe-Components'
+	#category : #'GReaSe-Components-BlockEditor'
 }
 
 { #category : #'as yet unclassified' }

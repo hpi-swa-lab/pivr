@@ -1,7 +1,7 @@
 Class {
 	#name : #SBTSVRTest,
 	#superclass : #CMFReactComponent,
-	#category : #'GReaSe-Components'
+	#category : #'GReaSe-Components-Examples'
 }
 
 { #category : #'as yet unclassified' }
@@ -11,7 +11,7 @@ SBTSVRTest >> render: props [
 	y := self useState: 0.1.
 	
 	^ (self godot: #Spatial) children: {
-		(self godot: #DworphicVRRoot) children: {
+		(self godot: #GRVRRoot) children: {
 			(self godot: #ARVROrigin) children: {
 				self godot: #ARVRCamera.
 				(self godot: #ARVRController)

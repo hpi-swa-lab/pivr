@@ -60,7 +60,7 @@ CMFReactNodeGodot >> godotId: anObject [
 	godotId := anObject
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #testing }
 CMFReactNodeGodot >> hasGodotId [
 
 	^ godotId notNil
@@ -144,7 +144,7 @@ CMFReactNodeGodot >> propertiesToSet [
 	^ properties select: [:val | val isGodotNode not]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #converting }
 CMFReactNodeGodot >> putVariantOn: aStream [
 
 	self propertiesToSet putVariantOn: aStream

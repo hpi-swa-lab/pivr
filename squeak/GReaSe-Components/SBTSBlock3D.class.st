@@ -1,7 +1,7 @@
 Class {
 	#name : #SBTSBlock3D,
 	#superclass : #CMFReactComponent,
-	#category : #'GReaSe-Components'
+	#category : #'GReaSe-Components-BlockEditor'
 }
 
 { #category : #'as yet unclassified' }
@@ -25,13 +25,13 @@ SBTSBlock3D >> blockThickness [
 { #category : #'as yet unclassified' }
 SBTSBlock3D >> render: props [
 
-	| block bounds xy hovered id |
+	| block bounds xy hovered areaRef |
 	block := props at: #block.
 	bounds := block at: #bounds.
-	id := block at: #id.
 	xy := bounds first * self blockScale @ (bounds second * self blockScale).
+	areaRef := self useRef: nil.
 	
-	hovered := (self useContext: SBTSHoveredContext) get = id.
+	hovered := (self useContext: SBTSHoveredContext) get = areaRef get.
 	
 	^ (self godot: #Spatial)
 		name: 'TSBlock';
@@ -57,7 +57,7 @@ SBTSBlock3D >> render: props [
 							[#insert] -> [nil]}
 						otherwise: [nil]]).
 			(self godot: #Area)
-				groups: #('grabbable');
+				ref: areaRef;
 				collision_layer: 3;
 				scale: xy @ self areaThickness;
 				children: {self godot: #CollisionShape}}

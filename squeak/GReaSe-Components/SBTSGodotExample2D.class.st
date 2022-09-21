@@ -1,7 +1,7 @@
 Class {
 	#name : #SBTSGodotExample2D,
 	#superclass : #CMFReactComponent,
-	#category : #'GReaSe-Components'
+	#category : #'GReaSe-Components-Examples'
 }
 
 { #category : #'as yet unclassified' }
