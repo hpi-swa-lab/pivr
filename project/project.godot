@@ -255,7 +255,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Vr-and-squeak-test"
-run/main_scene="res://DworphicWorld/DworphicWorld.tscn"
+run/main_scene="res://GRRoot/GRRoot.tscn"
 run/flush_stdout_on_print=true
 config/icon="res://icon.png"
 
