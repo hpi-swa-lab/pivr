@@ -109,10 +109,11 @@ SBTSAirwrite >> render: props [
 
 	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points |
 	lastControllerTranslation := self useState: Vector3 zero.
-	controllerTranslation := (self useContext: SBTSRightControllerTransform) translation.
 	points := self useState: {}.
-	buttonPressed := self useContext: SBTSRightJoystickPressed.
-	headPosition := (self useContext: SBTSHeadTransform) translation.
+	controllerTranslation := (self useProvided: #rightControllerTransform) translation.
+	buttonPressed := self useProvided: #rightJoystickPressed.
+	headPosition := (self useProvided: #headTransform) translation.
+	
 	curveRef := self useRef: nil.
 	
 	self

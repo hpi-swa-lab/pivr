@@ -1,0 +1,60 @@
+Class {
+	#name : #GRProvider,
+	#superclass : #CMFReactNodeComponent,
+	#instVars : [
+		'children',
+		'values'
+	],
+	#category : #'GReaSe-Core'
+}
+
+{ #category : #'as yet unclassified' }
+GRProvider class >> values: aDictionary children: aCollection [
+
+	^ self new values: aDictionary children: aCollection
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> executeUserCode: react renderInfo: renderInfo [
+
+	^ nil
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> get: aSymbol [
+
+	^ values at: aSymbol
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> hasKey [
+
+	^ false
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> hasSymbol: aSymbol [
+
+	^ values includesKey: aSymbol
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> key [
+
+	^ self shouldNotImplement
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> render: react renderInfo: renderInfo userCodeResult: userCodeResult [
+
+	^ react renderNodes: children
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> values: aDictionary children: aCollection [
+
+	values := aDictionary isDictionary
+		ifTrue: [aDictionary]
+		ifFalse: [aDictionary as: Dictionary].
+	children := aCollection
+]
