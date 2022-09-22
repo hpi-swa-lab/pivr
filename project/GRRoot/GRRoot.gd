@@ -69,7 +69,6 @@ func _process(_delta):
 	for subscription in subscriptions:
 		var update = subscription.update()
 		if update:
-			print(update)
 			pending_signal_handlers.append(update)
 	
 	if not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
