@@ -67,3 +67,11 @@ GRVariantTest >> testString [
 		assert: 'abc'
 		equals: (GDSocketListener readVariantFrom: (ByteArray streamContents: [:stream | GDSocketListener putVariant: 'abc' on: stream]) readStream)
 ]
+
+{ #category : #'as yet unclassified' }
+GRVariantTest >> testTransform [
+
+	| matrix |
+	matrix := GDSocketListener readVariantFrom: #[13 0 0 0 0 0 0 192 0 0 128 63 0 0 128 64 0 0 128 191 0 0 0 64 0 0 160 64 0 0 0 0 0 0 64 64 0 0 192 64 0 0 224 64 0 0 0 65 0 0 16 65] readStream.
+	self assert: matrix translation equals: (Vector3 x: 7 y: 8 z: 9)
+]

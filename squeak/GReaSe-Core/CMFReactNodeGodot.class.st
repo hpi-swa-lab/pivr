@@ -196,6 +196,12 @@ CMFReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObje
 ]
 
 { #category : #accessing }
+CMFReactNodeGodot >> subscribeTo: aPropertyNameString do: aCallbackClosure [
+
+	properties at: 'subscribe_', aPropertyNameString put: aCallbackClosure
+]
+
+{ #category : #accessing }
 CMFReactNodeGodot >> type [
 
 	^ {#godot. godotClass}

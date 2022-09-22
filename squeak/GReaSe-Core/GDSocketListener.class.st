@@ -113,6 +113,24 @@ GDSocketListener class >> readVariantFrom: aStream [
 			string := (aStream next: length) utf8Decoded.
 			aStream next: pad.
 			string].
+		[13] -> [
+			self flag: #todo.
+			"is the rotation in the right order? translation is correct"
+			Matrix4x4 new
+				a11: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a12: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a13: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a21: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a22: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a23: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a31: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a32: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a33: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a14: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a24: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a34: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
+				a44: 1;
+				yourself].
 		[17] -> [ | objectId |
 			self assert: (type bitAnd: (1 bitShift: 16)) ~= 0.
 			objectId := aStream nextLittleEndianNumber: 8.

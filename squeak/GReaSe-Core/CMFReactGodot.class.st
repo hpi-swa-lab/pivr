@@ -105,6 +105,8 @@ CMFReactGodot >> moveChild: aNode to: anotherNumber in: aParentNode [
 CMFReactGodot >> registerCallback: aClosure [
 
 	| id |
+	callbacks keysAndValuesDo: [:closureId :closure | closure == aClosure ifTrue: [^ closureId]].
+	
 	id := self class nextGodotId.
 	callbacks at: id put: aClosure.
 	^ id
