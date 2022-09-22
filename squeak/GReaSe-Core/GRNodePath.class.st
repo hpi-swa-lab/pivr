@@ -14,6 +14,24 @@ GRNodePath class >> path: aString [
 ]
 
 { #category : #'as yet unclassified' }
+GRNodePath >> = aPath [
+
+	^ self path = aPath path
+]
+
+{ #category : #'as yet unclassified' }
+GRNodePath >> hash [
+
+	^ path hash
+]
+
+{ #category : #'as yet unclassified' }
+GRNodePath >> path [
+
+	^ path
+]
+
+{ #category : #'as yet unclassified' }
 GRNodePath >> path: aString [
 
 	path := aString

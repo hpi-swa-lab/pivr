@@ -26,8 +26,7 @@ SBTSGodotExample2D >> render: props [
 						GDCurrentSession value set: 'hdr' of: viewport to: false.
 						GDCurrentSession value set: 'arvr' of: viewport to: true.
 						GDCurrentSession value set: 'vsync_enabled' of: 'OS' to: true.
-						GDCurrentSession value set: 'iterations_per_second' of: 'Engine' to: 90]}.
-				Transcript showln: {viewport}].
+						GDCurrentSession value set: 'iterations_per_second' of: 'Engine' to: 90]}].
 			nil]
 		dependencies: {rootRef get}.
 	

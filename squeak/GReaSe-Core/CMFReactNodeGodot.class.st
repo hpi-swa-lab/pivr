@@ -13,6 +13,24 @@ Class {
 	#category : #'GReaSe-Core'
 }
 
+{ #category : #rendering }
+CMFReactNodeGodot >> adoptPropsFrom: aNode [
+
+	self assert: godotClass = aNode godotClass.
+	properties := aNode properties.
+	children := aNode children.
+	key := aNode key.
+	godotId := aNode godotId.
+	isResource := aNode isResource.
+	ref := aNode ref
+]
+
+{ #category : #accessing }
+CMFReactNodeGodot >> children [
+
+	^ children
+]
+
 { #category : #accessing }
 CMFReactNodeGodot >> children: aCollection [
 
@@ -22,10 +40,10 @@ CMFReactNodeGodot >> children: aCollection [
 { #category : #accessing }
 CMFReactNodeGodot >> doesNotUnderstand: aMessage [
 
-	| key precedence |
+	| key |
 	key := aMessage selector.
-	(precedence := key precedence) = 1 ifTrue: [^ properties at: key ifAbsent: nil].
-	(precedence = 3 and: [(key indexOf: $:) = key size]) ifTrue: [ | value prop |
+	"(precedence := key precedence) = 1 ifTrue: [^ properties at: key ifAbsent: nil]."
+	(key precedence = 3 and: [(key indexOf: $:) = key size]) ifTrue: [ | value prop |
 		prop := key allButLast asSymbol.
 		value := aMessage arguments first.
 		value isGodotNode ifTrue: [
@@ -78,12 +96,6 @@ CMFReactNodeGodot >> initialize [
 	super initialize.
 	isResource := false.
 	properties := Dictionary new
-]
-
-{ #category : #testing }
-CMFReactNodeGodot >> isCMFReactNode [
-
-	^ true
 ]
 
 { #category : #testing }
@@ -164,22 +176,27 @@ CMFReactNodeGodot >> ref: aRef [
 ]
 
 { #category : #rendering }
-CMFReactNodeGodot >> render: react properties: aDictionary [
+CMFReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInfo [
 
 	aDictionary keysAndValuesDo: [:key :value |
-		value isGodotNode ifTrue: [aDictionary at: key put: (react renderNode: value forceReRender: false)].
-		value isBlock ifTrue: [
-			aDictionary at: key put: (react registerCallback: value)]].
+		value isGodotNode ifTrue: [ | newNode |
+			newNode := react renderNode: value forceReRender: false.
+			(renderInfo oldNode notNil and: [newNode godotId = ((renderInfo oldNode properties at: key ifAbsent: nil) ifNotNil: [:o | o godotId])]) ifFalse: [react addUpdate: {#update. renderInfo treeEntry godotPath. key. newNode}].
+			aDictionary at: key put: newNode].
+		value isBlock ifTrue: [aDictionary at: key put: (react registerCallback: value)]].
 	^ aDictionary
 ]
 
 { #category : #rendering }
 CMFReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObject [
 
+	| node |
+	node := self.
 	renderInfo reusingOldNodes
 		ifTrue: [ | oldProps |
+			node := renderInfo oldNode.
 			godotId := renderInfo oldNode godotId.
-			self render: react properties: self properties.
+			self render: react properties: self properties renderInfo: renderInfo.
 			
 			oldProps := renderInfo oldNode properties.
 			"prop that was in oldProps but is not in newProps"
@@ -187,13 +204,19 @@ CMFReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObje
 			self properties
 				ifNil: [oldProps ifNotNil: [oldProps keysDo: [:key | Transcript showln: {#updateRemove. key}]]]
 				ifNotNil: [
-					self properties keysAndValuesDo: [:key :newValue |
+					self propertiesToSet keysAndValuesDo: [:key :newValue |
 						(oldProps notNil and: [(oldProps at: key ifAbsent: nil) = newValue]) ifFalse: [
 							self assert: renderInfo treeEntry node hasGodotId.
-							react addUpdate: {#update. renderInfo treeEntry godotPath. key. newValue}]]]]
-		ifFalse: [self render: react properties: self properties].
+							react addUpdate: {#update. renderInfo treeEntry godotPath. key. newValue}]]].
+			node adoptPropsFrom: self]
+		ifFalse: [self render: react properties: self properties renderInfo: renderInfo].
 	children ifNotNil: [react renderNodes: children].
-	ref ifNotNil: [react addRef: ref for: renderInfo treeEntry godotPath]
+	ref ifNotNil: [
+		ref isBlock
+			ifTrue: [ref value: react elementTree currentParentEntry]
+			ifFalse: [react addRef: ref for: renderInfo treeEntry godotPath]].
+	
+	^ node
 ]
 
 { #category : #accessing }

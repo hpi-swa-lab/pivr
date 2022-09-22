@@ -7,8 +7,8 @@ CMFReactNodeTreeEntry >> godotPath [
 	current := self.
 	path := ''.
 	[current] whileNotNil: [
-		current node isGodotNode ifTrue: [
-			path := (current node isResource ifTrue: [':'] ifFalse: ['/']), current node godotId, path].
+		(current node class = CMFReactNodePortal and: [current node container notNil]) ifTrue: [current := current node container].
+		current node isGodotNode ifTrue: [path := (current node isResource ifTrue: [':'] ifFalse: ['/']), current node godotId, path].
 		current := current parent].
 	^ path
 ]

@@ -27,7 +27,7 @@ CMFReactGodot class >> example [
 { #category : #'as yet unclassified' }
 CMFReactGodot class >> isValidRenderResult: anObject [
 
-	^ anObject isGodotNode or: [anObject isSequenceable and: [anObject allSatisfy: [:o | o class == CMFReactNodeGodot]]]
+	^ anObject isGodotNode or: [anObject isSequenceable and: [anObject allSatisfy: [:o | o isGodotNode]]]
 ]
 
 { #category : #'as yet unclassified' }

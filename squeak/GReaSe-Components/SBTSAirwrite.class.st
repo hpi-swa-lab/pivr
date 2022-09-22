@@ -107,12 +107,13 @@ SBTSAirwrite >> directionOfStrokeFrom: a to: b headPosition: head [
 { #category : #'as yet unclassified' }
 SBTSAirwrite >> render: props [
 
-	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points |
+	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points leftControllerPortal |
 	lastControllerTranslation := self useState: Vector3 zero.
 	points := self useState: {}.
 	controllerTranslation := (self useProvided: #rightControllerTransform) translation.
 	buttonPressed := self useProvided: #rightJoystickPressed.
 	headPosition := (self useProvided: #headTransform) translation.
+	leftControllerPortal := self useProvided: #leftControllerPortal.
 	
 	curveRef := self useRef: nil.
 	
@@ -135,6 +136,11 @@ SBTSAirwrite >> render: props [
 		dependencies: {controllerTranslation. buttonPressed}.
 	
 	^ (self godot: #Spatial) children: {
+		CMFReactNodePortal
+			child: ((self godot: #MeshInstance) mesh: ((self godot: #CubeMesh)
+				size: (Vector3 x: 0.05 y: 0.05 z: 0.05);
+				material: ((self godot: #SpatialMaterial) albedo_color: (Color r: 1 g: 0.0 b: 0.0))))
+			in: leftControllerPortal.
 		(self godot: #Path)
 			curve: ((self godot: #Curve3D)
 				ref: curveRef;
