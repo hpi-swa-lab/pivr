@@ -190,7 +190,7 @@ GDSocketListener >> handleConnection: aSocket [
 GDSocketListener >> handleMessage: stream [
 
 	| message |
-	message := self class readMessageFrom: stream.
+	message := [self class readMessageFrom: stream] on: ConnectionClosed do: [^ false].
 	message first caseOf: {
 		[self class messageTypeTickFromGodot] -> [ | updates |
 			updates := (sessions at: message second) tick: message third.

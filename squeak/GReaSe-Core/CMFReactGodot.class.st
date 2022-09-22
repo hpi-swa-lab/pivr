@@ -73,7 +73,7 @@ CMFReactGodot >> afterFirstFrame [
 	"consider moving this to -core (it's currently in intoWorld:)"
 
 	self flag: #todo.
-	hooks values concatenation do: #onComponentWasRendered
+	GDCurrentSession value: session during: [hooks values concatenation do: #onComponentWasRendered]
 ]
 
 { #category : #reconciliation }
@@ -116,7 +116,7 @@ CMFReactGodot >> registerCallback: aClosure [
 CMFReactGodot >> replaceChildAt: aNumber with: aNode in: aParentNode [
 
 	self addUpdate: {#replace. aParentNode childrenTreeNodes at: aNumber. aNode}.
-	super replaceChildAt: aNumber with: aNode in: aParentNode
+	^ super replaceChildAt: aNumber with: aNode in: aParentNode
 ]
 
 { #category : #rendering }

@@ -119,7 +119,8 @@ CMFReactNodeGodot >> key [
 { #category : #accessing }
 CMFReactNodeGodot >> key: anObject [
 
-	key := anObject
+	key := anObject.
+	godotId := key
 ]
 
 { #category : #printing }
