@@ -1,8 +1,7 @@
 extends Node
 
-var pending_signal_handlers = []
-
 const root_path = '/root/DworphicWorld/'
+
 enum MessageType {
 	tick_from_godot = 0
 	tick_completed_from_squeak = 1
@@ -16,9 +15,24 @@ enum MessageType {
 	bind_refs_from_godot = 9
 }
 
-var tcp: StreamPeerTCP
+class Subscription:
+	var instance: Object
+	var key: String
+	var callback_id: int
+	var last_value
+	
+	func update():
+		var current_value = instance.get(key)
+		if last_value != current_value:
+			last_value = current_value
+			return [callback_id, current_value]
+		else:
+			return null
 
-var session_id
+var tcp: StreamPeerTCP
+var pending_signal_handlers = []
+var subscriptions = []
+var session_id: int
 
 func ip():
 	if OS.get_cmdline_args().empty():
@@ -26,7 +40,16 @@ func ip():
 	else:
 		return OS.get_cmdline_args()[0]
 
+func debug_print_bytes(obj):
+	var squeak_bytes = '#['
+	for b in var2bytes(obj):
+		squeak_bytes += str(b) + ' '
+	squeak_bytes += ']'
+	print(squeak_bytes)
+
 func _ready():
+	# return debug_print_bytes([])
+	
 	tcp = StreamPeerTCP.new()
 	var error = tcp.connect_to_host(ip(), 8292)
 	if error != OK:
@@ -43,6 +66,12 @@ func _ready():
 	update()
 
 func _process(_delta):
+	for subscription in subscriptions:
+		var update = subscription.update()
+		if update:
+			print(update)
+			pending_signal_handlers.append(update)
+	
 	if not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
 		update()
 
@@ -121,6 +150,18 @@ func apply_prop(instance, key, value):
 	if key == 'groups':
 		for group in value:
 			instance.add_to_group(group)
+		return
+	
+	if key.begins_with('subscribe_'):
+		key = key.substr(10)
+		if not key in instance:
+			print("No property named " + key + " on " + str(instance))
+			return
+		var s = Subscription.new()
+		s.instance = instance
+		s.key = key
+		s.callback_id = value
+		subscriptions.append(s)
 		return
 	
 	if instance.has_signal(key):
