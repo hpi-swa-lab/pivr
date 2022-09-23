@@ -7,55 +7,16 @@ Class {
 { #category : #'as yet unclassified' }
 WorldDworph >> render: props [
 
-	| rightControllerTransform leftTransformSubscription leftControllerTransform rightTransformSubscription rightJoystickPressed headTransform headTransformSubscription leftControllerPortal buttonPressed buttonRelease rightControllerPortal triggerStrengthSubscription |
-	self useVR.
-	rightJoystickPressed := self useState: false.
+	| headTransform headTransformSubscription |
 	
-	leftControllerTransform := self useState: Matrix4x4 identity.
-	rightControllerTransform := self useState: Matrix4x4 identity.
+	self useVR.
 	headTransform := self useState: Matrix4x4 identity.
 	
-	buttonPressed := self useCallback: [:which | rightJoystickPressed set: true] dependencies: {}.
-	buttonRelease := self useCallback: [:which | rightJoystickPressed set: false] dependencies: {}.
-	leftTransformSubscription := self
-		useCallback: [:transform | leftControllerTransform set: transform]
-		dependencies: {}.
-	rightTransformSubscription := self
-		useCallback: [:transform | rightControllerTransform set: transform]
-		dependencies: {}.
-	headTransformSubscription := self
-		useCallback: [:transform | headTransform set: transform]
-		dependencies: {}.
-	triggerStrengthSubscription := self
-		useCallback: [:strength | Transcript showln: strength]
-		dependencies: {}.
-	leftControllerPortal := self useRef: nil.
-	rightControllerPortal := self useRef: nil.
-	
-	^ GRProvider
-		values: {
-			#leftControllerTransform -> leftControllerTransform get.
-			#rightControllerTransform -> rightControllerTransform get.
-			#rightJoystickPressed -> rightJoystickPressed get.
-			#headTransform -> headTransform get.
-			#leftControllerPortal -> leftControllerPortal get.
-			#rightControllerPortal -> rightControllerPortal get}
-		children: {
-			(self godot: #ARVROrigin) children: {
-				(self godot: #ARVRCamera) subscribeTo: #transform do: headTransformSubscription.
-				(self godot: #ARVRController)
-					controller_id: 1;
-					children: (props at: #leftControllerChildren ifAbsent: [#()]), {(self godot: #Spatial) ref: [:node | leftControllerPortal set: node]};
-					subscribeTo: #transform do: leftTransformSubscription;
-					subscribeCall: #'get_joystick_axis'
-						with: {2}
-						do: triggerStrengthSubscription.
-				(self godot: #ARVRController)
-					controller_id: 2;
-					children: (props at: #rightControllerChildren ifAbsent: [#()]), {(self godot: #Spatial) ref: [:node | rightControllerPortal set: node]};
-					subscribeTo: #transform do: rightTransformSubscription;
-					button_pressed: buttonPressed;
-					button_release: buttonRelease}, (props at: #children ifAbsent: [#()])}
+	^ GRProvider values: {#headTransform -> headTransform get} children: {
+		(self godot: #ARVROrigin) children: {
+			(self godot: #ARVRCamera) subscribeTo: #transform do: headTransformSubscription.
+			ControllerDworph new left: true.
+			ControllerDworph new left: false}, (props at: #children ifAbsent: [#()])}
 ]
 
 { #category : #'as yet unclassified' }
