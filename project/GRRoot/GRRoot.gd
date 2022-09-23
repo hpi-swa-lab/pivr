@@ -94,6 +94,8 @@ func update():
 				MessageType.property_get_from_squeak:
 					var ret = object_for(response[1]).get(response[2])
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
+				_:
+					assert(false, "unhandled message type: " + str(response[0]))
 
 func object_for(string_or_obj_id):
 	return Engine.get_singleton(string_or_obj_id) if string_or_obj_id is String else instance_from_id(string_or_obj_id.object_id)
@@ -151,7 +153,6 @@ func apply_updates(list):
 				print("Unknown update: " + update[0])
 
 func create_node(update):
-	var is_resource = update[2]
 	var gd_class_name = update[4]
 	var props_dictionary = update[5]
 	
