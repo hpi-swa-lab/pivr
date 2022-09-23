@@ -10,25 +10,6 @@ GRExample2D >> render: props [
 	| count rootRef |
 	count := self useState: 0.
 	rootRef := self useRef: nil.
-	self
-		useEffect: [
-			rootRef get ifNotNil: [ | viewport |
-				GRReactCurrentSession value
-					callOn: 'ARVRServer'
-					method: 'find_interface'
-					arguments: {'OpenXR'}.
-				viewport := GRReactCurrentSession value
-					callOn: rootRef get
-					method: 'get_viewport'
-					arguments: {}.
-				SBToggledCode comment: '' active: 0 do: {
-					[
-						GRReactCurrentSession value set: 'hdr' of: viewport to: false.
-						GRReactCurrentSession value set: 'arvr' of: viewport to: true.
-						GRReactCurrentSession value set: 'vsync_enabled' of: 'OS' to: true.
-						GRReactCurrentSession value set: 'iterations_per_second' of: 'Engine' to: 90]}].
-			nil]
-		dependencies: {rootRef get}.
 	
 	^ (self godot: #VBoxContainer)
 		ref: rootRef;

@@ -190,15 +190,17 @@ GDSocketListener >> handleConnection: aSocket [
 GDSocketListener >> handleMessage: stream [
 
 	| message |
-	message := [self class readMessageFrom: stream] on: ConnectionClosed do: [^ false].
+	message := [self class readMessageFrom: stream]
+		on: ConnectionClosed
+		do: [^ false].
 	message first caseOf: {
 		[self class messageTypeTickFromGodot] -> [ | updates |
 			updates := (sessions at: message second) tick: message third.
 			self class putVariant: {self class messageTypeTickCompletedFromSqueak. updates} on: stream].
 		[self class messageTypeInitializeSessionFromGodot] -> [ | session |
 			session := GDSocketSession new
-				reactComponent: self componentClass;
-				socketStream: stream.
+				socketStream: stream;
+				reactComponent: self componentClass.
 			sessions at: session sessionId put: session.
 			self class
 				putVariant: {self class messageTypeInitializedSessionFromSqueak. session sessionId. GDObjectId new objectId: 0}

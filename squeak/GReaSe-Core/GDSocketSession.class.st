@@ -52,8 +52,9 @@ GDSocketSession >> get: aString of: anObject [
 { #category : #'as yet unclassified' }
 GDSocketSession >> reactComponent: aComponentClass [
 
-	react := GRReact new session: self.
-	react initAndRender: aComponentClass asReactNodeBuilder build
+	react := GRReact new
+		session: self;
+		init: aComponentClass new
 ]
 
 { #category : #'as yet unclassified' }

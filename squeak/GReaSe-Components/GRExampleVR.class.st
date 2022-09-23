@@ -28,3 +28,30 @@ GRExampleVR >> render: props [
 					translation: p;
 					mesh: ((self godot: #CubeMesh) size: (Vector3 x: 1 y: 1 z: 1))])}
 ]
+
+{ #category : #'as yet unclassified' }
+GRExampleVR >> useVR [
+
+	self
+		useEffect: [ | openxr |
+			openxr := GRReactCurrentSession value
+				callOn: 'ARVRServer'
+				method: 'find_interface'
+				arguments: {'OpenXR'}.
+			openxr ifNotNil: [ | sceneTree viewport |
+				GRReactCurrentSession value
+					callOn: openxr
+					method: 'initialize'
+					arguments: {}.
+				sceneTree := GRReactCurrentSession value
+					callOn: 'Engine'
+					method: 'get_main_loop'
+					arguments: {}.
+				viewport := GRReactCurrentSession value get: 'root' of: sceneTree.
+				GRReactCurrentSession value set: 'hdr' of: viewport to: false.
+				GRReactCurrentSession value set: 'vsync_enabled' of: 'OS' to: true.
+				GRReactCurrentSession value set: 'iterations_per_second' of: 'Engine' to: 90.
+				GRReactCurrentSession value set: 'arvr' of: viewport to: true].
+			nil]
+		dependencies: {}
+]
