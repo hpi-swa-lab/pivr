@@ -3,7 +3,7 @@ Class {
 	#superclass : #CMFReactHook,
 	#instVars : [
 		'symbol',
-		'nodeId',
+		'node',
 		'lastValue'
 	],
 	#category : #'GReaSe-Core'
@@ -18,9 +18,8 @@ GRHookUseProvided >> canTriggerRerender [
 { #category : #'as yet unclassified' }
 GRHookUseProvided >> getValueBasedOnNodeTree: aCMFReactNodeTree setLastValue: aBoolean [
 
-	| treeEntry newValue |
-	treeEntry := aCMFReactNodeTree rootEntry findTreeNodeById: nodeId.
-	newValue := (treeEntry orParentSatisfying: [:entry | entry node class == GRProvider and: [entry node hasSymbol: symbol]])
+	| newValue |
+	newValue := (node orParentSatisfying: [:entry | entry node class == GRProvider and: [entry node hasSymbol: symbol]])
 		ifNotNil: [:entry | entry get: symbol]
 		ifNil: [self error: ('no value for {1} provided in tree' format: {symbol})].
 	aBoolean ifTrue: [lastValue := newValue].
@@ -34,8 +33,8 @@ GRHookUseProvided >> isValueOutdatedBasedOnNodeTree: aCMFReactNodeTree [
 ]
 
 { #category : #'as yet unclassified' }
-GRHookUseProvided >> symbol: aSymbol nodeId: aNodeId [
+GRHookUseProvided >> symbol: aSymbol node: aNode [
 
 	symbol := aSymbol.
-	nodeId := aNodeId
+	node := aNode
 ]

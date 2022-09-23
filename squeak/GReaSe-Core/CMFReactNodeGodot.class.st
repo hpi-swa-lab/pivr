@@ -37,6 +37,12 @@ CMFReactNodeGodot >> children: aCollection [
 	children := aCollection
 ]
 
+{ #category : #'as yet unclassified' }
+CMFReactNodeGodot >> createInfo [
+
+	^ {self isResource. self godotId. self godotClass. self}
+]
+
 { #category : #accessing }
 CMFReactNodeGodot >> doesNotUnderstand: aMessage [
 
@@ -207,8 +213,7 @@ CMFReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObje
 					self propertiesToSet keysAndValuesDo: [:key :newValue |
 						(oldProps notNil and: [(oldProps at: key ifAbsent: nil) = newValue]) ifFalse: [
 							self assert: renderInfo treeEntry node hasGodotId.
-							react addUpdate: {#update. renderInfo treeEntry godotPath. key. newValue}]]].
-			node adoptPropsFrom: self]
+							react addUpdate: {#update. renderInfo treeEntry godotPath. key. newValue}]]]]
 		ifFalse: [self render: react properties: self properties renderInfo: renderInfo].
 	children ifNotNil: [react renderNodes: children].
 	ref ifNotNil: [

@@ -53,8 +53,7 @@ GDSocketSession >> get: aString of: anObject [
 GDSocketSession >> reactComponent: aComponentClass [
 
 	react := CMFReactGodot new session: self.
-	react initAndRender: aComponentClass asReactNodeBuilder build.
-	react afterFirstFrame
+	react initAndRender: aComponentClass asReactNodeBuilder build
 ]
 
 { #category : #'as yet unclassified' }
