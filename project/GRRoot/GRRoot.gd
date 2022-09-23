@@ -120,14 +120,7 @@ func apply_updates(list):
 				var parent_path = update[1]
 				var is_resource = update[2]
 				var id_or_prop_name = update[3]
-				var gd_class_name = update[4]
-				var props_dictionary = update[5]
-				
-				# FIXME seems like ClassDB find custom classes? if so, we will need to maintain our own list somewhere
-				var instance = GRVRRoot.new() if gd_class_name == "GRVRRoot" else ClassDB.instance(gd_class_name)
-				for key in props_dictionary.keys():
-					apply_prop(instance, key, props_dictionary[key])
-				
+				var instance = create_node(update)
 				if is_resource:
 					var target = get_node_and_resource(root_path + parent_path)
 					(target[1] if target[1] else target[0]).set(id_or_prop_name, instance)
@@ -142,8 +135,32 @@ func apply_updates(list):
 				apply_prop(target[1] if target[1] else target[0], key, value)
 			'delete':
 				get_node(root_path + update[1]).queue_free()
+			'replace':
+				var old_path = update[1]
+				var is_resource = update[2]
+				var id_or_prop_name = update[3]
+				var instance = create_node(update)
+				if is_resource:
+					var target = get_node_and_resource(root_path + old_path)
+					# FIXME probably wrong, always get_parent()?
+					(target[1] if target[1] else target[0]).get_parent().set(id_or_prop_name, instance)
+				else:
+					instance.name = id_or_prop_name
+					get_node(root_path + old_path).replace_by(instance)
 			_:
 				print("Unknown update: " + update[0])
+
+func create_node(update):
+	var is_resource = update[2]
+	var gd_class_name = update[4]
+	var props_dictionary = update[5]
+	
+	# FIXME seems like ClassDB find custom classes? if so, we will need to maintain our own list somewhere
+	var instance = GRVRRoot.new() if gd_class_name == "GRVRRoot" else ClassDB.instance(gd_class_name)
+	for key in props_dictionary.keys():
+		apply_prop(instance, key, props_dictionary[key])
+	
+	return instance
 
 func apply_prop(instance, key, value):
 	if key == 'groups':
