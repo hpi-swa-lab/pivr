@@ -21,7 +21,7 @@ Metacello new
 * Clone this repo and add it via the GitBrowser, checkout the most recent commit
 * In Squeak, run in a workspace:
 ```smalltalk
-GDSocketListener start: SBTSGodotExample2D
+GRExample2D inGodot
 ```
 * Open the Godot project in the `project/` subfolder and run the game
 
@@ -37,7 +37,7 @@ GDSocketListener start: SBTSGodotExample2D
 * putVariantOn: and readVariant is not implemented for all classes yet. Refer to the [Godot source code](https://github.com/godotengine/godot/blob/3.5/core/io/marshalls.cpp) to add those you need.
 
 ## VR
-* Run `GDSocketListener start: SBTSVRTest` for the test scene. When pressing any button, your hand gets longer
+* Run `GRExampleVR inGodot` for the test scene
 * For the Quest, either:
 	- change the IP address in `GSRoot/GSRoot.gd` to that of the computer where Squeak is running (no better ideas for this just yet)
 	- map your laptop's port to the device's port if you are connected via cable: `adb reverse tcp:8292 tcp:8292`
