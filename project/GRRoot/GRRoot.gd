@@ -156,8 +156,7 @@ func create_node(update):
 	var gd_class_name = update[4]
 	var props_dictionary = update[5]
 	
-	# FIXME seems like ClassDB find custom classes? if so, we will need to maintain our own list somewhere
-	var instance = GRVRRoot.new() if gd_class_name == "GRVRRoot" else ClassDB.instance(gd_class_name)
+	var instance = ClassDB.instance(gd_class_name)
 	for key in props_dictionary.keys():
 		apply_prop(instance, key, props_dictionary[key])
 	
