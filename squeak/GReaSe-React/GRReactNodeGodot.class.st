@@ -215,8 +215,12 @@ GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObjec
 { #category : #accessing }
 GRReactNodeGodot >> subscribeCall: aMethodString with: aCollection do: aCallbackClosure [
 
+	| id |
+	"append an index to the id. unlike properties, subscribing multiple times make sense if it's different arguments each time"
+	id := 'call_', aMethodString.
+	id := id, '_', (properties keys count: [:key | key beginsWith: id]).
 	properties
-		at: 'call_', aMethodString
+		at: id
 		put: (GRBlockWithArguments new block: aCallbackClosure arguments: aCollection)
 ]
 

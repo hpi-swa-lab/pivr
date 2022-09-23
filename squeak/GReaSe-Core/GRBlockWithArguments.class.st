@@ -34,12 +34,6 @@ GRBlockWithArguments >> block: aBlock arguments: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
-GRBlockWithArguments >> isBlock [
-
-	^ true
-]
-
-{ #category : #'as yet unclassified' }
 GRBlockWithArguments >> valueWithArguments: aSequenceOfArguments [
 
 	^ block valueWithArguments: aSequenceOfArguments
