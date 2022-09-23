@@ -19,10 +19,11 @@ class Subscription:
 	var instance: Object
 	var key: String
 	var callback_id: int
+	var call_arguments = null
 	var last_value
 	
 	func update():
-		var current_value = instance.get(key)
+		var current_value = instance.callv(key, call_arguments) if call_arguments else instance.get(key)
 		if last_value != current_value:
 			last_value = current_value
 			return [callback_id, current_value]
@@ -166,6 +167,18 @@ func apply_prop(instance, key, value):
 	if key == 'groups':
 		for group in value:
 			instance.add_to_group(group)
+		return
+	
+	if key.begins_with('call_'):
+		key = key.substr(5, key.find_last('_') - 5)
+		if not instance.has_method(key):
+			print("No method named " + key + " on " + str(instance))
+		var s = Subscription.new()
+		s.instance = instance
+		s.key = key
+		s.callback_id = value[0]
+		s.call_arguments = value[1]
+		subscriptions.append(s)
 		return
 	
 	if key.begins_with('subscribe_'):
