@@ -176,7 +176,8 @@ GRReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInfo
 			newNode := react renderNode: value forceReRender: false.
 			(renderInfo oldNode notNil and: [newNode godotId = ((renderInfo oldNode properties at: key ifAbsent: nil) ifNotNil: [:o | o godotId])]) ifFalse: [react addUpdate: {#update. renderInfo treeEntry godotPath. key. newNode}].
 			aDictionary at: key put: newNode].
-		value isBlock ifTrue: [aDictionary at: key put: (react registerCallback: value)]].
+		value isBlock ifTrue: [aDictionary at: key put: (react registerCallback: value)].
+		(value isKindOf: GRBlockWithArguments) ifTrue: [aDictionary at: key put: {react registerCallback: value block. value arguments}]].
 	^ aDictionary
 ]
 
@@ -209,6 +210,14 @@ GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObjec
 			ifFalse: [react addRef: ref for: renderInfo treeEntry godotPath]].
 	
 	^ node
+]
+
+{ #category : #accessing }
+GRReactNodeGodot >> subscribeCall: aMethodString with: aCollection do: aCallbackClosure [
+
+	properties
+		at: 'call_', aMethodString
+		put: (GRBlockWithArguments new block: aCallbackClosure arguments: aCollection)
 ]
 
 { #category : #accessing }

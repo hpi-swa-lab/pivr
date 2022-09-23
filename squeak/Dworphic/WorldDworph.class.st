@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 WorldDworph >> render: props [
 
-	| rightControllerTransform leftTransformSubscription leftControllerTransform rightTransformSubscription rightJoystickPressed headTransform headTransformSubscription leftControllerPortal buttonPressed buttonRelease rightControllerPortal |
+	| rightControllerTransform leftTransformSubscription leftControllerTransform rightTransformSubscription rightJoystickPressed headTransform headTransformSubscription leftControllerPortal buttonPressed buttonRelease rightControllerPortal triggerStrengthSubscription |
 	self useVR.
 	rightJoystickPressed := self useState: false.
 	
@@ -26,6 +26,9 @@ WorldDworph >> render: props [
 	headTransformSubscription := self
 		useCallback: [:transform | headTransform set: transform]
 		dependencies: {}.
+	triggerStrengthSubscription := self
+		useCallback: [:strength | Transcript showln: strength]
+		dependencies: {}.
 	leftControllerPortal := self useRef: nil.
 	rightControllerPortal := self useRef: nil.
 	
@@ -43,7 +46,10 @@ WorldDworph >> render: props [
 				(self godot: #ARVRController)
 					controller_id: 1;
 					children: (props at: #leftControllerChildren ifAbsent: [#()]), {(self godot: #Spatial) ref: [:node | leftControllerPortal set: node]};
-					subscribeTo: #transform do: leftTransformSubscription.
+					subscribeTo: #transform do: leftTransformSubscription;
+					subscribeCall: #'get_joystick_axis'
+						with: {2}
+						do: triggerStrengthSubscription.
 				(self godot: #ARVRController)
 					controller_id: 2;
 					children: (props at: #rightControllerChildren ifAbsent: [#()]), {(self godot: #Spatial) ref: [:node | rightControllerPortal set: node]};
