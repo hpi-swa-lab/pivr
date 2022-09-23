@@ -1,11 +1,11 @@
 Class {
-	#name : #SBTSGodotExample2D,
+	#name : #GRExample2D,
 	#superclass : #CMFReactComponent,
 	#category : #'GReaSe-Components-Examples'
 }
 
 { #category : #'as yet unclassified' }
-SBTSGodotExample2D >> render: props [
+GRExample2D >> render: props [
 
 	| count rootRef |
 	count := self useState: 0.
@@ -13,20 +13,20 @@ SBTSGodotExample2D >> render: props [
 	self
 		useEffect: [
 			rootRef get ifNotNil: [ | viewport |
-				GDCurrentSession value
+				GRReactCurrentSession value
 					callOn: 'ARVRServer'
 					method: 'find_interface'
 					arguments: {'OpenXR'}.
-				viewport := GDCurrentSession value
+				viewport := GRReactCurrentSession value
 					callOn: rootRef get
 					method: 'get_viewport'
 					arguments: {}.
 				SBToggledCode comment: '' active: 0 do: {
 					[
-						GDCurrentSession value set: 'hdr' of: viewport to: false.
-						GDCurrentSession value set: 'arvr' of: viewport to: true.
-						GDCurrentSession value set: 'vsync_enabled' of: 'OS' to: true.
-						GDCurrentSession value set: 'iterations_per_second' of: 'Engine' to: 90]}].
+						GRReactCurrentSession value set: 'hdr' of: viewport to: false.
+						GRReactCurrentSession value set: 'arvr' of: viewport to: true.
+						GRReactCurrentSession value set: 'vsync_enabled' of: 'OS' to: true.
+						GRReactCurrentSession value set: 'iterations_per_second' of: 'Engine' to: 90]}].
 			nil]
 		dependencies: {rootRef get}.
 	

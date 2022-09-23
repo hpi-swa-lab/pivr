@@ -1,5 +1,5 @@
 Class {
-	#name : #CMFReactNodeGodot,
+	#name : #GRReactNodeGodot,
 	#superclass : #CMFReactNode,
 	#instVars : [
 		'godotClass',
@@ -10,45 +10,32 @@ Class {
 		'properties',
 		'ref'
 	],
-	#category : #'GReaSe-Core'
+	#category : #'GReaSe-React'
 }
 
-{ #category : #rendering }
-CMFReactNodeGodot >> adoptPropsFrom: aNode [
-
-	self assert: godotClass = aNode godotClass.
-	properties := aNode properties.
-	children := aNode children.
-	key := aNode key.
-	godotId := aNode godotId.
-	isResource := aNode isResource.
-	ref := aNode ref
-]
-
 { #category : #accessing }
-CMFReactNodeGodot >> children [
+GRReactNodeGodot >> children [
 
 	^ children
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> children: aCollection [
+GRReactNodeGodot >> children: aCollection [
 
 	children := aCollection
 ]
 
-{ #category : #'as yet unclassified' }
-CMFReactNodeGodot >> createInfo [
+{ #category : #converting }
+GRReactNodeGodot >> createInfo [
 
 	^ {self isResource. self godotId. self godotClass. self}
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> doesNotUnderstand: aMessage [
+GRReactNodeGodot >> doesNotUnderstand: aMessage [
 
 	| key |
 	key := aMessage selector.
-	"(precedence := key precedence) = 1 ifTrue: [^ properties at: key ifAbsent: nil]."
 	(key precedence = 3 and: [(key indexOf: $:) = key size]) ifTrue: [ | value prop |
 		prop := key allButLast asSymbol.
 		value := aMessage arguments first.
@@ -61,43 +48,43 @@ CMFReactNodeGodot >> doesNotUnderstand: aMessage [
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> godotClass [
+GRReactNodeGodot >> godotClass [
 
 	^ godotClass
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> godotClass: aClassNameSymbol [
+GRReactNodeGodot >> godotClass: aClassNameSymbol [
 
 	godotClass := aClassNameSymbol
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> godotId [
+GRReactNodeGodot >> godotId [
 
-	^ godotId ifNil: [godotId := CMFReactGodot nextGodotId asString]
+	^ godotId ifNil: [godotId := GRReact nextGodotId asString]
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> godotId: anObject [
+GRReactNodeGodot >> godotId: anObject [
 
 	godotId := anObject
 ]
 
 { #category : #testing }
-CMFReactNodeGodot >> hasGodotId [
+GRReactNodeGodot >> hasGodotId [
 
 	^ godotId notNil
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> hasKey [
+GRReactNodeGodot >> hasKey [
 
 	^ key notNil
 ]
 
 { #category : #'initialize-release' }
-CMFReactNodeGodot >> initialize [
+GRReactNodeGodot >> initialize [
 
 	super initialize.
 	isResource := false.
@@ -105,44 +92,44 @@ CMFReactNodeGodot >> initialize [
 ]
 
 { #category : #testing }
-CMFReactNodeGodot >> isGodotNode [
+GRReactNodeGodot >> isGodotNode [
 
 	^ true
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> isResource [
+GRReactNodeGodot >> isResource [
 
 	^ isResource
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> isResource: aBoolean [
+GRReactNodeGodot >> isResource: aBoolean [
 
 	isResource := aBoolean
 ]
 
 { #category : #converting }
-CMFReactNodeGodot >> jsonWriteOn: aStream [
+GRReactNodeGodot >> jsonWriteOn: aStream [
 
 	self propertiesToSet jsonWriteOn: aStream
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> key [
+GRReactNodeGodot >> key [
 
 	^ key
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> key: anObject [
+GRReactNodeGodot >> key: anObject [
 
 	key := anObject.
 	godotId := key
 ]
 
 { #category : #printing }
-CMFReactNodeGodot >> printOn: aStream [
+GRReactNodeGodot >> printOn: aStream [
 
 	aStream nextPut: $<.
 	aStream nextPutAll: godotClass.
@@ -152,37 +139,37 @@ CMFReactNodeGodot >> printOn: aStream [
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> properties [
+GRReactNodeGodot >> properties [
 
 	^ properties
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> propertiesToSet [
+GRReactNodeGodot >> propertiesToSet [
 
 	^ properties select: [:val | val isGodotNode not]
 ]
 
 { #category : #converting }
-CMFReactNodeGodot >> putVariantOn: aStream [
+GRReactNodeGodot >> putVariantOn: aStream [
 
 	self propertiesToSet putVariantOn: aStream
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> ref [
+GRReactNodeGodot >> ref [
 
 	^ ref
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> ref: aRef [
+GRReactNodeGodot >> ref: aRef [
 
 	ref := aRef
 ]
 
 { #category : #rendering }
-CMFReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInfo [
+GRReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInfo [
 
 	aDictionary keysAndValuesDo: [:key :value |
 		value isGodotNode ifTrue: [ | newNode |
@@ -194,7 +181,7 @@ CMFReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInf
 ]
 
 { #category : #rendering }
-CMFReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObject [
+GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObject [
 
 	| node |
 	node := self.
@@ -225,13 +212,13 @@ CMFReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObje
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> subscribeTo: aPropertyNameString do: aCallbackClosure [
+GRReactNodeGodot >> subscribeTo: aPropertyNameString do: aCallbackClosure [
 
 	properties at: 'subscribe_', aPropertyNameString put: aCallbackClosure
 ]
 
 { #category : #accessing }
-CMFReactNodeGodot >> type [
+GRReactNodeGodot >> type [
 
 	^ {#godot. godotClass}
 ]

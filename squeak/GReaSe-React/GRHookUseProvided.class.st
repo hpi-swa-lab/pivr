@@ -6,7 +6,7 @@ Class {
 		'node',
 		'lastValue'
 	],
-	#category : #'GReaSe-Core'
+	#category : #'GReaSe-React'
 }
 
 { #category : #'as yet unclassified' }

@@ -1,5 +1,5 @@
 Class {
-	#name : #CMFReactGodot,
+	#name : #GRReact,
 	#superclass : #CMFReact,
 	#instVars : [
 		'pendingUpdates',
@@ -12,17 +12,17 @@ Class {
 	#classVars : [
 		'CurrentGodotId'
 	],
-	#category : #'GReaSe-Core'
+	#category : #'GReaSe-React'
 }
 
 { #category : #testing }
-CMFReactGodot class >> isValidRenderResult: anObject [
+GRReact class >> isValidRenderResult: anObject [
 
 	^ anObject isGodotNode or: [anObject isSequenceable and: [anObject allSatisfy: [:o | o isGodotNode]]]
 ]
 
 { #category : #utils }
-CMFReactGodot class >> nextGodotId [
+GRReact class >> nextGodotId [
 
 	CurrentGodotId ifNil: [CurrentGodotId := 0].
 	CurrentGodotId := CurrentGodotId + 1.
@@ -31,26 +31,26 @@ CMFReactGodot class >> nextGodotId [
 ]
 
 { #category : #reconciliation }
-CMFReactGodot >> addChild: aNode in: aParentNode [
+GRReact >> addChild: aNode in: aParentNode [
 
 	aNode isGodotNode ifTrue: [self addUpdate: {#add. aParentNode godotPath}, aNode createInfo].
 	^ super addChild: aNode in: aParentNode
 ]
 
 { #category : #reconciliation }
-CMFReactGodot >> addRef: aRef for: aPathString [
+GRReact >> addRef: aRef for: aPathString [
 
 	pendingRefs add: {aPathString. aRef}
 ]
 
 { #category : #reconciliation }
-CMFReactGodot >> addUpdate: aTuple [
+GRReact >> addUpdate: aTuple [
 
 	pendingUpdates add: aTuple
 ]
 
 { #category : #reconciliation }
-CMFReactGodot >> deleteChildrenFrom: aNumber in: aParentNode [
+GRReact >> deleteChildrenFrom: aNumber in: aParentNode [
 
 	aParentNode childrenTreeNodes
 		from: aNumber
@@ -60,7 +60,7 @@ CMFReactGodot >> deleteChildrenFrom: aNumber in: aParentNode [
 ]
 
 { #category : #'initialize-release' }
-CMFReactGodot >> initialize [
+GRReact >> initialize [
 
 	super initialize.
 	
@@ -68,14 +68,14 @@ CMFReactGodot >> initialize [
 ]
 
 { #category : #reconciliation }
-CMFReactGodot >> moveChild: aNode to: anotherNumber in: aParentNode [
+GRReact >> moveChild: aNode to: anotherNumber in: aParentNode [
 
 	self addUpdate: {#move. aNode godotId}.
 	super moveChild: aNode to: anotherNumber in: aParentNode
 ]
 
 { #category : #rendering }
-CMFReactGodot >> registerCallback: aClosure [
+GRReact >> registerCallback: aClosure [
 
 	| id |
 	callbacks keysAndValuesDo: [:closureId :closure | closure == aClosure ifTrue: [^ closureId]].
@@ -86,26 +86,26 @@ CMFReactGodot >> registerCallback: aClosure [
 ]
 
 { #category : #reconciliation }
-CMFReactGodot >> replaceChildAt: aNumber with: aNode in: aParentNode [
+GRReact >> replaceChildAt: aNumber with: aNode in: aParentNode [
 
 	self addUpdate: {#replace. (aParentNode childrenTreeNodes at: aNumber) godotPath}, aNode createInfo.
 	^ super replaceChildAt: aNumber with: aNode in: aParentNode
 ]
 
 { #category : #rendering }
-CMFReactGodot >> replaceOldMorphsInWorld: old by: new isRoot: isRoot [
+GRReact >> replaceOldMorphsInWorld: old by: new isRoot: isRoot [
 
 	isRoot ifTrue: [renderResult := new]
 ]
 
 { #category : #accessing }
-CMFReactGodot >> session: aSession [
+GRReact >> session: aSession [
 
 	session := aSession
 ]
 
 { #category : #rendering }
-CMFReactGodot >> tick: aCollectionOfPendingCallbacks [
+GRReact >> tick: aCollectionOfPendingCallbacks [
 
 	| currentPending allUpdates currentPendingRefs allPendingRefs |
 	currentPending := (pendingUpdates ifNil: [#()]) copy.
@@ -128,17 +128,17 @@ CMFReactGodot >> tick: aCollectionOfPendingCallbacks [
 ]
 
 { #category : #lifecycle }
-CMFReactGodot >> updateFrameDo: aBlock [
+GRReact >> updateFrameDo: aBlock [
 
 	| ret |
 	pendingUpdates := OrderedCollection new.
 	pendingRefs := OrderedCollection new.
-	GDCurrentSession value: session during: [ret := super updateFrameDo: aBlock].
+	GRReactCurrentSession value: session during: [ret := super updateFrameDo: aBlock].
 	^ ret
 ]
 
 { #category : #accessing }
-CMFReactGodot >> waitingRefs [
+GRReact >> waitingRefs [
 
 	^ waitingRefs
 ]

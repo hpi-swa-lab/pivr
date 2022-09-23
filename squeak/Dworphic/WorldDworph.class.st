@@ -1,11 +1,11 @@
 Class {
-	#name : #DworphicWorld,
+	#name : #WorldDworph,
 	#superclass : #CMFReactComponent,
-	#category : #'GReaSe-Components-Examples'
+	#category : #Dworphic
 }
 
 { #category : #'as yet unclassified' }
-DworphicWorld >> render: props [
+WorldDworph >> render: props [
 
 	| rightControllerTransform leftTransformSubscription leftControllerTransform rightTransformSubscription rightJoystickPressed headTransform headTransformSubscription leftControllerPortal buttonPressed buttonRelease |
 	rightJoystickPressed := self useState: false.

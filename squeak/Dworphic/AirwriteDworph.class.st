@@ -1,11 +1,11 @@
 Class {
-	#name : #SBTSAirwrite,
+	#name : #AirwriteDworph,
 	#superclass : #CMFReactComponent,
-	#category : #'GReaSe-Components-Examples'
+	#category : #Dworphic
 }
 
 { #category : #'as yet unclassified' }
-SBTSAirwrite >> checkMatch: aCollection [
+AirwriteDworph >> checkMatch: aCollection [
 
 	{
 		'a' -> 'urd'.
@@ -78,7 +78,7 @@ SBTSAirwrite >> checkMatch: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
-SBTSAirwrite >> detectChar: aCollection head: headPosition [
+AirwriteDworph >> detectChar: aCollection head: headPosition [
 
 	| directions |
 	directions := Array streamContents: [:s |
@@ -90,7 +90,7 @@ SBTSAirwrite >> detectChar: aCollection head: headPosition [
 ]
 
 { #category : #'as yet unclassified' }
-SBTSAirwrite >> directionOfStrokeFrom: a to: b headPosition: head [
+AirwriteDworph >> directionOfStrokeFrom: a to: b headPosition: head [
 
 	| delta |
 	delta := (a - b) abs.
@@ -105,7 +105,7 @@ SBTSAirwrite >> directionOfStrokeFrom: a to: b headPosition: head [
 ]
 
 { #category : #'as yet unclassified' }
-SBTSAirwrite >> render: props [
+AirwriteDworph >> render: props [
 
 	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points leftControllerPortal |
 	lastControllerTranslation := self useState: Vector3 zero.
@@ -121,14 +121,14 @@ SBTSAirwrite >> render: props [
 		useEffect: [
 			(buttonPressed not and: [points get notEmpty]) ifTrue: [
 				Transcript showln: (self detectChar: points get head: headPosition).
-				GDCurrentSession value callOn: curveRef get method: 'clear_points' arguments: {}.
+				GRReactCurrentSession value callOn: curveRef get method: 'clear_points' arguments: {}.
 				points set: {}].
 			
 			(lastControllerTranslation get distanceTo: controllerTranslation) > 0.01 ifTrue: [
 				lastControllerTranslation set: controllerTranslation.
 				buttonPressed ifTrue: [
 					points set: [:p | p copyWith: controllerTranslation].
-					GDCurrentSession value
+					GRReactCurrentSession value
 						callOn: curveRef get
 						method: 'add_point'
 						arguments: {controllerTranslation}]].
@@ -167,7 +167,7 @@ SBTSAirwrite >> render: props [
 ]
 
 { #category : #'as yet unclassified' }
-SBTSAirwrite >> thinPoints: aCollection [
+AirwriteDworph >> thinPoints: aCollection [
 
 	^ Array streamContents: [:stream |
 		stream nextPut: aCollection first.

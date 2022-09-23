@@ -3,9 +3,16 @@ Extension { #name : #CMFReactComponent }
 { #category : #'*GReaSe-Core' }
 CMFReactComponent >> godot: aClassName [
 
-	^ CMFReactNodeGodot new
+	^ GRReactNodeGodot new
 		godotClass: aClassName;
 		yourself
+]
+
+{ #category : #'*GReaSe-Core' }
+CMFReactComponent class >> inGodot [
+	"replaces the current listener and opens a new one, serving this component class as the root"
+
+	^ GDSocketListener start: self
 ]
 
 { #category : #'*GReaSe-Core' }

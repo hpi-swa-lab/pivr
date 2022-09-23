@@ -52,14 +52,14 @@ GDSocketSession >> get: aString of: anObject [
 { #category : #'as yet unclassified' }
 GDSocketSession >> reactComponent: aComponentClass [
 
-	react := CMFReactGodot new session: self.
+	react := GRReact new session: self.
 	react initAndRender: aComponentClass asReactNodeBuilder build
 ]
 
 { #category : #'as yet unclassified' }
 GDSocketSession >> sessionId [
 
-	^ sessionId ifNil: [sessionId := CMFReactGodot nextGodotId]
+	^ sessionId ifNil: [sessionId := GRReact nextGodotId]
 ]
 
 { #category : #'as yet unclassified' }
