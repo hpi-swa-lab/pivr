@@ -10,7 +10,9 @@ Class {
 		'waitingRefs'
 	],
 	#classVars : [
-		'CurrentGodotId'
+		'CurrentGodotId',
+		'GodotPath',
+		'RunningGodotProcess'
 	],
 	#category : #'GReaSe-React'
 }
@@ -28,6 +30,35 @@ GRReact class >> nextGodotId [
 	CurrentGodotId := CurrentGodotId + 1.
 	CurrentGodotId > 900000000 ifTrue: [CurrentGodotId := 0].
 	^ CurrentGodotId
+]
+
+{ #category : #deploy }
+GRReact class >> pivrPath [
+
+	^ SquotWorkingCopy registered
+		detect: [:each | | gitRepository |
+			(each repository respondsTo: #git) and: [
+				gitRepository := each repository git.
+				each repository remoteNames anySatisfy: [:remote | (gitRepository remoteUrl: remote) includesSubstring: 'pivr']]]
+		ifFound: [:project | project repository git workingDir]
+]
+
+{ #category : #deploy }
+GRReact class >> questRestartApp [
+
+	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
+		shell waitForCommand: 'adb reverse tcp:8292 tcp:8292'.
+		shell waitForCommand: 'adb shell am force-stop org.godotengine.vrandsqueaktest'.
+		shell waitForCommand: 'adb shell am start -n org.godotengine.vrandsqueaktest/com.godot.game.GodotApp']
+]
+
+{ #category : #deploy }
+GRReact class >> startGodot [
+
+	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
+		RunningGodotProcess ifNotNil: #terminate.
+		GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
+		RunningGodotProcess := shell command: ('bash -c "cd {1}; {2}"' format: {self pivrPath / 'project'. GodotPath})]
 ]
 
 { #category : #reconciliation }
@@ -50,12 +81,19 @@ GRReact >> addUpdate: aTuple [
 ]
 
 { #category : #reconciliation }
+GRReact >> clearTree [
+
+	self addUpdate: {#clear}.
+	super clearTree
+]
+
+{ #category : #reconciliation }
 GRReact >> deleteChildrenFrom: aNumber in: aParentNode [
 
 	aParentNode childrenTreeNodes
 		from: aNumber
 		to: aParentNode childrenTreeNodes size
-		do: [:node | self addUpdate: {#delete. node godotPath}].
+		do: [:node | node renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}]].
 	^ super deleteChildrenFrom: aNumber in: aParentNode
 ]
 
@@ -88,7 +126,10 @@ GRReact >> registerCallback: aClosure [
 { #category : #reconciliation }
 GRReact >> replaceChildAt: aNumber with: aNode in: aParentNode [
 
-	self addUpdate: {#replace. (aParentNode childrenTreeNodes at: aNumber) godotPath}, aNode createInfo.
+	(aParentNode childrenTreeNodes at: aNumber) renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}].
+	aNode isGodotNode ifTrue: [
+		self addUpdate: {#add. aParentNode godotPath}, aNode createInfo].
+	
 	^ super replaceChildAt: aNumber with: aNode in: aParentNode
 ]
 
@@ -104,35 +145,37 @@ GRReact >> session: aSession [
 	session := aSession
 ]
 
+{ #category : #'as yet unclassified' }
+GRReact >> subscribeToCodeChanges [
+	"noop, conflicft with our global listener"
+
+	
+]
+
 { #category : #rendering }
 GRReact >> tick: aCollectionOfPendingCallbacks [
 
-	| currentPending allUpdates currentPendingRefs allPendingRefs |
-	currentPending := (pendingUpdates ifNil: [#()]) copy.
-	pendingUpdates := OrderedCollection new.
-	currentPendingRefs := (pendingRefs ifNil: [#()]) copy.
-	pendingRefs := OrderedCollection new.
-	
+	| return |
 	aCollectionOfPendingCallbacks
 		ifNotEmpty: [self batchUpdatesDuring: [aCollectionOfPendingCallbacks do: [:callback | (callbacks at: callback first) valueWithArguments: callback allButFirst]]]
 		ifEmpty: ["if there were no pending callbacks, it's a full update request"
 		self render].
 	
-	allUpdates := currentPending, pendingUpdates.
-	SBToggledCode comment: '' active: 0 do: {[allUpdates do: [:u | Transcript showln: u]]}.
-	allPendingRefs := currentPendingRefs, pendingRefs.
+	SBToggledCode comment: '' active: 0 do: {[pendingUpdates do: [:u | Transcript showln: u]]}.
+	
+	waitingRefs := pendingRefs collect: #second.
+	return := {pendingUpdates. pendingRefs collect: #first}.
 	pendingUpdates := nil.
 	pendingRefs := nil.
-	waitingRefs := allPendingRefs collect: #second.
-	^ {allUpdates. allPendingRefs collect: #first}
+	^ return
 ]
 
 { #category : #lifecycle }
 GRReact >> updateFrameDo: aBlock [
 
 	| ret |
-	pendingUpdates := OrderedCollection new.
-	pendingRefs := OrderedCollection new.
+	pendingUpdates ifNil: [pendingUpdates := OrderedCollection new].
+	pendingRefs ifNil: [pendingRefs := OrderedCollection new].
 	GRReactCurrentSession value: session during: [ret := super updateFrameDo: aBlock].
 	^ ret
 ]

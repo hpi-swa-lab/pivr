@@ -1,0 +1,19 @@
+Extension { #name : #Matrix4x4 }
+
+{ #category : #'*GReaSe-Core' }
+Matrix4x4 >> putVariantOn: aStream [
+
+	aStream nextLittleEndianNumber: 4 put: 13.
+	aStream nextLittleEndianNumber: 4 put: self a11 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a12 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a13 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a21 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a22 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a23 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a31 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a32 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a33 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a14 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a24 asIEEE32BitWord.
+	aStream nextLittleEndianNumber: 4 put: self a34 asIEEE32BitWord
+]

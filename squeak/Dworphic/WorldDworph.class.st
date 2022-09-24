@@ -1,25 +1,30 @@
 Class {
 	#name : #WorldDworph,
-	#superclass : #CMFReactComponent,
+	#superclass : #GRComponent,
 	#category : #Dworphic
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #rendering }
 WorldDworph >> render: props [
 
-	| headTransform headTransformSubscription |
-	
+	| headTransform headTransformSubscription worldRef |
 	self useVR.
 	headTransform := self useState: Matrix4x4 identity.
+	headTransformSubscription := self useCallback: [:t | headTransform set: t] dependencies: {}.
+	worldRef := self useRef: nil.
 	
-	^ GRProvider values: {#headTransform -> headTransform get} children: {
-		(self godot: #ARVROrigin) children: {
-			(self godot: #ARVRCamera) subscribeTo: #transform do: headTransformSubscription.
-			ControllerDworph new left: true.
-			ControllerDworph new left: false}, (props at: #children ifAbsent: [#()])}
+	^ GRProvider
+		values: {#headTransform -> headTransform get. #worldPortal -> worldRef get}
+		children: {
+			(self godot: #ARVROrigin) children: {
+				(self godot: #ARVRCamera) subscribeTo: #transform do: headTransformSubscription.
+				ControllerInfoDworph new
+					left: false;
+					children: {props at: #children ifAbsent: [#()]}.
+				(self godot: #Spatial) ref: [:node | worldRef set: node]}}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #hooks }
 WorldDworph >> useVR [
 
 	self

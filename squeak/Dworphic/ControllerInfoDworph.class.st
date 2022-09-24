@@ -1,13 +1,13 @@
 Class {
-	#name : #ControllerDworph,
-	#superclass : #CMFReactComponent,
+	#name : #ControllerInfoDworph,
+	#superclass : #GRComponent,
 	#category : #Dworphic
 }
 
-{ #category : #'as yet unclassified' }
-ControllerDworph >> render: props [
+{ #category : #rendering }
+ControllerInfoDworph >> render: props [
 
-	| handPortal transform transformSub triggerStrength triggerStrengthSub buttonPressed buttonRelase pressedButtons controllerNode axes |
+	| handPortal transform transformSub buttonPressed buttonRelase pressedButtons controllerNode axes |
 	handPortal := self useRef: nil.
 	
 	transform := self useState: Matrix4x4 identity.
@@ -15,14 +15,8 @@ ControllerDworph >> render: props [
 	
 	axes := {{2. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state subscriber |
 		state := self useState: 0.0.
-		subscriber := self
-			useCallback: [:s |
-				Transcript showln: {axis second. s}.
-				state set: s]
-			dependencies: {}.
+		subscriber := self useCallback: [:s | state set: s] dependencies: {}.
 		axis, {state. subscriber}].
-	triggerStrength := self useState: 0.0.
-	triggerStrengthSub := self useCallback: [:s | triggerStrength set: s] dependencies: {}.
 	
 	pressedButtons := self useState: {}.
 	buttonPressed := self
@@ -34,12 +28,24 @@ ControllerDworph >> render: props [
 	
 	controllerNode := (self godot: #ARVRController)
 		controller_id: ((props at: #left) == true ifTrue: [1] ifFalse: [2]);
-		children: (props at: #children ifAbsent: [#()]), {(self godot: #Spatial) ref: [:node | handPortal set: node]};
+		children: {
+			(self godot: #Area) children: {
+				(self godot: #CollisionShape) shape: ((self godot: #SphereShape)
+					margin: 0.001;
+					radius: 0.002)}.
+			(self godot: #Spatial) ref: [:node | handPortal set: node]};
 		button_pressed: buttonPressed;
 		button_release: buttonRelase;
 		subscribeTo: #transform do: transformSub.
 	
 	axes do: [:axis | controllerNode subscribeCall: 'get_joystick_axis' with: {axis first} do: axis fourth].
 	
-	^ controllerNode
+	^ {
+		controllerNode.
+		GRProvider
+			values: {
+				#controllerTransform -> transform get.
+				#handPortal -> handPortal get.
+				#pressedButtons -> pressedButtons get}, (axes collect: [:axis | axis second -> axis third get])
+			children: (props at: #children ifAbsent: [#()])}
 ]

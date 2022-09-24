@@ -13,6 +13,12 @@ Class {
 	#category : #'GReaSe-React'
 }
 
+{ #category : #'as yet unclassified' }
+GRReactNodeGodot class >> for: aSymbol [
+
+	^ self new godotClass: aSymbol
+]
+
 { #category : #accessing }
 GRReactNodeGodot >> children [
 

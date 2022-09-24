@@ -1,5 +1,5 @@
 Class {
-	#name : #GDSocketListener,
+	#name : #GRSocketListener,
 	#superclass : #Object,
 	#instVars : [
 		'listener',
@@ -14,67 +14,67 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeCallFromSqueak [
+GRSocketListener class >> messageTypeCallFromSqueak [
 
 	^ 2
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeInitializeSessionFromGodot [
+GRSocketListener class >> messageTypeInitializeSessionFromGodot [
 
 	^ 4
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeInitializedSessionFromSqueak [
+GRSocketListener class >> messageTypeInitializedSessionFromSqueak [
 
 	^ 5
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypePropertyGetFromSqueak [
+GRSocketListener class >> messageTypePropertyGetFromSqueak [
 
 	^ 8
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypePropertySetFromSqueak [
+GRSocketListener class >> messageTypePropertySetFromSqueak [
 
 	^ 7
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeQuitFromGodot [
+GRSocketListener class >> messageTypeQuitFromGodot [
 
 	^ 6
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeRefsFromGodot [
+GRSocketListener class >> messageTypeRefsFromGodot [
 
 	^ 9
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeResponseToCallFromGodot [
+GRSocketListener class >> messageTypeResponseToCallFromGodot [
 
 	^ 3
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeTickCompletedFromSqueak [
+GRSocketListener class >> messageTypeTickCompletedFromSqueak [
 
 	^ 1
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> messageTypeTickFromGodot [
+GRSocketListener class >> messageTypeTickFromGodot [
 
 	^ 0
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> putVariant: anObject on: aSocketStream [
+GRSocketListener class >> putVariant: anObject on: aSocketStream [
 
 	| buffer size |
 	buffer := ByteArray streamContents: [:stream | anObject putVariantOn: stream].
@@ -86,7 +86,7 @@ GDSocketListener class >> putVariant: anObject on: aSocketStream [
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> readMessageFrom: aStream [
+GRSocketListener class >> readMessageFrom: aStream [
 
 	| messageLength |
 	messageLength := (aStream next: 4) readStream nextLittleEndianNumber: 4.
@@ -94,7 +94,7 @@ GDSocketListener class >> readMessageFrom: aStream [
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> readVariantFrom: aStream [
+GRSocketListener class >> readVariantFrom: aStream [
 
 	| type is64Bit |
 	type := aStream nextLittleEndianNumber: 4.
@@ -134,7 +134,7 @@ GDSocketListener class >> readVariantFrom: aStream [
 		[17] -> [ | objectId |
 			self assert: (type bitAnd: (1 bitShift: 16)) ~= 0.
 			objectId := aStream nextLittleEndianNumber: 8.
-			objectId = 0 ifTrue: [nil] ifFalse: [GDObjectId new objectId: objectId]].
+			objectId = 0 ifTrue: [nil] ifFalse: [GRObjectId new objectId: objectId]].
 		[18] -> [ | count |
 			count := (aStream nextLittleEndianNumber: 4) bitAnd: 2147483647.
 			Dictionary newFrom: ((1 to: count) collect: [:index | (self readVariantFrom: aStream) -> (self readVariantFrom: aStream)])].
@@ -144,7 +144,7 @@ GDSocketListener class >> readVariantFrom: aStream [
 ]
 
 { #category : #'as yet unclassified' }
-GDSocketListener class >> start: aComponentClass [
+GRSocketListener class >> start: aComponentClass [
 
 	| listener |
 	Current ifNotNil: [Current destroy].
@@ -156,82 +156,72 @@ GDSocketListener class >> start: aComponentClass [
 	^ listener
 ]
 
+{ #category : #handlers }
+GRSocketListener >> codeChanged: event [
+
+	SBToggledCode
+		comment: ''
+		active: 0
+		do: {[sessions do: [:session | session codeChanged: event]]}
+]
+
 { #category : #accessing }
-GDSocketListener >> componentClass [
+GRSocketListener >> componentClass [
 
 	^ componentClass
 ]
 
 { #category : #accessing }
-GDSocketListener >> componentClass: aClass [
+GRSocketListener >> componentClass: aClass [
 
 	componentClass := aClass
 ]
 
 { #category : #communication }
-GDSocketListener >> destroy [
+GRSocketListener >> destroy [
 
+	SystemChangeNotifier uniqueInstance noMoreNotificationsFor: self.
+	
 	listener destroy.
 	process terminate.
 	sessions do: #close
 ]
 
 { #category : #communication }
-GDSocketListener >> handleConnection: aSocket [
+GRSocketListener >> handleConnection: aSocket [
 
-	| stream |
+	| stream session |
 	stream := SocketStream on: aSocket.
 	stream timeout: 100000.
 	stream binary.
-	[stream atEnd ifFalse: [(self handleMessage: stream) ifFalse: [^ self]]] repeat
-]
-
-{ #category : #'as yet unclassified' }
-GDSocketListener >> handleMessage: stream [
-
-	| message |
-	message := [self class readMessageFrom: stream]
-		on: ConnectionClosed
-		do: [^ false].
-	message first caseOf: {
-		[self class messageTypeTickFromGodot] -> [ | updates |
-			updates := (sessions at: message second) tick: message third.
-			self class putVariant: {self class messageTypeTickCompletedFromSqueak. updates} on: stream].
-		[self class messageTypeInitializeSessionFromGodot] -> [ | session |
-			session := GDSocketSession new
-				socketStream: stream;
-				reactComponent: self componentClass.
-			sessions at: session sessionId put: session.
-			self class
-				putVariant: {self class messageTypeInitializedSessionFromSqueak. session sessionId. GDObjectId new objectId: 0}
-				on: stream].
-		[self class messageTypeQuitFromGodot] -> [
-			sessions removeKey: message second.
-			stream close.
-			^ false].
-		[self class messageTypeResponseToCallFromGodot] -> [self error: 'message sent on wrong thread? response arrived in listener loop'].
-		[self class messageTypeRefsFromGodot] -> [(sessions at: message second) bindRefs: message third]}.
-	^ true
+	
+	session := GRSocketSession new
+		socketStream: stream;
+		reactComponent: self componentClass.
+	sessions at: session sessionId put: session.
+	
+	session spawnHandlerProcess
 ]
 
 { #category : #'initialize-release' }
-GDSocketListener >> initialize [
+GRSocketListener >> initialize [
 
 	sessions := Dictionary new
 ]
 
 { #category : #communication }
-GDSocketListener >> spawnListener [
+GRSocketListener >> spawnListener [
 
 	listener := Socket newTCP.
 	listener listenOn: 8292 backlogSize: 15.
 	listener isWaitingForConnection ifFalse: [^ self error: 'Failed to connect'].
+	
+	SystemChangeNotifier uniqueInstance
+		notify: self
+		ofAllSystemChangesUsing: #codeChanged:.
+	
 	process := [
-		[listener isValid] whileTrue: [
-			(listener waitForAcceptFor: 10000000) ifNotNil: [:connection |
-				[self handleConnection: (SBWatch report: connection for: 663488349)]
-					forkAt: Processor highIOPriority
-					named: '[Godot Session Connection]']].
+		[listener isValid] whileTrue: [(listener waitForAcceptFor: 10000000) ifNotNil: [:connection | self handleConnection: connection]].
 		listener destroy]
 		forkAt: Processor lowIOPriority
 		named: '[Godot Socket Listener]'

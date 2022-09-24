@@ -1,5 +1,5 @@
 Class {
-	#name : #GDObjectId,
+	#name : #GRObjectId,
 	#superclass : #Object,
 	#instVars : [
 		'objectId'
@@ -8,31 +8,31 @@ Class {
 }
 
 { #category : #comparing }
-GDObjectId >> = anObject [
+GRObjectId >> = anObject [
 
 	^ self class = anObject class and: [anObject objectId = self objectId]
 ]
 
 { #category : #comparing }
-GDObjectId >> hash [
+GRObjectId >> hash [
 
 	^ objectId hash
 ]
 
 { #category : #accessing }
-GDObjectId >> objectId [
+GRObjectId >> objectId [
 
 	^ objectId
 ]
 
 { #category : #accessing }
-GDObjectId >> objectId: aNumber [
+GRObjectId >> objectId: aNumber [
 
 	objectId := aNumber
 ]
 
 { #category : #converting }
-GDObjectId >> putVariantOn: aWriteStream [
+GRObjectId >> putVariantOn: aWriteStream [
 
 	aWriteStream nextLittleEndianNumber: 4 put: (17 bitOr: (1 bitShift: 16)).
 	aWriteStream nextLittleEndianNumber: 8 put: objectId

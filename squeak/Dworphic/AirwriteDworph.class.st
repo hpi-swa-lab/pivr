@@ -1,10 +1,10 @@
 Class {
 	#name : #AirwriteDworph,
-	#superclass : #CMFReactComponent,
+	#superclass : #GRComponent,
 	#category : #Dworphic
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #detection }
 AirwriteDworph >> checkMatch: aCollection [
 
 	{
@@ -78,6 +78,15 @@ AirwriteDworph >> checkMatch: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+AirwriteDworph >> collisionShape [
+
+	^ (self godot: #CylinderShape)
+		height: 0.1;
+		radius: 0.02;
+		margin: 0.001
+]
+
+{ #category : #detection }
 AirwriteDworph >> detectChar: aCollection head: headPosition [
 
 	| directions |
@@ -89,7 +98,7 @@ AirwriteDworph >> detectChar: aCollection head: headPosition [
 	^ self checkMatch: directions
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #detection }
 AirwriteDworph >> directionOfStrokeFrom: a to: b headPosition: head [
 
 	| delta |
@@ -104,69 +113,104 @@ AirwriteDworph >> directionOfStrokeFrom: a to: b headPosition: head [
 		ifFalse: [b y > a y ifTrue: ['u'] ifFalse: ['d']]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #rendering }
 AirwriteDworph >> render: props [
 
-	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points leftControllerPortal |
-	lastControllerTranslation := self useState: Vector3 zero.
+	^ ControllerToolDworph new
+		transform: (props at: #transform);
+		shape: self collisionShape;
+		active: [(self methodAsComponent: #renderActive:) props: props];
+		passive: [(self methodAsComponent: #renderPassive:) props: props]
+]
+
+{ #category : #rendering }
+AirwriteDworph >> renderActive: props [
+
+	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points worldPortal |
+	worldPortal := self useWorldPortal.
 	points := self useState: {}.
-	controllerTranslation := (self useProvided: #rightControllerTransform) translation.
-	buttonPressed := self useProvided: #rightJoystickPressed.
-	headPosition := (self useProvided: #headTransform) translation.
-	leftControllerPortal := self useProvided: #leftControllerPortal.
+	lastControllerTranslation := self useState: Vector3 zero.
+	
+	headPosition := self useHeadTransform translation.
+	controllerTranslation := self useControllerTransform translation.
+	buttonPressed := self useGripPressed.
 	
 	curveRef := self useRef: nil.
 	
 	self
 		useEffect: [
-			(buttonPressed not and: [points get notEmpty]) ifTrue: [
-				Transcript showln: (self detectChar: points get head: headPosition).
-				GRReactCurrentSession value callOn: curveRef get method: 'clear_points' arguments: {}.
-				points set: {}].
-			
-			(lastControllerTranslation get distanceTo: controllerTranslation) > 0.01 ifTrue: [
-				lastControllerTranslation set: controllerTranslation.
-				buttonPressed ifTrue: [
-					points set: [:p | p copyWith: controllerTranslation].
-					GRReactCurrentSession value
-						callOn: curveRef get
-						method: 'add_point'
-						arguments: {controllerTranslation}]].
+			curveRef get ifNotNil: [
+				(lastControllerTranslation get distanceTo: controllerTranslation) > 0.01 ifTrue: [
+					lastControllerTranslation set: controllerTranslation.
+					buttonPressed ifTrue: [
+						points set: [:p | p copyWith: controllerTranslation].
+						GRReactCurrentSession value
+							callOn: curveRef get
+							method: 'add_point'
+							arguments: {controllerTranslation}]]].
 			nil]
 		dependencies: {controllerTranslation. buttonPressed}.
 	
+	self
+		useEffect: [
+			"return a clean-up effect for when this component is unmounted -- in other words, when the tool is let go by the user"
+			[
+				points get notEmpty ifTrue: [
+					Transcript showln: (self detectChar: points get head: headPosition).
+					GRReactCurrentSession value
+						callOn: curveRef get
+						method: 'clear_points'
+						arguments: {}.
+					points set: {}]]]
+		dependencies: {}.
+	
 	^ (self godot: #Spatial) children: {
+		self renderPassive: props.
 		CMFReactNodePortal
-			child: ((self godot: #MeshInstance) mesh: ((self godot: #CubeMesh)
-				size: (Vector3 x: 0.05 y: 0.05 z: 0.05);
-				material: ((self godot: #SpatialMaterial) albedo_color: (Color r: 1 g: 0.0 b: 0.0))))
-			in: leftControllerPortal.
-		(self godot: #Path)
-			curve: ((self godot: #Curve3D)
-				ref: curveRef;
-				bake_interval: 0.01);
-			key: 'path'.
-		(self godot: #CSGPolygon)
-			path_node: (GRNodePath path: '../path');
-			polygon: (GRPoolVector2Array new
-				add: (Vector2 x: -0.005 y: -0.005);
-				add: (Vector2 x: -0.005 y: 0.005);
-				add: (Vector2 x: 0.005 y: 0.005);
-				add: (Vector2 x: 0.005 y: -0.005);
-				yourself);
-			mode: 2;
-			path_interval_type: 0;
-			path_interval: 0.01;
-			path_simplify_angle: 0.0;
-			path_rotation: 2;
-			path_local: true;
-			path_joined: false;
-			path_continuous_u: true;
-			path_u_distance: 0.71;
-			smooth_faces: true}
+			child: {
+				(self godot: #Path)
+					curve: ((self godot: #Curve3D)
+						ref: curveRef;
+						bake_interval: 0.01);
+					key: 'path'.
+				(self godot: #CSGPolygon)
+					path_node: (GRNodePath path: '../path');
+					polygon: (GRPoolVector2Array new
+						add: (Vector2 x: -0.005 y: -0.005);
+						add: (Vector2 x: -0.005 y: 0.005);
+						add: (Vector2 x: 0.005 y: 0.005);
+						add: (Vector2 x: 0.005 y: -0.005);
+						yourself);
+					mode: 2;
+					path_interval_type: 0;
+					path_interval: 0.01;
+					path_simplify_angle: 0.0;
+					path_rotation: 2;
+					path_local: true;
+					path_joined: false;
+					path_continuous_u: true;
+					path_u_distance: 0.71;
+					smooth_faces: true}
+			in: worldPortal}
+]
+
+{ #category : #rendering }
+AirwriteDworph >> renderPassive: props [
+
+	^ (self godot: #MeshInstance) mesh: self shape
 ]
 
 { #category : #'as yet unclassified' }
+AirwriteDworph >> shape [
+
+	^ (self godot: #CylinderMesh)
+		height: 0.1;
+		top_radius: 0.02;
+		bottom_radius: 0.02;
+		radial_segments: 12
+]
+
+{ #category : #detection }
 AirwriteDworph >> thinPoints: aCollection [
 
 	^ Array streamContents: [:stream |
