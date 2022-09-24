@@ -67,12 +67,19 @@ func _ready():
 	update()
 
 func _process(_delta):
+	# FIXME probably not gonna work like this but the idea is that we put
+	# a simple marker into our stream when there's nothing supposed to be there
+	# to tell godot that it should requery
+	var code_changed = tcp.get_available_bytes()
+	if code_changed:
+		tcp.get_var(true)
+	
 	for subscription in subscriptions:
 		var update = subscription.update()
 		if update:
 			pending_signal_handlers.append(update)
 	
-	if not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
+	if code_changed or not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
 		update()
 
 func update():
@@ -119,6 +126,9 @@ func bind_refs(refs):
 func apply_updates(list):
 	for update in list:
 		match update[0]:
+			'clear':
+				for c in get_node(root_path).get_children():
+					c.queue_free()
 			'add':
 				var parent_path = update[1]
 				var is_resource = update[2]
