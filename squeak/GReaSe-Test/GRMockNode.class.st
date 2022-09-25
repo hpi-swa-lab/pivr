@@ -35,7 +35,7 @@ GRMockNode >> applyUpdate: anUpdate [
 			parent := self getNodeForPath: anUpdate second.
 			node := GRMockNode new
 				godotClass: anUpdate fifth;
-				properties: anUpdate sixth properties copy.
+				properties: anUpdate sixth copy.
 			anUpdate third ifTrue: [parent properties at: anUpdate fourth put: node] ifFalse: [
 				parent addChild: node.
 				node name: anUpdate fourth]].

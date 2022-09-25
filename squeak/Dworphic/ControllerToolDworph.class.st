@@ -35,5 +35,9 @@ ControllerToolDworph >> render: props [
 				transform: transform get;
 				area_entered: enteredSub;
 				area_exited: exitedSub;
-				children: {(props at: #passive) value. (self godot: #CollisionShape) shape: (props at: #shape)}]
+				children: {
+					(props at: #passive) value.
+					(self godot: #CollisionShape)
+						shape: (props at: #shape);
+						transform: (props at: #shapeTransform ifAbsent: [Matrix4x4 identity])}]
 ]

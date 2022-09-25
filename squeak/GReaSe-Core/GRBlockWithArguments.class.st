@@ -34,6 +34,12 @@ GRBlockWithArguments >> block: aBlock arguments: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRBlockWithArguments >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'as yet unclassified' }
 GRBlockWithArguments >> valueWithArguments: aSequenceOfArguments [
 
 	^ block valueWithArguments: aSequenceOfArguments

@@ -1,6 +1,12 @@
 Extension { #name : #Matrix4x4 }
 
 { #category : #'*GReaSe-Core' }
+Matrix4x4 >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'*GReaSe-Core' }
 Matrix4x4 >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 13.

@@ -1,6 +1,12 @@
 Extension { #name : #String }
 
 { #category : #'*GReaSe-Core' }
+String >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'*GReaSe-Core' }
 String >> putVariantOn: aStream [
 
 	self putVariantOn: aStream skipType: false

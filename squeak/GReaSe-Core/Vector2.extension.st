@@ -1,6 +1,12 @@
 Extension { #name : #Vector2 }
 
 { #category : #'*GReaSe-Core' }
+Vector2 >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'*GReaSe-Core' }
 Vector2 >> isVector2 [
 
 	^ true

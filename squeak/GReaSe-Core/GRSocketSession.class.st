@@ -5,7 +5,8 @@ Class {
 		'react',
 		'sessionId',
 		'stream',
-		'communicationLock'
+		'communicationLock',
+		'codeChanged'
 	],
 	#category : #'GReaSe-Core'
 }
@@ -33,13 +34,16 @@ GRSocketSession >> callOn: anObject method: aString arguments: aCollection [
 { #category : #'as yet unclassified' }
 GRSocketSession >> close [
 
-	stream ifNotNil: #close
+	[stream ifNotNil: #close] on: SocketPrimitiveFailed do: [:error |]
 ]
 
 { #category : #'as yet unclassified' }
 GRSocketSession >> codeChanged: event [
 
 	event isDoIt ifTrue: [^ self].
+	self synchronousCodeReload ifFalse: [
+		codeChanged := true.
+		^ self].
 	
 	(react codeChanged: event) then: [:unused | self communicationLockDuring: [GRSocketListener putVariant: 'code_changed' on: stream]]
 ]
@@ -95,6 +99,7 @@ GRSocketSession >> initialize [
 
 	super initialize.
 	
+	codeChanged := false.
 	communicationLock := Mutex new
 ]
 
@@ -157,7 +162,16 @@ GRSocketSession >> spawnHandlerProcess [
 ]
 
 { #category : #'as yet unclassified' }
+GRSocketSession >> synchronousCodeReload [
+
+	^ false
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketSession >> tick: aCollection [
 
+	codeChanged ifTrue: [
+		react onCodeChanged.
+		codeChanged := false].
 	^ react tick: aCollection
 ]

@@ -20,6 +20,12 @@ GRNodePath >> = aPath [
 ]
 
 { #category : #'as yet unclassified' }
+GRNodePath >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'as yet unclassified' }
 GRNodePath >> hash [
 
 	^ path hash

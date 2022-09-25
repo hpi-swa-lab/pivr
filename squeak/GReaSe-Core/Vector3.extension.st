@@ -7,6 +7,12 @@ Vector3 >> closeTo: aVector3 [
 ]
 
 { #category : #'*GReaSe-Core' }
+Vector3 >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'*GReaSe-Core' }
 Vector3 >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 7.

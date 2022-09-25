@@ -1,6 +1,12 @@
 Extension { #name : #Color }
 
 { #category : #'*GReaSe-Core' }
+Color >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'*GReaSe-Core' }
 Color >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 14.

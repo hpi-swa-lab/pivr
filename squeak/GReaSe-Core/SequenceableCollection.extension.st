@@ -1,6 +1,12 @@
 Extension { #name : #SequenceableCollection }
 
 { #category : #'*GReaSe-Core' }
+SequenceableCollection >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'*GReaSe-Core' }
 SequenceableCollection >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 19.

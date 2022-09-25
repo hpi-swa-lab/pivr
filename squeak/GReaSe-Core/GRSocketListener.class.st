@@ -156,13 +156,23 @@ GRSocketListener class >> start: aComponentClass [
 	^ listener
 ]
 
+{ #category : #'as yet unclassified' }
+GRSocketListener class >> stopAll [
+
+	Current destroy
+]
+
+{ #category : #communication }
+GRSocketListener >> clearSessions [
+
+	sessions do: [:s | s close].
+	sessions removeAll
+]
+
 { #category : #handlers }
 GRSocketListener >> codeChanged: event [
 
-	SBToggledCode
-		comment: ''
-		active: 0
-		do: {[sessions do: [:session | session codeChanged: event]]}
+	sessions do: [:session | session codeChanged: event]
 ]
 
 { #category : #accessing }
@@ -198,6 +208,8 @@ GRSocketListener >> handleConnection: aSocket [
 	session := GRSocketSession new
 		socketStream: stream;
 		reactComponent: self componentClass.
+	"if you want to allow multiple sessions per image, disable this (enabled as it makes recovering from failed quit notifications easier)"
+	self clearSessions.
 	sessions at: session sessionId put: session.
 	
 	session spawnHandlerProcess

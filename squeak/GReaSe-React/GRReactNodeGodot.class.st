@@ -32,9 +32,9 @@ GRReactNodeGodot >> children: aCollection [
 ]
 
 { #category : #converting }
-GRReactNodeGodot >> createInfo [
+GRReactNodeGodot >> createInfoFor: aReact [
 
-	^ {self isResource. self godotId. self godotClass. self}
+	^ {self isResource. self godotId. self godotClass. self propertiesToSetFor: aReact}
 ]
 
 { #category : #accessing }
@@ -115,12 +115,6 @@ GRReactNodeGodot >> isResource: aBoolean [
 	isResource := aBoolean
 ]
 
-{ #category : #converting }
-GRReactNodeGodot >> jsonWriteOn: aStream [
-
-	self propertiesToSet jsonWriteOn: aStream
-]
-
 { #category : #accessing }
 GRReactNodeGodot >> key [
 
@@ -150,16 +144,13 @@ GRReactNodeGodot >> properties [
 	^ properties
 ]
 
-{ #category : #accessing }
-GRReactNodeGodot >> propertiesToSet [
-
-	^ properties select: [:val | val isGodotNode not]
-]
-
 { #category : #converting }
-GRReactNodeGodot >> putVariantOn: aStream [
+GRReactNodeGodot >> propertiesToSetFor: aReact [
 
-	self propertiesToSet putVariantOn: aStream
+	| out |
+	out := properties copyEmpty.
+	properties associationsDo: [:each | each value isGodotNode ifFalse: [out add: each key -> (self serializePropValue: each value for: aReact)]].
+	^ out
 ]
 
 { #category : #accessing }
@@ -180,10 +171,16 @@ GRReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInfo
 	aDictionary keysAndValuesDo: [:key :value |
 		value isGodotNode ifTrue: [ | newNode |
 			newNode := react renderNode: value forceReRender: false.
-			(renderInfo oldNode notNil and: [newNode godotId = ((renderInfo oldNode properties at: key ifAbsent: nil) ifNotNil: [:o | o godotId])]) ifFalse: [react addUpdate: {#update. renderInfo treeEntry godotPath. key. newNode}].
+			(renderInfo oldNode notNil and: [newNode godotId = ((renderInfo oldNode properties at: key ifAbsent: nil) ifNotNil: [:o | o godotId])]) ifFalse: [
+				SBToggledCode
+					comment: ''
+					active: 0
+					do: {[react addUpdate: {#update. renderInfo treeEntry godotPath. key. newNode}]}].
 			aDictionary at: key put: newNode].
-		value isBlock ifTrue: [aDictionary at: key put: (react registerCallback: value)].
-		(value isKindOf: GRBlockWithArguments) ifTrue: [aDictionary at: key put: {react registerCallback: value block. value arguments}]].
+		SBToggledCode comment: '' active: 0 do: {
+			[
+				value isBlock ifTrue: [aDictionary at: key put: (react registerCallback: value)].
+				(value isKindOf: GRBlockWithArguments) ifTrue: [aDictionary at: key put: {react registerCallback: value block. value arguments}]]}].
 	^ aDictionary
 ]
 
@@ -204,10 +201,10 @@ GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObjec
 			self properties
 				ifNil: [oldProps ifNotNil: [oldProps keysDo: [:key | Transcript showln: {#updateRemove. key}]]]
 				ifNotNil: [
-					self propertiesToSet keysAndValuesDo: [:key :newValue |
-						(oldProps notNil and: [(oldProps at: key ifAbsent: nil) = newValue]) ifFalse: [
+					self properties keysAndValuesDo: [:key :newValue |
+						(newValue isGodotNode not and: [oldProps notNil and: [((oldProps at: key ifAbsent: nil) grEqual: newValue) not]]) ifTrue: [
 							self assert: renderInfo treeEntry node hasGodotId.
-							react addUpdate: {#update. renderInfo treeEntry godotPath. key. newValue}]]]]
+							react addUpdate: {#update. renderInfo treeEntry godotPath. key. self serializePropValue: newValue for: react}]]]]
 		ifFalse: [self render: react properties: self properties renderInfo: renderInfo].
 	children ifNotNil: [react renderNodes: children].
 	ref ifNotNil: [
@@ -216,6 +213,14 @@ GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObjec
 			ifFalse: [react addRef: ref for: renderInfo treeEntry godotPath]].
 	
 	^ node
+]
+
+{ #category : #converting }
+GRReactNodeGodot >> serializePropValue: anObject for: aReact [
+
+	anObject isBlock ifTrue: [^ aReact registerCallback: anObject].
+	(anObject isKindOf: GRBlockWithArguments) ifTrue: [^ {aReact registerCallback: anObject block. anObject arguments}].
+	^ anObject
 ]
 
 { #category : #accessing }

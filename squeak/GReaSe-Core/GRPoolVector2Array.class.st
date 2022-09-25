@@ -12,6 +12,12 @@ GRPoolVector2Array >> at: anInteger put: anObject [
 ]
 
 { #category : #'as yet unclassified' }
+GRPoolVector2Array >> grEqual: anObject [
+
+	^ self = anObject
+]
+
+{ #category : #'as yet unclassified' }
 GRPoolVector2Array >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 24.

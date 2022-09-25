@@ -107,7 +107,7 @@ AirwriteDworph >> directionOfStrokeFrom: a to: b headPosition: head [
 		ifTrue: [ | p1 p2 |
 			p1 := a - head.
 			p2 := b - head.
-			(SBWatch report: (p1 x @ p1 z angleWith: p2 x @ p2 z) for: 512906530) > (Float pi / 2)
+			(p1 x @ p1 z angleWith: p2 x @ p2 z) > (Float pi / 2)
 				ifTrue: ['l']
 				ifFalse: ['r']]
 		ifFalse: [b y > a y ifTrue: ['u'] ifFalse: ['d']]
@@ -131,6 +131,8 @@ AirwriteDworph >> render: props [
 	^ ControllerToolDworph new
 		transform: (props at: #transform);
 		shape: self collisionShape;
+		shapeTransform: (Matrix4x4 withOffset: 0 @ (self length / 2) @ 0);
+		onRelease: #stay;
 		active: [(self methodAsComponent: #renderActive:) props: props];
 		passive: [(self methodAsComponent: #renderPassive:) props: props]
 ]
@@ -178,42 +180,42 @@ AirwriteDworph >> renderActive: props [
 					points set: {}]]]
 		dependencies: {}.
 	
-	^ (self godot: #Spatial)
-		translation: 0 @ (self length / 2) @ 0;
-		children: {
-			self renderPassive: props.
-			CMFReactNodePortal
-				child: {
-					(self godot: #Path)
-						curve: ((self godot: #Curve3D)
-							ref: curveRef;
-							bake_interval: 0.01);
-						key: 'path'.
-					(self godot: #CSGPolygon)
-						path_node: (GRNodePath path: '../path');
-						polygon: (GRPoolVector2Array new
-							add: (Vector2 x: -0.005 y: -0.005);
-							add: (Vector2 x: -0.005 y: 0.005);
-							add: (Vector2 x: 0.005 y: 0.005);
-							add: (Vector2 x: 0.005 y: -0.005);
-							yourself);
-						mode: 2;
-						path_interval_type: 0;
-						path_interval: 0.01;
-						path_simplify_angle: 0.0;
-						path_rotation: 2;
-						path_local: true;
-						path_joined: false;
-						path_continuous_u: true;
-						path_u_distance: 0.71;
-						smooth_faces: true}
-				in: worldPortal}
+	^ (self godot: #Spatial) children: {
+		self renderPassive: props.
+		CMFReactNodePortal
+			child: {
+				(self godot: #Path)
+					curve: ((self godot: #Curve3D)
+						ref: curveRef;
+						bake_interval: 0.01);
+					key: 'path'.
+				(self godot: #CSGPolygon)
+					path_node: (GRNodePath path: '../path');
+					polygon: (GRPoolVector2Array new
+						add: (Vector2 x: -0.005 y: -0.005);
+						add: (Vector2 x: -0.005 y: 0.005);
+						add: (Vector2 x: 0.005 y: 0.005);
+						add: (Vector2 x: 0.005 y: -0.005);
+						yourself);
+					mode: 2;
+					path_interval_type: 0;
+					path_interval: 0.01;
+					path_simplify_angle: 0.0;
+					path_rotation: 2;
+					path_local: true;
+					path_joined: false;
+					path_continuous_u: true;
+					path_u_distance: 0.71;
+					smooth_faces: true}
+			in: worldPortal}
 ]
 
 { #category : #rendering }
 AirwriteDworph >> renderPassive: props [
 
-	^ (self godot: #MeshInstance) mesh: self shape
+	^ (self godot: #MeshInstance)
+		mesh: self shape;
+		translation: 0 @ (self length / 2) @ 0
 ]
 
 { #category : #'as yet unclassified' }
@@ -238,6 +240,7 @@ AirwriteDworph >> thinPoints: aCollection [
 AirwriteDworph >> tipPosition: controllerTransform [
 
 	^ SBToggledCode comment: '' active: 2 do: {
+		[controllerTransform productFromVector3: 0 @ self length @ 0].
 		[controllerTransform translation].
 		[(controllerTransform rotateVector3: 0 @ self length @ 0) + controllerTransform translation]}
 ]

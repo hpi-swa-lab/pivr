@@ -13,6 +13,12 @@ GRObjectId >> = anObject [
 	^ self class = anObject class and: [anObject objectId = self objectId]
 ]
 
+{ #category : #converting }
+GRObjectId >> grEqual: anObject [
+
+	^ self = anObject
+]
+
 { #category : #comparing }
 GRObjectId >> hash [
 

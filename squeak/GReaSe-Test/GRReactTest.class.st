@@ -90,6 +90,19 @@ GRReactTest >> testReleaseToolStayOrReturn [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testUnregistersCallbacks [
+
+	self openComponentBlock: [(self godot: #Button) pressed: []].
+	self assert: 1 equals: (react instVarNamed: #callbacks) size.
+	self tick.
+	self tick.
+	self tick.
+	Smalltalk garbageCollectMost.
+	(react instVarNamed: #callbacks) clean.
+	self assert: 2 equals: (react instVarNamed: #callbacks) size
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> tick [
 
 	^ self tick: {}

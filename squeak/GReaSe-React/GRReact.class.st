@@ -58,13 +58,28 @@ GRReact class >> startGodot [
 	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
 		RunningGodotProcess ifNotNil: #terminate.
 		GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
-		RunningGodotProcess := shell command: ('bash -c "cd {1}; {2}"' format: {self pivrPath / 'project'. GodotPath})]
+		RunningGodotProcess := shell isWindows
+			ifTrue: [OSProcess command: ('{1} --path {2}' format: {GodotPath. (self pivrPath / 'project') asString})]
+			ifFalse: [
+				ExternalUnixOSProcess
+					forkAndExec: GodotPath
+					arguments: {}
+					environment: nil
+					descriptors: nil
+					workingDir: (self pivrPath / 'project') asString]]
+]
+
+{ #category : #deploy }
+GRReact class >> stopAll [
+
+	GRSocketListener stopAll.
+	RunningGodotProcess ifNotNil: #terminate
 ]
 
 { #category : #reconciliation }
 GRReact >> addChild: aNode in: aParentNode [
 
-	aNode isGodotNode ifTrue: [self addUpdate: {#add. aParentNode godotPath}, aNode createInfo].
+	aNode isGodotNode ifTrue: [self addUpdate: {#add. aParentNode godotPath}, (aNode createInfoFor: self)].
 	^ super addChild: aNode in: aParentNode
 ]
 
@@ -102,7 +117,7 @@ GRReact >> initialize [
 
 	super initialize.
 	
-	callbacks := Dictionary new
+	callbacks := GRCallbackRegistry new
 ]
 
 { #category : #reconciliation }
@@ -115,20 +130,14 @@ GRReact >> moveChild: aNode to: anotherNumber in: aParentNode [
 { #category : #rendering }
 GRReact >> registerCallback: aClosure [
 
-	| id |
-	callbacks keysAndValuesDo: [:closureId :closure | closure == aClosure ifTrue: [^ closureId]].
-	
-	id := self class nextGodotId.
-	callbacks at: id put: aClosure.
-	^ id
+	^ callbacks registerCallback: aClosure
 ]
 
 { #category : #reconciliation }
 GRReact >> replaceChildAt: aNumber with: aNode in: aParentNode [
 
 	(aParentNode childrenTreeNodes at: aNumber) renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}].
-	aNode isGodotNode ifTrue: [
-		self addUpdate: {#add. aParentNode godotPath}, aNode createInfo].
+	aNode isGodotNode ifTrue: [self addUpdate: {#add. aParentNode godotPath}, (aNode createInfoFor: self)].
 	
 	^ super replaceChildAt: aNumber with: aNode in: aParentNode
 ]
@@ -147,7 +156,7 @@ GRReact >> session: aSession [
 
 { #category : #'as yet unclassified' }
 GRReact >> subscribeToCodeChanges [
-	"noop, conflicft with our global listener"
+	"noop, conflict with our global listener"
 
 	
 ]
@@ -157,7 +166,7 @@ GRReact >> tick: aCollectionOfPendingCallbacks [
 
 	| return |
 	aCollectionOfPendingCallbacks
-		ifNotEmpty: [self batchUpdatesDuring: [aCollectionOfPendingCallbacks do: [:callback | (callbacks at: callback first) valueWithArguments: callback allButFirst]]]
+		ifNotEmpty: [self batchUpdatesDuring: [aCollectionOfPendingCallbacks do: [:callback | (callbacks get: callback first) valueWithArguments: callback allButFirst]]]
 		ifEmpty: ["if there were no pending callbacks, it's a full update request"
 		self render].
 	
@@ -177,6 +186,7 @@ GRReact >> updateFrameDo: aBlock [
 	pendingUpdates ifNil: [pendingUpdates := OrderedCollection new].
 	pendingRefs ifNil: [pendingRefs := OrderedCollection new].
 	GRReactCurrentSession value: session during: [ret := super updateFrameDo: aBlock].
+	callbacks clean.
 	^ ret
 ]
 
