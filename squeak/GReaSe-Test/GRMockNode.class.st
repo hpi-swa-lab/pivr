@@ -117,7 +117,7 @@ GRMockNode >> name [
 { #category : #'as yet unclassified' }
 GRMockNode >> name: aString [
 
-	name := aString
+	name := aString asString
 ]
 
 { #category : #'as yet unclassified' }
@@ -137,7 +137,7 @@ GRMockNode >> printOn: aStream [
 
 	aStream nextPutAll: self className.
 	aStream nextPut: $(.
-	aStream nextPutAll: self name.
+	aStream nextPutAll: self name asString.
 	aStream nextPut: $)
 ]
 

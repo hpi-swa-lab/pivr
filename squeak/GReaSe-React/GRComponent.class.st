@@ -46,6 +46,12 @@ GRComponent >> useGripPressed [
 ]
 
 { #category : #hooks }
+GRComponent >> useHandId [
+
+	^ self useProvided: #handId
+]
+
+{ #category : #hooks }
 GRComponent >> useHandPortal [
 
 	^ self useProvided: #handPortal

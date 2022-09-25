@@ -37,6 +37,15 @@ GRObjectId >> objectId: aNumber [
 	objectId := aNumber
 ]
 
+{ #category : #printing }
+GRObjectId >> printOn: aStream [
+
+	aStream nextPutAll: self className.
+	aStream nextPut: $(.
+	aStream nextPutAll: self objectId asString.
+	aStream nextPut: $)
+]
+
 { #category : #converting }
 GRObjectId >> putVariantOn: aWriteStream [
 

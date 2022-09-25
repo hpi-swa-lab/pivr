@@ -7,8 +7,9 @@ Class {
 { #category : #rendering }
 ControllerInfoDworph >> render: props [
 
-	| handPortal transform transformSub buttonPressed buttonRelase pressedButtons controllerNode axes |
+	| handPortal transform transformSub buttonPressed buttonRelase pressedButtons controllerNode axes handArea |
 	handPortal := self useRef: nil.
+	handArea := self useRef: nil.
 	
 	transform := self useState: Matrix4x4 identity.
 	transformSub := self useCallback: [:t | transform set: t] dependencies: {}.
@@ -29,10 +30,12 @@ ControllerInfoDworph >> render: props [
 	controllerNode := (self godot: #ARVRController)
 		controller_id: ((props at: #left) == true ifTrue: [1] ifFalse: [2]);
 		children: {
-			(self godot: #Area) children: {
-				(self godot: #CollisionShape) shape: ((self godot: #SphereShape)
-					margin: 0.001;
-					radius: 0.002)}.
+			(self godot: #Area)
+				children: {
+					(self godot: #CollisionShape) shape: ((self godot: #SphereShape)
+						margin: 0.001;
+						radius: 0.002)};
+				ref: handArea.
 			(self godot: #Spatial) ref: [:node | handPortal set: node]};
 		button_pressed: buttonPressed;
 		button_release: buttonRelase;
@@ -46,6 +49,7 @@ ControllerInfoDworph >> render: props [
 			values: {
 				#controllerTransform -> transform get.
 				#handPortal -> handPortal get.
+				#handId -> handArea.
 				#pressedButtons -> pressedButtons get}, (axes collect: [:axis | axis second -> axis third get])
 			children: (props at: #children ifAbsent: [#()])}
 ]

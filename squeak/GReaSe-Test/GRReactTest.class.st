@@ -56,6 +56,24 @@ GRReactTest >> testConditionalReplace [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testLoopWithKeyedObjects [
+
+	| nestedComponent |
+	nestedComponent := [ | count callback |
+		count := CMFReact useState: 0.
+		callback := CMFReact useCallback: [count set: [:x | x + 1]] dependencies: {}.
+		(self godot: (count get = 0 ifTrue: [#MeshInstance] ifFalse: [#RigidBody]))
+			mesh: (self godot: #CubeMesh);
+			pressed: callback].
+	self openComponentBlock: [
+		(self godot: #Spatial) children: ((1 to: 10) withIndexCollect: [:num :index |
+			nestedComponent asReactNodeBuilder
+				props: {#key -> index};
+				build])].
+	self assert: (self tick: {(godotTree firstNodeOfType: #MeshInstance) trigger: #pressed}) first size = 3
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testReleaseToolStayOrReturn [
 
 	| releasePos initialPos |

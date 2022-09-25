@@ -83,7 +83,7 @@ AirwriteDworph >> collisionShape [
 	^ (self godot: #CylinderShape)
 		height: self length;
 		radius: self radius * 2;
-		margin: 0.001
+		margin: 0.0001
 ]
 
 { #category : #detection }
@@ -132,7 +132,7 @@ AirwriteDworph >> render: props [
 		transform: (props at: #transform);
 		shape: self collisionShape;
 		shapeTransform: (Matrix4x4 withOffset: 0 @ (self length / 2) @ 0);
-		onRelease: #stay;
+		onRelease: #drop;
 		active: [(self methodAsComponent: #renderActive:) props: props];
 		passive: [(self methodAsComponent: #renderPassive:) props: props]
 ]
