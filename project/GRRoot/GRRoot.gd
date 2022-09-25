@@ -34,6 +34,7 @@ var tcp: StreamPeerTCP
 var pending_signal_handlers = []
 var subscriptions = []
 var session_id: int
+var quit = false
 
 func ip():
 	if OS.get_cmdline_args().empty():
@@ -67,11 +68,15 @@ func _ready():
 	update()
 
 func _process(_delta):
+	if quit:
+		return
+	
 	# FIXME probably not gonna work like this but the idea is that we put
 	# a simple marker into our stream when there's nothing supposed to be there
 	# to tell godot that it should requery
-	var code_changed = tcp.get_available_bytes()
+	var code_changed = tcp.get_available_bytes() >= 4
 	if code_changed:
+		print("Hot code reload")
 		tcp.get_var(true)
 	
 	for subscription in subscriptions:
@@ -110,6 +115,7 @@ func object_for(string_or_obj_id):
 
 func _notification(what):
 	if what == MainLoop.NOTIFICATION_WM_QUIT_REQUEST:
+		quit = true
 		tcp.put_var([MessageType.quit_from_godot, session_id])
 		get_tree().quit()
 
