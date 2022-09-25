@@ -239,8 +239,5 @@ AirwriteDworph >> thinPoints: aCollection [
 { #category : #'as yet unclassified' }
 AirwriteDworph >> tipPosition: controllerTransform [
 
-	^ SBToggledCode comment: '' active: 2 do: {
-		[controllerTransform productFromVector3: 0 @ self length @ 0].
-		[controllerTransform translation].
-		[(controllerTransform rotateVector3: 0 @ self length @ 0) + controllerTransform translation]}
+	^ controllerTransform transform: 0 @ self length @ 0
 ]

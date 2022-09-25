@@ -45,3 +45,12 @@ Matrix4x4 >> scale [
 
 	^ Vector3 x: self a11 y: self a22 z: self a33
 ]
+
+{ #category : #'*GReaSe-Core' }
+Matrix4x4 >> transform: aVector3 [
+
+	^ Vector3
+		x: (self row1 dot: aVector3) + self a14
+		y: (self row2 dot: aVector3) + self a24
+		z: (self row3 dot: aVector3) + self a34
+]
