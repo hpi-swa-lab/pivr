@@ -9,6 +9,14 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GRReactTest >> godot: aClassName [
+
+	^ GRReactNodeGodot new
+		godotClass: aClassName;
+		yourself
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> openComponent: aComponentClass [
 
 	react := GRReact new
@@ -34,10 +42,10 @@ GRReactTest >> testConditionalReplace [
 	self openComponentBlock: [:props | | active |
 		active := CMFReact useState: false.
 		{
-			(GRReactNodeGodot for: #Button) pressed: [active set: [:b | b not]].
+			(self godot: #Button) pressed: [active set: [:b | b not]].
 			active get
-				ifTrue: [(GRReactNodeGodot for: #Label) children: {GRReactNodeGodot for: #Child}]
-				ifFalse: [GRReactNodeGodot for: #Spatial]}].
+				ifTrue: [(self godot: #Label) children: {self godot: #Child}]
+				ifFalse: [self godot: #Spatial]}].
 	
 	godotTree firstNodeOfType: #Spatial.
 	
@@ -48,33 +56,37 @@ GRReactTest >> testConditionalReplace [
 ]
 
 { #category : #'as yet unclassified' }
-GRReactTest >> testGrabTool [
+GRReactTest >> testReleaseToolStayOrReturn [
 
-	self openComponent: GRExampleVR.
-	
-	self
-		should: [(godotTree firstNodeOfType: #ARVRController) firstNodeOfType: #MeshInstance]
-		raise: Error.
-	
-	self tick: {
-		(godotTree firstNodeOfType: #ARVRController)
-			trigger: #'button_pressed'
-			with: {6}}.
-	self tick: {
-		(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
-			trigger: #'area_entered'
-			with: {6}}.
-	self
-		shouldnt: [(godotTree firstNodeOfType: #ARVRController) firstNodeOfType: #MeshInstance]
-		raise: Error.
-	
-	self tick: {
-		(godotTree firstNodeOfType: #ARVRController)
-			trigger: #'button_release'
-			with: {6}}.
-	self
-		should: [(godotTree firstNodeOfType: #ARVRController) firstNodeOfType: #MeshInstance]
-		raise: Error
+	| releasePos initialPos |
+	initialPos := 1 @ 2 @ 3.
+	releasePos := 4 @ 5 @ 6.
+	{{#stay. releasePos}. {#return. initialPos}} do: [:pair |
+		self openComponentBlock: [
+			WorldDworph new children: {
+				ControllerToolDworph new
+					shape: (self godot: #CollisionShape);
+					transform: (Matrix4x4 withOffset: initialPos);
+					onRelease: pair first;
+					active: [self godot: #Active];
+					passive: [self godot: #Passive]}].
+		self tick: {
+			(godotTree firstNodeOfType: #ARVRController)
+				trigger: #'button_pressed'
+				with: {6}.
+			(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
+				trigger: #'area_entered'
+				with: {6}.
+			(godotTree firstNodeOfType: #ARVRController)
+				trigger: 'subscribe_transform'
+				with: {Matrix4x4 withOffset: releasePos}}.
+		self tick: {
+			(godotTree firstNodeOfType: #ARVRController)
+				trigger: #'button_release'
+				with: {6}}.
+		self
+			assert: pair second
+			equals: ((godotTree firstNodeOfType: #Passive) parent properties at: #transform) translation]
 ]
 
 { #category : #'as yet unclassified' }

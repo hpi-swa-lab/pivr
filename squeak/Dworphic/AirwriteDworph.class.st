@@ -81,8 +81,8 @@ AirwriteDworph >> checkMatch: aCollection [
 AirwriteDworph >> collisionShape [
 
 	^ (self godot: #CylinderShape)
-		height: 0.1;
-		radius: 0.02;
+		height: self length;
+		radius: self radius * 2;
 		margin: 0.001
 ]
 
@@ -113,6 +113,18 @@ AirwriteDworph >> directionOfStrokeFrom: a to: b headPosition: head [
 		ifFalse: [b y > a y ifTrue: ['u'] ifFalse: ['d']]
 ]
 
+{ #category : #'as yet unclassified' }
+AirwriteDworph >> length [
+
+	^ 0.1
+]
+
+{ #category : #'as yet unclassified' }
+AirwriteDworph >> radius [
+
+	^ 0.005
+]
+
 { #category : #rendering }
 AirwriteDworph >> render: props [
 
@@ -126,13 +138,14 @@ AirwriteDworph >> render: props [
 { #category : #rendering }
 AirwriteDworph >> renderActive: props [
 
-	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points worldPortal |
+	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points worldPortal controllerTransform |
 	worldPortal := self useWorldPortal.
 	points := self useState: {}.
 	lastControllerTranslation := self useState: Vector3 zero.
 	
 	headPosition := self useHeadTransform translation.
-	controllerTranslation := self useControllerTransform translation.
+	controllerTransform := self useControllerTransform.
+	controllerTranslation := controllerTransform translation.
 	buttonPressed := self useGripPressed.
 	
 	curveRef := self useRef: nil.
@@ -142,12 +155,13 @@ AirwriteDworph >> renderActive: props [
 			curveRef get ifNotNil: [
 				(lastControllerTranslation get distanceTo: controllerTranslation) > 0.01 ifTrue: [
 					lastControllerTranslation set: controllerTranslation.
-					buttonPressed ifTrue: [
-						points set: [:p | p copyWith: controllerTranslation].
+					buttonPressed ifTrue: [ | position |
+						position := self tipPosition: controllerTransform.
+						points set: [:p | p copyWith: position].
 						GRReactCurrentSession value
 							callOn: curveRef get
 							method: 'add_point'
-							arguments: {controllerTranslation}]]].
+							arguments: {position}]]].
 			nil]
 		dependencies: {controllerTranslation. buttonPressed}.
 	
@@ -164,34 +178,36 @@ AirwriteDworph >> renderActive: props [
 					points set: {}]]]
 		dependencies: {}.
 	
-	^ (self godot: #Spatial) children: {
-		self renderPassive: props.
-		CMFReactNodePortal
-			child: {
-				(self godot: #Path)
-					curve: ((self godot: #Curve3D)
-						ref: curveRef;
-						bake_interval: 0.01);
-					key: 'path'.
-				(self godot: #CSGPolygon)
-					path_node: (GRNodePath path: '../path');
-					polygon: (GRPoolVector2Array new
-						add: (Vector2 x: -0.005 y: -0.005);
-						add: (Vector2 x: -0.005 y: 0.005);
-						add: (Vector2 x: 0.005 y: 0.005);
-						add: (Vector2 x: 0.005 y: -0.005);
-						yourself);
-					mode: 2;
-					path_interval_type: 0;
-					path_interval: 0.01;
-					path_simplify_angle: 0.0;
-					path_rotation: 2;
-					path_local: true;
-					path_joined: false;
-					path_continuous_u: true;
-					path_u_distance: 0.71;
-					smooth_faces: true}
-			in: worldPortal}
+	^ (self godot: #Spatial)
+		translation: 0 @ (self length / 2) @ 0;
+		children: {
+			self renderPassive: props.
+			CMFReactNodePortal
+				child: {
+					(self godot: #Path)
+						curve: ((self godot: #Curve3D)
+							ref: curveRef;
+							bake_interval: 0.01);
+						key: 'path'.
+					(self godot: #CSGPolygon)
+						path_node: (GRNodePath path: '../path');
+						polygon: (GRPoolVector2Array new
+							add: (Vector2 x: -0.005 y: -0.005);
+							add: (Vector2 x: -0.005 y: 0.005);
+							add: (Vector2 x: 0.005 y: 0.005);
+							add: (Vector2 x: 0.005 y: -0.005);
+							yourself);
+						mode: 2;
+						path_interval_type: 0;
+						path_interval: 0.01;
+						path_simplify_angle: 0.0;
+						path_rotation: 2;
+						path_local: true;
+						path_joined: false;
+						path_continuous_u: true;
+						path_u_distance: 0.71;
+						smooth_faces: true}
+				in: worldPortal}
 ]
 
 { #category : #rendering }
@@ -204,9 +220,9 @@ AirwriteDworph >> renderPassive: props [
 AirwriteDworph >> shape [
 
 	^ (self godot: #CylinderMesh)
-		height: 0.1;
-		top_radius: 0.02;
-		bottom_radius: 0.02;
+		height: self length;
+		top_radius: self radius;
+		bottom_radius: self radius;
 		radial_segments: 12
 ]
 
@@ -216,4 +232,12 @@ AirwriteDworph >> thinPoints: aCollection [
 	^ Array streamContents: [:stream |
 		stream nextPut: aCollection first.
 		aCollection allButFirstDo: [:point | (point distanceTo: stream last) > 0.03 ifTrue: [stream nextPut: point]]]
+]
+
+{ #category : #'as yet unclassified' }
+AirwriteDworph >> tipPosition: controllerTransform [
+
+	^ SBToggledCode comment: '' active: 2 do: {
+		[controllerTransform translation].
+		[(controllerTransform rotateVector3: 0 @ self length @ 0) + controllerTransform translation]}
 ]

@@ -15,7 +15,7 @@ GRExampleVR >> render: props [
 		dependencies: {}.
 	
 	^ WorldDworph new children: {
-		GRProvider values: {#keyEntered -> enterKey} children: {AirwriteDworph new transform: (Matrix4x4 withOffset: 0 @ 0.7 @ 0)}, (points collect: [:p |
+		GRProvider values: {#keyEntered -> enterKey} children: {AirwriteDworph new transform: (Matrix4x4 withOffset: 1 @ 0.4 @ 1)}, (points collect: [:p |
 			(self godot: #MeshInstance)
 				translation: p;
 				mesh: ((self godot: #CubeMesh) size: (Vector3 x: 1 y: 1 z: 1))])}

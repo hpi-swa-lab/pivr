@@ -70,6 +70,18 @@ GRComponent >> useProvided: aSymbol [
 ]
 
 { #category : #hooks }
+GRComponent >> useProvidedRef: aSymbol [
+
+	| hook react |
+	react := CMFCurrentReact value.
+	hook := react getHook: GRHookUseProvidedRef IfAbsent: [:node |
+		GRHookUseProvidedRef new
+			symbol: aSymbol node: node;
+			yourself].
+	^ hook
+]
+
+{ #category : #hooks }
 GRComponent >> useWorldPortal [
 
 	^ self useProvided: #worldPortal

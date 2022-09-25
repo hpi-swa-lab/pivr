@@ -1,7 +1,7 @@
 Class {
 	#name : #GRVariantTest,
 	#superclass : #TestCase,
-	#category : #'GReaSe-Core'
+	#category : #'GReaSe-Test'
 }
 
 { #category : #'as yet unclassified' }
@@ -72,6 +72,19 @@ GRVariantTest >> testString [
 GRVariantTest >> testTransform [
 
 	| matrix |
-	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 0 0 0 192 0 0 128 63 0 0 128 64 0 0 128 191 0 0 0 64 0 0 160 64 0 0 0 0 0 0 64 64 0 0 192 64 0 0 224 64 0 0 0 65 0 0 16 65] readStream.
-	self assert: matrix translation equals: (Vector3 x: 7 y: 8 z: 9)
+	"Transform(Basis(), Vector3(7, 8, 9))"
+	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 0 0 128 63 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 63 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 63 0 0 224 64 0 0 0 65 0 0 16 65] readStream.
+	self assert: matrix translation equals: (Vector3 x: 7 y: 8 z: 9).
+	
+	"Transform(Basis(Vector3(0, 0, 1), PI), Vector3(0, 0, 0))"
+	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 0 0 128 191 46 189 187 51 0 0 0 0 46 189 187 179 0 0 128 191 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 63 0 0 0 0 0 0 0 0 0 0 0 0] readStream.
+	self assert: (matrix rotation closeTo: 0 @ 0 @ 180).
+	
+	"Transform(Basis().scaled(Vector3(3, 4, 5)), Vector3(0, 0, 0))"
+	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 0 0 64 64 0 0 0 0 0 0 0 0 0 0 0 0 0 0 128 64 0 0 0 0 0 0 0 0 0 0 0 0 0 0 160 64 0 0 0 0 0 0 0 0 0 0 0 0] readStream.
+	self assert: (matrix scale closeTo: 3 @ 4 @ 5).
+	
+	"Transform(Basis(Vector3(0, 1, 0), PI), Vector3(0, 0, 0))"
+	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 0 0 128 191 0 0 0 0 46 189 187 179 0 0 0 0 0 0 128 63 0 0 0 0 46 189 187 51 0 0 0 0 0 0 128 191 0 0 0 0 0 0 0 0 0 0 0 0] readStream.
+	self assert: (matrix rotation closeTo: 0 @ 180 @ 0)
 ]
