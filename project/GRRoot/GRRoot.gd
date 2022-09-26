@@ -156,6 +156,13 @@ func apply_updates(list):
 				apply_prop(target[1] if target[1] else target[0], key, value)
 			'delete':
 				get_node(root_path + update[1]).queue_free()
+			'move':
+				var nodePaths = update[1]
+				var startIndex = update[2]
+				for path in nodePaths:
+					var child = get_node(path)
+					child.get_parent().move_child(child, startIndex - 1)
+					startIndex += 1
 			'replace':
 				var old_path = update[1]
 				var is_resource = update[2]
@@ -209,6 +216,11 @@ func apply_prop(instance, key, value):
 		s.key = key
 		s.callback_id = value
 		subscriptions.append(s)
+		return
+	
+	if key.begins_with('meta_'):
+		key = key.substr(5)
+		instance.set_meta(key, value)
 		return
 	
 	if instance.has_signal(key):
