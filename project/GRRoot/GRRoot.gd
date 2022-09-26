@@ -13,6 +13,7 @@ enum MessageType {
 	property_set_from_squeak = 7
 	property_get_from_squeak = 8
 	bind_refs_from_godot = 9
+	tick_update_from_squeak = 10
 }
 
 class Subscription:
@@ -95,9 +96,10 @@ func update():
 		if response:
 			match response[0]:
 				MessageType.tick_completed_from_squeak:
+					return
+				MessageType.tick_update_from_squeak:
 					apply_updates(response[1][0])
 					bind_refs(response[1][1])
-					return
 				MessageType.call_from_squeak:
 					var ret = object_for(response[1]).callv(response[2], response[3])
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
