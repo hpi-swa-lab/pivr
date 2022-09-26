@@ -195,9 +195,9 @@ GRReactTest >> testReleaseToolStayOrReturn [
 				with: {6}.
 			(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
 				trigger: #'area_entered'
-				with: {6}.
+				with: {godotTree firstNodeOfType: #Area}.
 			(godotTree firstNodeOfType: #ARVRController)
-				trigger: 'subscribe_transform'
+				trigger: 'subscribe_global_transform'
 				with: {Matrix4x4 withOffset: releasePos}}.
 		self tick: {
 			(godotTree firstNodeOfType: #ARVRController)
