@@ -34,7 +34,7 @@ GRSocketSession >> callOn: anObject method: aString arguments: aCollection [
 { #category : #'as yet unclassified' }
 GRSocketSession >> close [
 
-	[stream ifNotNil: #close] on: SocketPrimitiveFailed do: [:error |]
+	[stream ifNotNil: #close] on: Error do: [:error |]
 ]
 
 { #category : #'as yet unclassified' }

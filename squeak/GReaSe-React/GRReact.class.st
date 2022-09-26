@@ -109,7 +109,9 @@ GRReact >> deleteChildrenFrom: aNumber in: aParentNode [
 	aParentNode childrenTreeNodes
 		from: aNumber
 		to: aParentNode childrenTreeNodes size
-		do: [:node | node renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}]].
+		do: [:node |
+			node renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}].
+			node allEntriesDo: [:entry | (node ~= entry and: [entry node class = CMFReactNodePortal]) ifTrue: [entry renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}]]]].
 	^ super deleteChildrenFrom: aNumber in: aParentNode
 ]
 
@@ -149,7 +151,11 @@ GRReact >> registerCallback: aClosure [
 { #category : #reconciliation }
 GRReact >> replaceChildAt: aNumber with: aNode in: aParentNode [
 
-	(aParentNode childrenTreeNodes at: aNumber) renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}].
+	| oldChild |
+	oldChild := aParentNode childrenTreeNodes at: aNumber.
+	oldChild renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}].
+	oldChild allEntriesDo: [:entry | (oldChild ~= entry and: [entry node class = CMFReactNodePortal]) ifTrue: [entry renderResultGodotPaths do: [:path | self addUpdate: {#delete. path}]]].
+	
 	aNode isGodotNode ifTrue: [self addUpdate: {#add. aParentNode godotPath}, (aNode createInfoFor: self)].
 	
 	^ super replaceChildAt: aNumber with: aNode in: aParentNode

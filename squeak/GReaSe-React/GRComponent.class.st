@@ -51,7 +51,7 @@ GRComponent >> useHandId [
 	^ self useProvided: #handId
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #hooks }
 GRComponent >> useHandIsFree [
 
 	^ self useProvided: #handIsFree
@@ -91,6 +91,12 @@ GRComponent >> useProvidedRef: aSymbol [
 			symbol: aSymbol node: node;
 			yourself].
 	^ hook
+]
+
+{ #category : #hooks }
+GRComponent >> useTeleport [
+
+	^ self useProvided: #teleport
 ]
 
 { #category : #hooks }

@@ -214,18 +214,12 @@ AirwriteDworph >> renderActive: props [
 AirwriteDworph >> renderPassive: props [
 
 	^ (self godot: #MeshInstance)
-		mesh: self shape;
+		mesh: ((self godot: #CylinderMesh)
+			height: self length;
+			top_radius: self radius;
+			bottom_radius: self radius;
+			radial_segments: 12);
 		translation: 0 @ (self length / 2) @ 0
-]
-
-{ #category : #'as yet unclassified' }
-AirwriteDworph >> shape [
-
-	^ (self godot: #CylinderMesh)
-		height: self length;
-		top_radius: self radius;
-		bottom_radius: self radius;
-		radial_segments: 12
 ]
 
 { #category : #detection }

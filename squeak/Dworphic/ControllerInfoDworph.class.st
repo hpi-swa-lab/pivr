@@ -35,23 +35,25 @@ ControllerInfoDworph >> render: props [
 				children: {
 					(self godot: #CollisionShape) shape: ((self godot: #SphereShape)
 						margin: 0.001;
-						radius: 0.002)};
+						radius: 0.005)};
 				ref: handArea.
-			(self godot: #Spatial) ref: [:node | handPortal set: node]};
+			(self godot: #Spatial) ref: [:node | handPortal set: node].
+			(self godot: #MeshInstance) mesh: ((self godot: #SphereMesh)
+				radius: 0.005;
+				height: 0.01)};
 		button_pressed: buttonPressed;
 		button_release: buttonRelase;
-		subscribeTo: #transform do: transformSub.
+		subscribeTo: #'global_transform' do: transformSub.
 	
 	axes do: [:axis | controllerNode subscribeCall: 'get_joystick_axis' with: {axis first} do: axis fourth].
 	
 	^ {
-		controllerNode.
 		GRProvider
 			values: {
 				#controllerTransform -> transform get.
-				#handPortal -> handPortal get.
+				#handPortal -> handPortal.
 				#handId -> handArea.
 				#handIsFree -> handIsFree.
 				#pressedButtons -> pressedButtons get}, (axes collect: [:axis | axis second -> axis third get])
-			children: (props at: #children ifAbsent: [#()])}
+			children: ((props at: #do) value: controllerNode)}
 ]

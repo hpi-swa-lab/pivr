@@ -7,21 +7,29 @@ Class {
 { #category : #rendering }
 WorldDworph >> render: props [
 
-	| headTransform headTransformSubscription worldRef |
+	| headTransform headTransformSubscription worldRef teleport |
 	self useVR.
 	headTransform := self useState: Matrix4x4 identity.
 	headTransformSubscription := self useCallback: [:t | headTransform set: t] dependencies: {}.
+	teleport := self useState: Matrix4x4 identity.
 	worldRef := self useRef: nil.
 	
 	^ GRProvider
-		values: {#headTransform -> headTransform get. #worldPortal -> worldRef get}
+		values: {#headTransform -> headTransform get. #worldPortal -> worldRef. #teleport -> teleport}
 		children: {
-			(self godot: #ARVROrigin) children: {
-				(self godot: #ARVRCamera) subscribeTo: #transform do: headTransformSubscription.
-				ControllerInfoDworph new
-					left: false;
-					children: {props at: #children ifAbsent: [#()]}.
-				(self godot: #Spatial) ref: [:node | worldRef set: node]}}
+			ControllerInfoDworph new
+				left: false;
+				do: [:controllerNode |
+					{
+						(self godot: #Spatial) children: {
+							(self godot: #ARVROrigin)
+								transform: teleport get;
+								children: {
+									(self godot: #ARVRCamera)
+										subscribeTo: #'global_transform'
+										do: headTransformSubscription.
+									controllerNode}.
+							(self godot: #Spatial) ref: [:node | worldRef set: node]}, (props at: #children ifAbsent: [{}])}]}
 ]
 
 { #category : #hooks }

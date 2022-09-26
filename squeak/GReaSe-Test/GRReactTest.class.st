@@ -116,6 +116,65 @@ GRReactTest >> testLoopWithKeyedObjects [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testOptionalChildDirectInPortal [
+
+	self openComponentBlock: [ | count portal |
+		count := CMFReact useState: 0.
+		portal := CMFReact useRef: nil.
+		CMFReact
+			useEffect: [count set: [:c | c = 1 ifTrue: [c + 1] ifFalse: [c]]]
+			dependencies: {count get}.
+		{
+			(self godot: #Other)
+				key: #other;
+				ref: [:node | portal set: node].
+			count get < 2 ifTrue: [
+				(self godot: #Spatial)
+					key: #Spatial;
+					pressed: [count set: [:c | c + 1]];
+					children: {
+						[
+							count get = 0
+								ifTrue: [
+									{
+										self godot: #Child1.
+										self godot: #Child2.
+										CMFReactNodePortal child: (self godot: #OptionalChild) in: portal}]
+								ifFalse: [{}]] asReactNodeBuilder build}]}].
+	self assert: 1 equals: (godotTree firstNodeOfType: #Other) children size.
+	self assert: 2 equals: (godotTree firstNodeOfType: #Spatial) children size.
+	self tick: {(godotTree firstNodeOfType: #Spatial) trigger: #pressed}.
+	self assert: 0 equals: (godotTree firstNodeOfType: #Spatial) children size.
+	self assert: 0 equals: (godotTree firstNodeOfType: #Other) children size
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testOptionalChildNestedInPortal [
+
+	self openComponentBlock: [ | count portal |
+		count := CMFReact useState: 0.
+		portal := CMFReact useRef: nil.
+		{
+			(self godot: #Other)
+				key: #other;
+				ref: [:node | portal set: node].
+			(self godot: #Spatial)
+				key: #Spatial;
+				pressed: [count set: [:c | c + 1]];
+				children: {
+					self godot: #Child1.
+					count get = 0
+						ifTrue: [(self godot: #Nested) children: {CMFReactNodePortal child: (self godot: #OptionalChild) in: portal}]
+						ifFalse: [nil].
+					self godot: #Child2}}].
+	self assert: 1 equals: (godotTree firstNodeOfType: #Other) children size.
+	self assert: 3 equals: (godotTree firstNodeOfType: #Spatial) children size.
+	self tick: {(godotTree firstNodeOfType: #Spatial) trigger: #pressed}.
+	self assert: 2 equals: (godotTree firstNodeOfType: #Spatial) children size.
+	self assert: 0 equals: (godotTree firstNodeOfType: #Other) children size
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testReleaseToolStayOrReturn [
 
 	| releasePos initialPos |

@@ -36,7 +36,7 @@ CubeRemoveDworph >> renderActive: props [
 				arguments: {'id'. nil}.
 			(triggerStrength > 0.6 and: [id notNil]) ifTrue: [
 				cubes set: [:c |
-					self assert: (cubes get anySatisfy: [:cube | cube third = id]).
+					self assert: (c anySatisfy: [:cube | cube third = id]).
 					c select: [:cube | cube third ~= id]]]]
 ]
 

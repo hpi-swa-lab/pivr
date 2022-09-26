@@ -153,7 +153,7 @@ GRMockNode >> parent: aNode [
 { #category : #'as yet unclassified' }
 GRMockNode >> printOn: aStream [
 
-	aStream nextPutAll: self className.
+	aStream nextPutAll: self godotClass.
 	aStream nextPut: $(.
 	aStream nextPutAll: self name asString.
 	aStream nextPut: $)

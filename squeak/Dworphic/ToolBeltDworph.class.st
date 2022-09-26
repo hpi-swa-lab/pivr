@@ -8,7 +8,10 @@ Class {
 ToolBeltDworph >> render: props [
 
 	| head |
-	head := self useHeadTransform translation.
+	head := SBToggledCode
+		comment: ''
+		active: 2
+		do: {[-1 @ 0.5 @ -1]. [self useHeadTransform translation]}.
 	^ (self godot: #MeshInstance)
 		translation: head - (0 @ 0.4 @ 0.05);
 		mesh: ((self godot: #CubeMesh) size: 0.2 @ 0.07 @ 0.01);
@@ -21,5 +24,8 @@ ToolBeltDworph >> render: props [
 				translation: 0.0 @ 0.03 @ 0.
 			(self godot: #Spatial)
 				children: {CubeRemoveDworph new};
-				translation: 0.04 @ 0.03 @ 0}
+				translation: 0.04 @ 0.03 @ 0.
+			(self godot: #Spatial)
+				children: {TeleportToolDworph new};
+				translation: 0.08 @ 0.04 @ 0}
 ]
