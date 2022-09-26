@@ -51,6 +51,12 @@ GRComponent >> useHandId [
 	^ self useProvided: #handId
 ]
 
+{ #category : #'as yet unclassified' }
+GRComponent >> useHandIsFree [
+
+	^ self useProvided: #handIsFree
+]
+
 { #category : #hooks }
 GRComponent >> useHandPortal [
 
@@ -85,6 +91,12 @@ GRComponent >> useProvidedRef: aSymbol [
 			symbol: aSymbol node: node;
 			yourself].
 	^ hook
+]
+
+{ #category : #hooks }
+GRComponent >> useTriggerStrength [
+
+	^ self useProvided: #trigger
 ]
 
 { #category : #hooks }

@@ -124,7 +124,7 @@ GRReact >> initialize [
 { #category : #reconciliation }
 GRReact >> moveChild: aNode to: anotherNumber in: aParentNode [
 
-	self addUpdate: {#move. aNode godotId}.
+	self addUpdate: {#move. aNode renderResultGodotPaths. anotherNumber}.
 	super moveChild: aNode to: anotherNumber in: aParentNode
 ]
 
@@ -181,7 +181,10 @@ GRReact >> tick: aCollectionOfPendingCallbacks updatesDo: aBlock [
 	
 	self batchUpdatesDuring: [
 		aCollectionOfPendingCallbacks
-			ifNotEmpty: [aCollectionOfPendingCallbacks do: [:callback | (callbacks get: callback first) valueWithArguments: callback allButFirst]]
+			ifNotEmpty: [
+				GRReactCurrentSession
+					value: session
+					during: [aCollectionOfPendingCallbacks do: [:callback | (callbacks get: callback first) valueWithArguments: callback allButFirst]]]
 			ifEmpty: ["if there were no pending callbacks, it's a full update request"
 			self render]]
 ]

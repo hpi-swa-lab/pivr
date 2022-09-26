@@ -15,6 +15,7 @@ CubeDworph >> render: props [
 	^ ControllerToolDworph new
 		transform: (props at: #transform);
 		onRelease: #drop;
+		id: (props at: #id ifAbsent: nil);
 		shape: ((self godot: #BoxShape) extents: 0.05 @ 0.05 @ 0.05);
 		active: renderMesh;
 		passive: renderMesh

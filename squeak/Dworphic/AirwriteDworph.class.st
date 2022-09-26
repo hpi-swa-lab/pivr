@@ -129,10 +129,10 @@ AirwriteDworph >> radius [
 AirwriteDworph >> render: props [
 
 	^ ControllerToolDworph new
-		transform: (props at: #transform);
+		transform: (props at: #transform ifAbsent: [Matrix4x4 identity]);
 		shape: self collisionShape;
 		shapeTransform: (Matrix4x4 withOffset: 0 @ (self length / 2) @ 0);
-		onRelease: #drop;
+		onRelease: #return;
 		active: [(self methodAsComponent: #renderActive:) props: props];
 		passive: [(self methodAsComponent: #renderPassive:) props: props]
 ]

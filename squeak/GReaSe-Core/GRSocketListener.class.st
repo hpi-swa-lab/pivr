@@ -100,6 +100,17 @@ GRSocketListener class >> readMessageFrom: aStream [
 ]
 
 { #category : #'as yet unclassified' }
+GRSocketListener class >> readStringFrom: aStream [
+
+	| length pad string |
+	length := aStream nextLittleEndianNumber: 4.
+	pad := length \\ 4 > 0 ifTrue: [4 - (length \\ 4)] ifFalse: [0].
+	string := (aStream next: length) utf8Decoded.
+	aStream next: pad.
+	^ string
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketListener class >> readVariantFrom: aStream [
 
 	| type is64Bit |
@@ -113,12 +124,7 @@ GRSocketListener class >> readVariantFrom: aStream [
 			is64Bit
 				ifTrue: [Float fromIEEE64Bit: (aStream nextLittleEndianNumber: 8)]
 				ifFalse: [Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)]].
-		[4] -> [ | length pad string |
-			length := aStream nextLittleEndianNumber: 4.
-			pad := length \\ 4 > 0 ifTrue: [4 - (length \\ 4)] ifFalse: [0].
-			string := (aStream next: length) utf8Decoded.
-			aStream next: pad.
-			string].
+		[4] -> [self readStringFrom: aStream].
 		[13] -> [
 			self flag: #todo.
 			"is the rotation in the right order? translation is correct"
@@ -137,6 +143,20 @@ GRSocketListener class >> readVariantFrom: aStream [
 				a34: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
 				a44: 1;
 				yourself].
+		[15] -> [ | nameCount subnameCount flags isAbsolute |
+			nameCount := (aStream nextLittleEndianNumber: 4) bitAnd: 2147483647.
+			subnameCount := aStream nextLittleEndianNumber: 4.
+			flags := aStream nextLittleEndianNumber: 4.
+			(flags bitAnd: 2) ~= 0 ifTrue: [subnameCount := subnameCount + 1].
+			isAbsolute := (flags bitAnd: 1) ~= 0.
+			String streamContents: [:stream |
+				isAbsolute ifTrue: [stream nextPut: $/].
+				(1 to: nameCount)
+					do: [:i | stream nextPutAll: (self readStringFrom: aStream)]
+					separatedBy: [stream nextPut: $/].
+				(1 to: subnameCount) do: [
+					aStream nextPut: $:.
+					stream nextPutAll: (self readStringFrom: aStream)]]].
 		[17] -> [ | objectId |
 			self assert: (type bitAnd: (1 bitShift: 16)) ~= 0.
 			objectId := aStream nextLittleEndianNumber: 8.

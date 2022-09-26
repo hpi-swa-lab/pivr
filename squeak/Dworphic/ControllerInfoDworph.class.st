@@ -7,10 +7,11 @@ Class {
 { #category : #rendering }
 ControllerInfoDworph >> render: props [
 
-	| handPortal transform transformSub buttonPressed buttonRelase pressedButtons controllerNode axes handArea |
+	| handPortal transform transformSub buttonPressed buttonRelase pressedButtons controllerNode axes handArea handIsFree |
 	handPortal := self useRef: nil.
 	handArea := self useRef: nil.
 	
+	handIsFree := self useState: true.
 	transform := self useState: Matrix4x4 identity.
 	transformSub := self useCallback: [:t | transform set: t] dependencies: {}.
 	
@@ -50,6 +51,7 @@ ControllerInfoDworph >> render: props [
 				#controllerTransform -> transform get.
 				#handPortal -> handPortal get.
 				#handId -> handArea.
+				#handIsFree -> handIsFree.
 				#pressedButtons -> pressedButtons get}, (axes collect: [:axis | axis second -> axis third get])
 			children: (props at: #children ifAbsent: [#()])}
 ]
