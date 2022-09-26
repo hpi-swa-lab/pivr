@@ -7,7 +7,8 @@ Class {
 		'server',
 		'session',
 		'pendingRefs',
-		'waitingRefs'
+		'waitingRefs',
+		'changesBlock'
 	],
 	#classVars : [
 		'CurrentGodotId',
@@ -128,6 +129,18 @@ GRReact >> moveChild: aNode to: anotherNumber in: aParentNode [
 ]
 
 { #category : #rendering }
+GRReact >> performRenderChanges [
+
+	SBToggledCode comment: '' active: 0 do: {[pendingUpdates do: [:u | Transcript showln: u]]}.
+	
+	waitingRefs := pendingRefs collect: #second.
+	changesBlock value: {pendingUpdates. pendingRefs collect: #first}.
+	
+	pendingUpdates removeAll.
+	pendingRefs removeAll
+]
+
+{ #category : #rendering }
 GRReact >> registerCallback: aClosure [
 
 	^ callbacks registerCallback: aClosure
@@ -162,21 +175,15 @@ GRReact >> subscribeToCodeChanges [
 ]
 
 { #category : #rendering }
-GRReact >> tick: aCollectionOfPendingCallbacks [
+GRReact >> tick: aCollectionOfPendingCallbacks updatesDo: aBlock [
 
-	| return |
-	aCollectionOfPendingCallbacks
-		ifNotEmpty: [self batchUpdatesDuring: [aCollectionOfPendingCallbacks do: [:callback | (callbacks get: callback first) valueWithArguments: callback allButFirst]]]
-		ifEmpty: ["if there were no pending callbacks, it's a full update request"
-		self render].
+	changesBlock := aBlock.
 	
-	SBToggledCode comment: '' active: 0 do: {[pendingUpdates do: [:u | Transcript showln: u]]}.
-	
-	waitingRefs := pendingRefs collect: #second.
-	return := {pendingUpdates. pendingRefs collect: #first}.
-	pendingUpdates := nil.
-	pendingRefs := nil.
-	^ return
+	self batchUpdatesDuring: [
+		aCollectionOfPendingCallbacks
+			ifNotEmpty: [aCollectionOfPendingCallbacks do: [:callback | (callbacks get: callback first) valueWithArguments: callback allButFirst]]
+			ifEmpty: ["if there were no pending callbacks, it's a full update request"
+			self render]]
 ]
 
 { #category : #lifecycle }

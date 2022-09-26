@@ -4,6 +4,14 @@ Class {
 	#category : #Dworphic
 }
 
+{ #category : #'as yet unclassified' }
+ControllerToolDworph >> colliderShape: props [
+
+	^ (self godot: #CollisionShape)
+		shape: (props at: #shape);
+		transform: (props at: #shapeTransform ifAbsent: [Matrix4x4 identity])
+]
+
 { #category : #rendering }
 ControllerToolDworph >> render: props [
 
@@ -44,20 +52,12 @@ ControllerToolDworph >> render: props [
 			pickableNode := (self godot: #Area)
 				area_entered: enteredSub;
 				area_exited: exitedSub;
-				children: {
-					(props at: #passive) value.
-					(self godot: #CollisionShape)
-						shape: (props at: #shape);
-						transform: (props at: #shapeTransform ifAbsent: [Matrix4x4 identity])}.
+				children: {(props at: #passive) value. self colliderShape: props}.
 			onRelease = #drop
 				ifTrue: [ | node |
 					node := (self godot: #RigidBody)
 						continuous_cd: true;
-						children: {
-							pickableNode.
-							(self godot: #CollisionShape)
-								shape: (props at: #shape);
-								transform: (props at: #shapeTransform ifAbsent: [Matrix4x4 identity])}.
+						children: {pickableNode. self colliderShape: props}.
 					rigidBodyPosInitialized get ifFalse: [
 						node transform: transform get.
 						rigidBodyPosInitialized set: true].

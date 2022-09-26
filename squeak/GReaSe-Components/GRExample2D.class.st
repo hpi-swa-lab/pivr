@@ -15,9 +15,7 @@ GRExample2D >> render: props [
 	pressedSub := self useCallback: [count set: [:c | c + 1]] dependencies: {}.
 	toggledSub := self useCallback: [:b | pressed set: b] dependencies: {}.
 	self
-		useEffect: [
-			Transcript showln: {'dep'. count get. pressed get}.
-			nil]
+		useEffect: [Transcript showln: {'dep'. count get. pressed get}]
 		dependencies: {count get. pressed get}.
 	
 	^ (self godot: #VBoxContainer)

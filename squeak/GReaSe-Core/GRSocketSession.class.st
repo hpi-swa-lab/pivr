@@ -72,9 +72,15 @@ GRSocketSession >> get: aString of: anObject [
 GRSocketSession >> handleMessage: aMessage [
 
 	aMessage first caseOf: {
-		[GRSocketListener messageTypeTickFromGodot] -> [ | updates |
-			updates := {{}. {}}.
-			[[updates := self tick: aMessage third] ensure: [self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak. updates}]]
+		[GRSocketListener messageTypeTickFromGodot] -> [
+			[
+				[
+					self tick: aMessage third updatesDo: [:updates |
+						self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
+						updates second ifNotEmpty: [ | refsMessage |
+							refsMessage := GRSocketListener readMessageFrom: stream.
+							self assert: refsMessage first = GRSocketListener messageTypeRefsFromGodot.
+							self bindRefs: refsMessage third]]] ensure: [self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}]]
 				on: ConnectionClosed, SocketPrimitiveFailed
 				do: [:error | ^ false]
 				on: Error
@@ -89,8 +95,7 @@ GRSocketSession >> handleMessage: aMessage [
 				do: {[ | sessions |sessions removeKey: aMessage second]}.
 			self close.
 			^ false].
-		[GRSocketListener messageTypeResponseToCallFromGodot] -> [self error: 'message sent on wrong thread? response arrived in listener loop'].
-		[GRSocketListener messageTypeRefsFromGodot] -> [self bindRefs: aMessage third]}.
+		[GRSocketListener messageTypeResponseToCallFromGodot] -> [self error: 'message sent on wrong thread? response arrived in listener loop']}.
 	^ true
 ]
 
@@ -168,10 +173,10 @@ GRSocketSession >> synchronousCodeReload [
 ]
 
 { #category : #'as yet unclassified' }
-GRSocketSession >> tick: aCollection [
+GRSocketSession >> tick: aCollection updatesDo: aBlock [
 
 	codeChanged ifTrue: [
 		react onCodeChanged.
 		codeChanged := false].
-	^ react tick: aCollection
+	^ react tick: aCollection updatesDo: aBlock
 ]

@@ -74,6 +74,12 @@ GRSocketListener class >> messageTypeTickFromGodot [
 ]
 
 { #category : #'as yet unclassified' }
+GRSocketListener class >> messageTypeTickUpdateFromSqueak [
+
+	^ 10
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketListener class >> putVariant: anObject on: aSocketStream [
 
 	| buffer size |

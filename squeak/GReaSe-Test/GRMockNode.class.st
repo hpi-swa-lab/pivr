@@ -162,10 +162,18 @@ GRMockNode >> tick: aReact [
 { #category : #'as yet unclassified' }
 GRMockNode >> tick: aReact updates: aCollection [
 
-	| updates |
-	updates := aReact tick: aCollection.
-	self applyUpdates: updates.
-	^ updates
+	| allUpdates |
+	allUpdates := {OrderedCollection new. OrderedCollection new}.
+	aReact tick: aCollection updatesDo: [:updates |
+		allUpdates first addAll: updates first.
+		allUpdates second addAll: updates second.
+		
+		self applyUpdates: updates.
+		
+		aReact waitingRefs
+			with: (updates second collect: [:path | self getNodeForPath: path])
+			do: [:ref :node | ref set: node]].
+	^ allUpdates
 ]
 
 { #category : #'as yet unclassified' }

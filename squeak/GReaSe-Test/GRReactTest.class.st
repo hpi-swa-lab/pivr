@@ -37,6 +37,19 @@ GRReactTest >> openComponentBlock: aBlock [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testAssignsRefBeforeEffects [
+
+	self openComponentBlock: [ | ref |
+		ref := CMFReact useRef: nil.
+		CMFReact
+			useEffect: [
+				self assert: ref get notNil.
+				nil]
+			dependencies: {}.
+		(self godot: #Spatial) ref: ref]
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testConditionalReplace [
 
 	self openComponentBlock: [:props | | active |
@@ -79,7 +92,7 @@ GRReactTest >> testReleaseToolStayOrReturn [
 	| releasePos initialPos |
 	initialPos := 1 @ 2 @ 3.
 	releasePos := 4 @ 5 @ 6.
-	{{#stay. releasePos}. {#return. initialPos}} do: [:pair |
+	{{#return. initialPos}. {#stay. releasePos}} do: [:pair |
 		self openComponentBlock: [
 			WorldDworph new children: {
 				ControllerToolDworph new
