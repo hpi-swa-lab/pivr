@@ -49,6 +49,7 @@ ControllerInfoDworph >> render: props [
 	
 	^ {
 		GRProvider
+			namespace: ((props at: #left) == true ifTrue: [#left] ifFalse: [#right])
 			values: {
 				#controllerTransform -> transform get.
 				#handPortal -> handPortal.

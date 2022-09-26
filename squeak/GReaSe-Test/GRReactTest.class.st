@@ -50,6 +50,29 @@ GRReactTest >> testAssignsRefBeforeEffects [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testCanUseControllerIndependentHooksInTool [
+
+	| controller |
+	self openComponentBlock: [
+		WorldDworph new children: {
+			ControllerToolDworph new
+				shape: (self godot: #CollisionShape);
+				active: [
+					[
+						GRComponent useProvided: #controllerTransform.
+						self godot: #Active] asReactNodeBuilder build];
+				passive: [self godot: #Passive]}].
+	
+	controller := godotTree firstNodeThat: [:node | (node properties at: #'controller_id' ifAbsent: nil) == 2].
+	
+	self tick: {
+		controller trigger: #'button_pressed' with: {6}.
+		(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
+			trigger: #'area_entered'
+			with: {controller firstNodeOfType: #Area}}
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testConditionalReplace [
 
 	self openComponentBlock: [:props | | active |

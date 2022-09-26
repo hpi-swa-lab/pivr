@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'symbol',
 		'node',
-		'lastValue'
+		'lastValue',
+		'namespace'
 	],
 	#category : #'GReaSe-React'
 }
@@ -18,8 +19,11 @@ GRHookUseProvided >> canTriggerRerender [
 { #category : #'as yet unclassified' }
 GRHookUseProvided >> getValueBasedOnNodeTree: aCMFReactNodeTree setLastValue: aBoolean [
 
-	| newValue |
-	newValue := (node orParentSatisfying: [:entry | entry node class == GRProvider and: [entry node hasSymbol: symbol]])
+	| newValue validNamespaces |
+	validNamespaces := OrderedCollection with: namespace.
+	newValue := (node orParentSatisfying: [:entry |
+		entry node class == GRUseProviderNamespace ifTrue: [validNamespaces add: entry node namespace].
+		entry node class == GRProvider and: [(validNamespaces includes: entry node namespace) and: [entry node hasSymbol: symbol]]])
 		ifNotNil: [:entry | entry get: symbol]
 		ifNil: [self error: ('no value for {1} provided in tree' format: {symbol})].
 	aBoolean ifTrue: [lastValue := newValue].
@@ -30,6 +34,12 @@ GRHookUseProvided >> getValueBasedOnNodeTree: aCMFReactNodeTree setLastValue: aB
 GRHookUseProvided >> isValueOutdatedBasedOnNodeTree: aCMFReactNodeTree [
 
 	^ lastValue ~~ (self getValueBasedOnNodeTree: aCMFReactNodeTree setLastValue: false)
+]
+
+{ #category : #'as yet unclassified' }
+GRHookUseProvided >> namespace: aSymbol [
+
+	namespace := aSymbol
 ]
 
 { #category : #'as yet unclassified' }

@@ -3,10 +3,17 @@ Class {
 	#superclass : #CMFReactNodeComponent,
 	#instVars : [
 		'children',
-		'values'
+		'values',
+		'namespace'
 	],
 	#category : #'GReaSe-React'
 }
+
+{ #category : #'as yet unclassified' }
+GRProvider class >> namespace: aSymbol values: aDictionary children: aCollection [
+
+	^ self new namespace: aSymbol values: aDictionary children: aCollection
+]
 
 { #category : #'as yet unclassified' }
 GRProvider class >> values: aDictionary children: aCollection [
@@ -42,6 +49,22 @@ GRProvider >> hasSymbol: aSymbol [
 GRProvider >> key [
 
 	^ self shouldNotImplement
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> namespace [
+
+	^ namespace
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> namespace: aSymbol values: aDictionary children: aCollection [
+
+	namespace := aSymbol.
+	values := aDictionary isDictionary
+		ifTrue: [aDictionary]
+		ifFalse: [aDictionary as: Dictionary].
+	children := aCollection
 ]
 
 { #category : #'as yet unclassified' }

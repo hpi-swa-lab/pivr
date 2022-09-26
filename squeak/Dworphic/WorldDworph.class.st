@@ -18,18 +18,23 @@ WorldDworph >> render: props [
 		values: {#headTransform -> headTransform get. #worldPortal -> worldRef. #teleport -> teleport}
 		children: {
 			ControllerInfoDworph new
-				left: false;
-				do: [:controllerNode |
+				left: true;
+				do: [:leftControllerNode |
 					{
-						(self godot: #Spatial) children: {
-							(self godot: #ARVROrigin)
-								transform: teleport get;
-								children: {
-									(self godot: #ARVRCamera)
-										subscribeTo: #'global_transform'
-										do: headTransformSubscription.
-									controllerNode}.
-							(self godot: #Spatial) ref: [:node | worldRef set: node]}, (props at: #children ifAbsent: [{}])}]}
+						ControllerInfoDworph new
+							left: false;
+							do: [:rightControllerNode |
+								{
+									(self godot: #Spatial) children: {
+										(self godot: #ARVROrigin)
+											transform: teleport get;
+											children: {
+												(self godot: #ARVRCamera)
+													subscribeTo: #'global_transform'
+													do: headTransformSubscription.
+												rightControllerNode.
+												leftControllerNode}.
+										(self godot: #Spatial) ref: [:node | worldRef set: node]}, (props at: #children ifAbsent: [{}])}]}]}
 ]
 
 { #category : #hooks }
