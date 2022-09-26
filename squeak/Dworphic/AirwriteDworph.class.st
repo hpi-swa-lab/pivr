@@ -148,37 +148,29 @@ AirwriteDworph >> renderActive: props [
 	headPosition := self useHeadTransform translation.
 	controllerTransform := self useControllerTransform.
 	controllerTranslation := controllerTransform translation.
-	buttonPressed := self useGripPressed.
+	buttonPressed := self useTriggerStrength > 0.6.
 	
 	curveRef := self useRef: nil.
 	
 	self
 		useEffect: [
-			curveRef get ifNotNil: [
-				(lastControllerTranslation get distanceTo: controllerTranslation) > 0.01 ifTrue: [
-					lastControllerTranslation set: controllerTranslation.
-					buttonPressed ifTrue: [ | position |
-						position := self tipPosition: controllerTransform.
-						points set: [:p | p copyWith: position].
-						GRReactCurrentSession value
-							callOn: curveRef get
-							method: 'add_point'
-							arguments: {position}]]].
-			nil]
-		dependencies: {controllerTranslation. buttonPressed}.
-	
-	self
-		useEffect: [
-			"return a clean-up effect for when this component is unmounted -- in other words, when the tool is let go by the user"
-			[
-				points get notEmpty ifTrue: [
-					Transcript showln: (self detectChar: points get head: headPosition).
+			(lastControllerTranslation get distanceTo: controllerTranslation) > 0.01 ifTrue: [
+				lastControllerTranslation set: controllerTranslation.
+				buttonPressed ifTrue: [ | position |
+					position := self tipPosition: controllerTransform.
+					points set: [:p | p copyWith: position].
 					GRReactCurrentSession value
 						callOn: curveRef get
-						method: 'clear_points'
-						arguments: {}.
-					points set: {}]]]
-		dependencies: {}.
+						method: 'add_point'
+						arguments: {position}]].
+			(points get notEmpty and: [buttonPressed not]) ifTrue: [
+				Transcript showln: (self detectChar: points get head: headPosition).
+				GRReactCurrentSession value
+					callOn: curveRef get
+					method: 'clear_points'
+					arguments: {}.
+				points set: {}]]
+		dependencies: {controllerTranslation. buttonPressed}.
 	
 	^ (self godot: #Spatial) children: {
 		self renderPassive: props.
