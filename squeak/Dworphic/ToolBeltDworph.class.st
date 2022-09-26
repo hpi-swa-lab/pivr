@@ -15,10 +15,10 @@ ToolBeltDworph >> render: props [
 		children: {
 			(self godot: #Spatial)
 				children: {AirwriteDworph new};
-				translation: -0.02 @ 0.03 @ 0.
+				translation: -0.04 @ 0.03 @ 0.
 			(self godot: #Spatial)
 				children: {CubeAddDworph new};
-				translation: 0.02 @ 0.03 @ 0.
+				translation: 0.0 @ 0.03 @ 0.
 			(self godot: #Spatial)
 				children: {CubeRemoveDworph new};
 				translation: 0.04 @ 0.03 @ 0}

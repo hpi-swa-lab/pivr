@@ -50,5 +50,5 @@ CubeAddDworph >> renderPassive: props [
 { #category : #'as yet unclassified' }
 CubeAddDworph >> size [
 
-	^ 0.05
+	^ 0.03
 ]

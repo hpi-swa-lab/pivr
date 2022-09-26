@@ -34,7 +34,10 @@ CubeRemoveDworph >> renderActive: props [
 				callOn: area
 				method: 'get_meta'
 				arguments: {'id'. nil}.
-			triggerStrength > 0.6 ifTrue: [cubes set: [:c | c select: [:cube | cube third ~= id]]]]
+			(triggerStrength > 0.6 and: [id notNil]) ifTrue: [
+				cubes set: [:c |
+					self assert: (cubes get anySatisfy: [:cube | cube third = id]).
+					c select: [:cube | cube third ~= id]]]]
 ]
 
 { #category : #'as yet unclassified' }
@@ -48,5 +51,5 @@ CubeRemoveDworph >> renderPassive: props [
 { #category : #'as yet unclassified' }
 CubeRemoveDworph >> size [
 
-	^ 0.05
+	^ 0.03
 ]

@@ -69,6 +69,35 @@ GRReactTest >> testConditionalReplace [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testDeleteInKeyedCollection [
+
+	| data |
+	data := {1. 2. 3. 4}.
+	self openComponentBlock: [ | list |
+		list := CMFReact useState: data.
+		(self godot: #Spatial) children: (list get collect: [:id |
+			(self godot: #Child)
+				key: id;
+				id: id;
+				onDelete: [list set: [:l | l copyWithout: id]]])].
+	self assert: 4 equals: (godotTree allNodesOfType: #Child) size.
+	self tick: {(godotTree allNodesOfType: #Child) second trigger: #onDelete}.
+	self
+		assert: #(1 3 4)
+		equals: ((godotTree allNodesOfType: #Child) collect: [:node | node properties at: #id]).
+	
+	self tick: {(godotTree allNodesOfType: #Child) first trigger: #onDelete}.
+	self
+		assert: #(3 4)
+		equals: ((godotTree allNodesOfType: #Child) collect: [:node | node properties at: #id]).
+	
+	self tick: {(godotTree allNodesOfType: #Child) last trigger: #onDelete}.
+	self
+		assert: #(3)
+		equals: ((godotTree allNodesOfType: #Child) collect: [:node | node properties at: #id])
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testLoopWithKeyedObjects [
 
 	| nestedComponent |
@@ -142,5 +171,5 @@ GRReactTest >> tick [
 { #category : #'as yet unclassified' }
 GRReactTest >> tick: aCollectionOfUpdates [
 
-	^ godotTree tick: react updates: aCollectionOfUpdates
+	^ godotTree tick: react updates: aCollectionOfUpdates asOrderedCollection
 ]

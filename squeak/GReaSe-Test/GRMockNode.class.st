@@ -27,6 +27,18 @@ GRMockNode >> allNodesDo: aBlock [
 ]
 
 { #category : #'as yet unclassified' }
+GRMockNode >> allNodesOfType: aSymbol [
+
+	^ self allNodesThat: [:node | node godotClass = aSymbol]
+]
+
+{ #category : #'as yet unclassified' }
+GRMockNode >> allNodesThat: aBlock [
+
+	^ Array streamContents: [:stream | self allNodesDo: [:node | (aBlock value: node) ifTrue: [stream nextPut: node]]]
+]
+
+{ #category : #'as yet unclassified' }
 GRMockNode >> applyUpdate: anUpdate [
 	"should only be called on the tree root"
 
@@ -43,6 +55,12 @@ GRMockNode >> applyUpdate: anUpdate [
 			(self getNodeForPath: anUpdate second) properties
 				at: anUpdate third
 				put: anUpdate fourth].
+		[#move] -> [
+			anUpdate second do: [:path | | child parent |
+				child := self getNodeForPath: path.
+				parent := child parent.
+				parent children remove: child.
+				parent children add: child beforeIndex: anUpdate third]].
 		[#delete] -> [(self getNodeForPath: anUpdate second) delete]}
 ]
 
