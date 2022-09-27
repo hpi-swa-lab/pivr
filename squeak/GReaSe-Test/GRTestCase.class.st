@@ -9,6 +9,18 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GRTestCase >> controllerCollider: aSideSymbol [
+
+	^ (self controllerNode: aSideSymbol) firstNodeOfType: #Area
+]
+
+{ #category : #'as yet unclassified' }
+GRTestCase >> controllerNode: aSideSymbol [
+
+	^ godotTree firstNodeThat: [:node | node godotClass = #ARVRController and: [(node properties at: #'controller_id') = (aSideSymbol = #left ifTrue: [1] ifFalse: [2])]]
+]
+
+{ #category : #'as yet unclassified' }
 GRTestCase >> godot: aClassName [
 
 	^ GRReactNodeGodot new

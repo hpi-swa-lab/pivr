@@ -28,6 +28,34 @@ DworphicToolTest >> testCanUseControllerIndependentHooksInTool [
 ]
 
 { #category : #'as yet unclassified' }
+DworphicToolTest >> testCantGrabMultipleThings [
+
+	self openComponentBlock: [
+		WorldDworph new children: {
+			ControllerToolDworph new
+				shape: (self godot: #CollisionShape);
+				active: [self godot: #Active1];
+				passive: [self godot: #Passive1].
+			ControllerToolDworph new
+				shape: (self godot: #CollisionShape);
+				active: [self godot: #Active2];
+				passive: [self godot: #Passive2]}].
+	
+	self tick: {
+		(self controllerNode: #right) toggleGrip: true.
+		((godotTree firstNodeOfType: #Passive1) orParentOfType: #Area)
+			signal: #'area_entered'
+			with: {self controllerCollider: #right}}.
+	godotTree firstNodeOfType: #Active1.
+	
+	self tick: {
+		((godotTree firstNodeOfType: #Passive2) orParentOfType: #Area)
+			signal: #'area_entered'
+			with: {self controllerCollider: #right}}.
+	self should: [godotTree firstNodeOfType: #Active2] raise: Error
+]
+
+{ #category : #'as yet unclassified' }
 DworphicToolTest >> testReleaseToolStayOrReturn [
 
 	| releasePos initialPos |
@@ -43,20 +71,49 @@ DworphicToolTest >> testReleaseToolStayOrReturn [
 					active: [self godot: #Active];
 					passive: [self godot: #Passive]}].
 		self tick: {
-			(godotTree firstNodeOfType: #ARVRController)
-				signal: #'button_pressed'
-				with: {6}.
-			(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
+			(self controllerNode: #right) toggleGrip: true.
+			((godotTree firstNodeOfType: #Passive) orParentOfType: #Area)
 				signal: #'area_entered'
-				with: {godotTree firstNodeOfType: #Area}.
-			(godotTree firstNodeOfType: #ARVRController)
-				subscribe: #'global_transform'
-				set: (Matrix4x4 withOffset: releasePos)}.
-		self tick: {
-			(godotTree firstNodeOfType: #ARVRController)
-				signal: #'button_release'
-				with: {6}}.
+				with: {self controllerCollider: #right}.
+			(self controllerNode: #right) setGlobalTransform: (Matrix4x4 withOffset: releasePos)}.
+		self tick: {(self controllerNode: #right) toggleGrip: false}.
 		self
 			assert: pair second
-			equals: ((godotTree firstNodeOfType: #Passive) parent properties at: #transform) translation]
+			equals: ((godotTree firstNodeOfType: #Passive) orParentOfType: #Area) transform translation]
+]
+
+{ #category : #'as yet unclassified' }
+DworphicToolTest >> testRightHandVsLeftHand [
+
+	| rightTransform leftTransform |
+	self openComponentBlock: [
+		WorldDworph new children: {
+			ControllerToolDworph new
+				onRelease: #drop;
+				shape: (self godot: #CollisionShape);
+				active: [self godot: #Active];
+				passive: [self godot: #Passive]}].
+	
+	self should: [godotTree firstNodeOfType: #Active] raise: Error.
+	
+	rightTransform := Matrix4x4 withOffset: 1 @ 2 @ 3.
+	leftTransform := Matrix4x4 withOffset: 3 @ 4 @ 5.
+	self tick: {
+		(self controllerNode: #right) setGlobalTransform: rightTransform.
+		(self controllerNode: #left) setGlobalTransform: leftTransform.
+		((godotTree firstNodeOfType: #Passive) orParentOfType: #Area)
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}}.
+	
+	self tick: {(self controllerNode: #right) toggleGrip: true}.
+	self should: [godotTree firstNodeOfType: #Active] raise: Error.
+	
+	self tick: {(self controllerNode: #left) toggleGrip: true}.
+	self shouldnt: [godotTree firstNodeOfType: #Active] raise: Error.
+	
+	self tick: {(self controllerNode: #left) toggleGrip: false}.
+	self should: [godotTree firstNodeOfType: #Active] raise: Error.
+	self
+		assert: leftTransform
+		equals: ((godotTree firstNodeOfType: #Passive) parent parent properties at: #transform)
 ]

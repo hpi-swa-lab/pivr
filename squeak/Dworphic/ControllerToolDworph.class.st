@@ -78,7 +78,7 @@ ControllerToolDworph >> renderForHand: props [
 	grabbed := props at: #grabbed.
 	side := props at: #side.
 	
-	gripPressed := (self useProvided: #pressedButtons namespace: side) includes: 6.
+	gripPressed := (self useProvided: #pressedButtons namespace: side) includes: ControllerInfoDworph grip.
 	controllerTransformLeft := self useProvidedRef: #controllerTransform namespace: #left.
 	controllerTransformRight := self useProvidedRef: #controllerTransform namespace: #right.
 	onRelease := props at: #onRelease ifAbsent: [nil].
@@ -95,7 +95,7 @@ ControllerToolDworph >> renderForHand: props [
 				(props at: #onGrabbed) value: 0.
 				handIsFree set: true].
 			nil]
-		dependencies: {props at: #onGrabbed. props at: #onTransform. gripPressed}.
+		dependencies: {props at: #onGrabbed. props at: #intersecting. props at: #onTransform. gripPressed}.
 	
 	^ grabbed ~= 0 ifTrue: [
 		GRUseProviderNamespace

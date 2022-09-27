@@ -4,6 +4,12 @@ Class {
 	#category : #Dworphic
 }
 
+{ #category : #'as yet unclassified' }
+ControllerInfoDworph class >> grip [
+
+	^ 6
+]
+
 { #category : #rendering }
 ControllerInfoDworph >> render: props [
 

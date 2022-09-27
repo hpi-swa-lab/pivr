@@ -83,6 +83,16 @@ GRMockNode >> delete [
 ]
 
 { #category : #accessing }
+GRMockNode >> doesNotUnderstand: aMessage [
+
+	| key |
+	"getter only, you are not supposed to set properties on the mock nodes"
+	key := aMessage selector.
+	key precedence = 1 ifTrue: [^ properties at: key].
+	^ super doesNotUnderstand: aMessage
+]
+
+{ #category : #accessing }
 GRMockNode >> firstNodeOfType: aSymbol [
 
 	^ self firstNodeThat: [:node | node godotClass = aSymbol]
@@ -139,6 +149,13 @@ GRMockNode >> name: aString [
 ]
 
 { #category : #accessing }
+GRMockNode >> orParentOfType: aSymbol [
+
+	self godotClass = aSymbol ifTrue: [^ self].
+	^ self parent orParentOfType: aSymbol
+]
+
+{ #category : #accessing }
 GRMockNode >> parent [
 
 	^ parent
@@ -169,6 +186,12 @@ GRMockNode >> properties [
 GRMockNode >> properties: aDictionary [
 
 	properties := aDictionary
+]
+
+{ #category : #utilities }
+GRMockNode >> setGlobalTransform: aMatrix [
+
+	^ self subscribe: #'global_transform' set: aMatrix
 ]
 
 { #category : #updates }
@@ -210,4 +233,13 @@ GRMockNode >> tick: aReact updates: aCollection [
 			with: (updates second collect: [:path | self getNodeForPath: path])
 			do: [:ref :node | ref set: node]].
 	^ allUpdates
+]
+
+{ #category : #utilities }
+GRMockNode >> toggleGrip: aBoolean [
+
+	self assert: godotClass = #ARVRController.
+	^ self
+		signal: (aBoolean ifTrue: [#'button_pressed'] ifFalse: [#'button_release'])
+		with: {ControllerInfoDworph grip}
 ]

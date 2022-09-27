@@ -94,7 +94,7 @@ GRComponent >> useControllerTransform [
 { #category : #hooks }
 GRComponent >> useGripPressed [
 
-	^ (self useProvided: #pressedButtons) includes: 6
+	^ (self useProvided: #pressedButtons) includes: ControllerInfoDworph grip
 ]
 
 { #category : #hooks }
