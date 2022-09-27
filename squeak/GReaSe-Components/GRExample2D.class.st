@@ -30,5 +30,8 @@ GRExample2D >> render: props [
 			(self godot: #Button)
 				text: 'Reset';
 				pressed: [count set: 0].
+			(self godot: #TextureRect)
+				texture: ((self godot: #ImageTexture) call: #load arguments: {'res://icon.png'});
+				rect_size: 50 @ 50.
 			(self godot: #CollisionShape2D) shape: ((self godot: #RectangleShape2D) extents: (Vector2 x: 100 * count get y: 30))}, ((1 to: count get) collect: [:i | (self godot: #Label) text: 'Hello world'])
 ]
