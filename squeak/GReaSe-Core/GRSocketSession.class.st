@@ -55,6 +55,28 @@ GRSocketSession >> communicationLockDuring: aBlock [
 ]
 
 { #category : #'as yet unclassified' }
+GRSocketSession >> createInstanceOf: aString [
+
+	| response |
+	GRSocketListener
+		putVariant: {GRSocketListener messageTypeCreateInstanceFromSqueak. aString}
+		on: stream.
+	
+	response := GRSocketListener readMessageFrom: stream.
+	self assert: response first = GRSocketListener messageTypeCreatedInstanceFromGodot.
+	self assert: response second = sessionId.
+	^ response third
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketSession >> freeInstance: anObjectId [
+
+	GRSocketListener
+		putVariant: {GRSocketListener messageTypeFreeInstanceFromSqueak. anObjectId}
+		on: stream
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketSession >> get: aString of: anObject [
 
 	| response |

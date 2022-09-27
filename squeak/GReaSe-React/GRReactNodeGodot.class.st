@@ -183,7 +183,7 @@ GRReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInfo
 	aDictionary keysAndValuesDo: [:key :value |
 		value isGodotNode ifTrue: [ | newNode |
 			newNode := react renderNode: value forceReRender: false.
-			(renderInfo oldNode notNil and: [newNode godotId = ((renderInfo oldNode properties at: key ifAbsent: nil) ifNotNil: [:o | o godotId])]) ifFalse: [
+			(renderInfo reusingOldNodes and: [newNode godotId = ((renderInfo oldNode properties at: key ifAbsent: nil) ifNotNil: [:o | o godotId])]) ifFalse: [
 				SBToggledCode
 					comment: ''
 					active: 0

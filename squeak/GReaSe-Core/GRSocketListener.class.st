@@ -20,6 +20,24 @@ GRSocketListener class >> messageTypeCallFromSqueak [
 ]
 
 { #category : #'as yet unclassified' }
+GRSocketListener class >> messageTypeCreateInstanceFromSqueak [
+
+	^ 11
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketListener class >> messageTypeCreatedInstanceFromGodot [
+
+	^ 12
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketListener class >> messageTypeFreeInstanceFromSqueak [
+
+	^ 13
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketListener class >> messageTypeInitializeSessionFromGodot [
 
 	^ 4
