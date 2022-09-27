@@ -1,40 +1,8 @@
 Class {
 	#name : #GRReactTest,
-	#superclass : #TestCase,
-	#instVars : [
-		'godotTree',
-		'react'
-	],
+	#superclass : #GRTestCase,
 	#category : #'GReaSe-Test'
 }
-
-{ #category : #'as yet unclassified' }
-GRReactTest >> godot: aClassName [
-
-	^ GRReactNodeGodot new
-		godotClass: aClassName;
-		yourself
-]
-
-{ #category : #'as yet unclassified' }
-GRReactTest >> openComponent: aComponentClass [
-
-	react := GRReact new
-		session: GRMockSession new;
-		init: aComponentClass new.
-	godotTree := GRMockNode new.
-	self tick
-]
-
-{ #category : #'as yet unclassified' }
-GRReactTest >> openComponentBlock: aBlock [
-
-	react := GRReact new
-		session: GRMockSession new;
-		init: aBlock asReactNodeBuilder build.
-	godotTree := GRMockNode new.
-	self tick
-]
 
 { #category : #'as yet unclassified' }
 GRReactTest >> testAssignsRefBeforeEffects [
@@ -50,29 +18,6 @@ GRReactTest >> testAssignsRefBeforeEffects [
 ]
 
 { #category : #'as yet unclassified' }
-GRReactTest >> testCanUseControllerIndependentHooksInTool [
-
-	| controller |
-	self openComponentBlock: [
-		WorldDworph new children: {
-			ControllerToolDworph new
-				shape: (self godot: #CollisionShape);
-				active: [
-					[
-						GRComponent useProvided: #controllerTransform.
-						self godot: #Active] asReactNodeBuilder build];
-				passive: [self godot: #Passive]}].
-	
-	controller := godotTree firstNodeThat: [:node | (node properties at: #'controller_id' ifAbsent: nil) == 2].
-	
-	self tick: {
-		controller trigger: #'button_pressed' with: {6}.
-		(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
-			trigger: #'area_entered'
-			with: {controller firstNodeOfType: #Area}}
-]
-
-{ #category : #'as yet unclassified' }
 GRReactTest >> testConditionalReplace [
 
 	self openComponentBlock: [:props | | active |
@@ -85,7 +30,7 @@ GRReactTest >> testConditionalReplace [
 	
 	godotTree firstNodeOfType: #Spatial.
 	
-	self tick: {(godotTree firstNodeOfType: #Button) trigger: #pressed}.
+	self tick: {(godotTree firstNodeOfType: #Button) signal: #pressed}.
 	
 	godotTree firstNodeOfType: #Label.
 	self should: [godotTree firstNodeOfType: #Spatial] raise: Error
@@ -104,17 +49,17 @@ GRReactTest >> testDeleteInKeyedCollection [
 				id: id;
 				onDelete: [list set: [:l | l copyWithout: id]]])].
 	self assert: 4 equals: (godotTree allNodesOfType: #Child) size.
-	self tick: {(godotTree allNodesOfType: #Child) second trigger: #onDelete}.
+	self tick: {(godotTree allNodesOfType: #Child) second signal: #onDelete}.
 	self
 		assert: #(1 3 4)
 		equals: ((godotTree allNodesOfType: #Child) collect: [:node | node properties at: #id]).
 	
-	self tick: {(godotTree allNodesOfType: #Child) first trigger: #onDelete}.
+	self tick: {(godotTree allNodesOfType: #Child) first signal: #onDelete}.
 	self
 		assert: #(3 4)
 		equals: ((godotTree allNodesOfType: #Child) collect: [:node | node properties at: #id]).
 	
-	self tick: {(godotTree allNodesOfType: #Child) last trigger: #onDelete}.
+	self tick: {(godotTree allNodesOfType: #Child) last signal: #onDelete}.
 	self
 		assert: #(3)
 		equals: ((godotTree allNodesOfType: #Child) collect: [:node | node properties at: #id])
@@ -135,40 +80,7 @@ GRReactTest >> testLoopWithKeyedObjects [
 			nestedComponent asReactNodeBuilder
 				props: {#key -> index};
 				build])].
-	self assert: (self tick: {(godotTree firstNodeOfType: #MeshInstance) trigger: #pressed}) first size = 3
-]
-
-{ #category : #'as yet unclassified' }
-GRReactTest >> testOptionalChildDirectInPortal [
-
-	self openComponentBlock: [ | count portal |
-		count := CMFReact useState: 0.
-		portal := CMFReact useRef: nil.
-		CMFReact
-			useEffect: [count set: [:c | c = 1 ifTrue: [c + 1] ifFalse: [c]]]
-			dependencies: {count get}.
-		{
-			(self godot: #Other)
-				key: #other;
-				ref: [:node | portal set: node].
-			count get < 2 ifTrue: [
-				(self godot: #Spatial)
-					key: #Spatial;
-					pressed: [count set: [:c | c + 1]];
-					children: {
-						[
-							count get = 0
-								ifTrue: [
-									{
-										self godot: #Child1.
-										self godot: #Child2.
-										CMFReactNodePortal child: (self godot: #OptionalChild) in: portal}]
-								ifFalse: [{}]] asReactNodeBuilder build}]}].
-	self assert: 1 equals: (godotTree firstNodeOfType: #Other) children size.
-	self assert: 2 equals: (godotTree firstNodeOfType: #Spatial) children size.
-	self tick: {(godotTree firstNodeOfType: #Spatial) trigger: #pressed}.
-	self assert: 0 equals: (godotTree firstNodeOfType: #Spatial) children size.
-	self assert: 0 equals: (godotTree firstNodeOfType: #Other) children size
+	self assert: (self tick: {(godotTree firstNodeOfType: #MeshInstance) signal: #pressed}) first size = 3
 ]
 
 { #category : #'as yet unclassified' }
@@ -192,43 +104,9 @@ GRReactTest >> testOptionalChildNestedInPortal [
 					self godot: #Child2}}].
 	self assert: 1 equals: (godotTree firstNodeOfType: #Other) children size.
 	self assert: 3 equals: (godotTree firstNodeOfType: #Spatial) children size.
-	self tick: {(godotTree firstNodeOfType: #Spatial) trigger: #pressed}.
+	self tick: {(godotTree firstNodeOfType: #Spatial) signal: #pressed}.
 	self assert: 2 equals: (godotTree firstNodeOfType: #Spatial) children size.
 	self assert: 0 equals: (godotTree firstNodeOfType: #Other) children size
-]
-
-{ #category : #'as yet unclassified' }
-GRReactTest >> testReleaseToolStayOrReturn [
-
-	| releasePos initialPos |
-	initialPos := 1 @ 2 @ 3.
-	releasePos := 4 @ 5 @ 6.
-	{{#return. initialPos}. {#stay. releasePos}} do: [:pair |
-		self openComponentBlock: [
-			WorldDworph new children: {
-				ControllerToolDworph new
-					shape: (self godot: #CollisionShape);
-					transform: (Matrix4x4 withOffset: initialPos);
-					onRelease: pair first;
-					active: [self godot: #Active];
-					passive: [self godot: #Passive]}].
-		self tick: {
-			(godotTree firstNodeOfType: #ARVRController)
-				trigger: #'button_pressed'
-				with: {6}.
-			(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
-				trigger: #'area_entered'
-				with: {godotTree firstNodeOfType: #Area}.
-			(godotTree firstNodeOfType: #ARVRController)
-				trigger: 'subscribe_global_transform'
-				with: {Matrix4x4 withOffset: releasePos}}.
-		self tick: {
-			(godotTree firstNodeOfType: #ARVRController)
-				trigger: #'button_release'
-				with: {6}}.
-		self
-			assert: pair second
-			equals: ((godotTree firstNodeOfType: #Passive) parent properties at: #transform) translation]
 ]
 
 { #category : #'as yet unclassified' }
@@ -242,16 +120,4 @@ GRReactTest >> testUnregistersCallbacks [
 	Smalltalk garbageCollectMost.
 	(react instVarNamed: #callbacks) clean.
 	self assert: 2 equals: (react instVarNamed: #callbacks) size
-]
-
-{ #category : #'as yet unclassified' }
-GRReactTest >> tick [
-
-	^ self tick: {}
-]
-
-{ #category : #'as yet unclassified' }
-GRReactTest >> tick: aCollectionOfUpdates [
-
-	^ godotTree tick: react updates: aCollectionOfUpdates asOrderedCollection
 ]

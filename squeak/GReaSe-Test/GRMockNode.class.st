@@ -11,7 +11,7 @@ Class {
 	#category : #'GReaSe-Test'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> addChild: aNode [
 
 	self assert: aNode parent isNil.
@@ -19,26 +19,26 @@ GRMockNode >> addChild: aNode [
 	aNode parent: self
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> allNodesDo: aBlock [
 
 	aBlock value: self.
 	self children do: [:child | child allNodesDo: aBlock]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> allNodesOfType: aSymbol [
 
 	^ self allNodesThat: [:node | node godotClass = aSymbol]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> allNodesThat: aBlock [
 
 	^ Array streamContents: [:stream | self allNodesDo: [:node | (aBlock value: node) ifTrue: [stream nextPut: node]]]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> applyUpdate: anUpdate [
 	"should only be called on the tree root"
 
@@ -64,38 +64,38 @@ GRMockNode >> applyUpdate: anUpdate [
 		[#delete] -> [(self getNodeForPath: anUpdate second) delete]}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> applyUpdates: aCollection [
 
 	aCollection first do: [:update | self applyUpdate: update]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> children [
 
 	^ children
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> delete [
 
 	self parent children remove: self
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> firstNodeOfType: aSymbol [
 
 	^ self firstNodeThat: [:node | node godotClass = aSymbol]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> firstNodeThat: aBlock [
 
 	self allNodesDo: [:node | (aBlock value: node) ifTrue: [^ node]].
 	self error: 'no node found'
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> getNodeForPath: aPath [
 
 	| current |
@@ -105,19 +105,19 @@ GRMockNode >> getNodeForPath: aPath [
 	^ current
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> godotClass [
 
 	^ godotClass
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> godotClass: aClass [
 
 	godotClass := aClass
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> initialize [
 
 	super initialize.
@@ -126,31 +126,31 @@ GRMockNode >> initialize [
 	properties := Dictionary new
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> name [
 
 	^ name
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> name: aString [
 
 	name := aString asString
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> parent [
 
 	^ parent
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> parent: aNode [
 
 	parent := aNode
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #printing }
 GRMockNode >> printOn: aStream [
 
 	aStream nextPutAll: self godotClass.
@@ -159,25 +159,43 @@ GRMockNode >> printOn: aStream [
 	aStream nextPut: $)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRMockNode >> properties [
 
 	^ properties
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> properties: aDictionary [
 
 	properties := aDictionary
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #updates }
+GRMockNode >> signal: aSymbol [
+
+	^ self signal: aSymbol with: {}
+]
+
+{ #category : #updates }
+GRMockNode >> signal: aSymbol with: aCollection [
+
+	^ {properties at: aSymbol}, aCollection
+]
+
+{ #category : #updates }
+GRMockNode >> subscribe: aSymbol set: anObject [
+
+	^ {properties at: 'sqsubscribe_', aSymbol. anObject}
+]
+
+{ #category : #internal }
 GRMockNode >> tick: aReact [
 
 	^ self tick: aReact updates: {}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #internal }
 GRMockNode >> tick: aReact updates: aCollection [
 
 	| allUpdates |
@@ -192,16 +210,4 @@ GRMockNode >> tick: aReact updates: aCollection [
 			with: (updates second collect: [:path | self getNodeForPath: path])
 			do: [:ref :node | ref set: node]].
 	^ allUpdates
-]
-
-{ #category : #'as yet unclassified' }
-GRMockNode >> trigger: aSymbol [
-
-	^ self trigger: aSymbol with: {}
-]
-
-{ #category : #'as yet unclassified' }
-GRMockNode >> trigger: aSymbol with: aCollection [
-
-	^ {properties at: aSymbol}, aCollection
 ]
