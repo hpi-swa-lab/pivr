@@ -86,6 +86,24 @@ GRComponent >> godot: aClassName [
 ]
 
 { #category : #hooks }
+GRComponent >> useAreaWithIntersectionFor: aBlock [
+
+	| intersected entered exited |
+	intersected := self useState: false.
+	entered := self
+		useCallback: [:node | (aBlock value: node) ifTrue: [intersected set: true]]
+		dependencies: {aBlock}.
+	exited := self
+		useCallback: [:node | (aBlock value: node) ifTrue: [intersected set: false]]
+		dependencies: {aBlock}.
+	^ {
+		(self godot: #Area)
+			area_entered: entered;
+			area_exited: exited.
+		intersected get}
+]
+
+{ #category : #hooks }
 GRComponent >> useControllerTransform [
 
 	^ self useProvided: #controllerTransform
@@ -149,6 +167,21 @@ GRComponent >> useProvidedRef: aSymbol namespace: anotherSymbol [
 GRComponent >> useTeleport [
 
 	^ self useProvided: #teleport
+]
+
+{ #category : #hooks }
+GRComponent >> useTriggerPressedDo: aBlock [
+
+	| trigger ready |
+	trigger := self useTriggerStrength.
+	ready := self useRef: true.
+	self
+		useEffect: [
+			(trigger > 0.6 and: [ready get]) ifTrue: [
+				ready set: false.
+				aBlock value].
+			trigger = 0.0 ifTrue: [ready set: true]]
+		dependencies: {aBlock. trigger}
 ]
 
 { #category : #hooks }

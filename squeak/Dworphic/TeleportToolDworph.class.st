@@ -24,22 +24,16 @@ TeleportToolDworph >> render: props [
 		shape: self collisionShape;
 		onRelease: #return;
 		active: [(self methodAsComponent: #renderActive:) props: props];
-		passive: [
-			SBToggledCode
-				comment: ''
-				active: 1
-				do: {[(self methodAsComponent: #renderPassive:) props: props]}]
+		passive: [(self methodAsComponent: #renderPassive:) props: props]
 ]
 
 { #category : #'as yet unclassified' }
 TeleportToolDworph >> renderActive: props [
 
-	| controller trigger teleport once world direction intersectionPoint |
+	| controller teleport world direction intersectionPoint |
 	controller := self useControllerTransform.
-	trigger := self useTriggerStrength.
 	
 	teleport := self useTeleport.
-	once := self useRef: true.
 	world := self useWorldPortal.
 	
 	direction := controller transform: 0 @ 0 @ 1.
@@ -47,13 +41,7 @@ TeleportToolDworph >> renderActive: props [
 		intersectPlane: 0 @ 0 @ 0
 		normal: 0 @ 1 @ 0.
 	
-	self
-		useEffect: [
-			(trigger > 0.6 and: [once get and: [intersectionPoint notNil]]) ifTrue: [
-				once set: false.
-				teleport set: (Matrix4x4 withOffset: intersectionPoint)].
-			trigger = 0 ifTrue: [once set: true]]
-		dependencies: {trigger}.
+	self useTriggerPressedDo: [intersectionPoint ifNotNil: [teleport set: (Matrix4x4 withOffset: intersectionPoint)]].
 	
 	^ {
 		self renderPassive: props.

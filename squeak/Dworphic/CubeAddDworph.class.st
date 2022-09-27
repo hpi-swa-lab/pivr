@@ -24,18 +24,10 @@ CubeAddDworph >> render: props [
 { #category : #'as yet unclassified' }
 CubeAddDworph >> renderActive: props [
 
-	| controllerTransform triggerStrength cubes once |
+	| controllerTransform cubes |
 	controllerTransform := self useProvidedRef: #controllerTransform.
-	triggerStrength := self useTriggerStrength.
 	cubes := self useProvided: #cubes.
-	once := self useRef: true.
-	self
-		useEffect: [
-			(triggerStrength > 0.6 and: [once get]) ifTrue: [
-				once set: false.
-				cubes set: [:c | c copyWith: {Color h: 360 atRandom s: 1 v: 1. controllerTransform get. UUID new asString}]].
-			triggerStrength = 0 ifTrue: [once set: true]]
-		dependencies: {triggerStrength}.
+	self useTriggerPressedDo: [cubes set: [:c | c copyWith: {Color h: 360 atRandom s: 1 v: 1. controllerTransform get. UUID new asString}]].
 	^ self renderPassive: props
 ]
 
