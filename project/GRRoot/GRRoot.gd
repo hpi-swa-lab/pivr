@@ -14,6 +14,9 @@ enum MessageType {
 	property_get_from_squeak = 8
 	bind_refs_from_godot = 9
 	tick_update_from_squeak = 10
+	create_instance_from_squeak = 11
+	created_instance_from_godot = 12
+	free_instance_from_squeak = 13
 }
 
 class Subscription:
@@ -57,6 +60,7 @@ func _ready():
 	var error = tcp.connect_to_host(ip(), 8292)
 	if error != OK:
 		print("Failed to connect: " + str(error))
+		return
 	while tcp.get_status() != 2:
 		if tcp.get_status() == 3:
 			print("Failed to connect")
@@ -109,6 +113,12 @@ func update():
 				MessageType.property_get_from_squeak:
 					var ret = object_for(response[1]).get(response[2])
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
+				MessageType.create_instance_from_squeak:
+					var ret = ClassDB.instance(response[1])
+					ret.reference()
+					tcp.put_var([MessageType.created_instance_from_godot, session_id, ret])
+				MessageType.free_instance_from_squeak:
+					response[1].unreference()
 				_:
 					assert(false, "unhandled message type: " + str(response[0]))
 
