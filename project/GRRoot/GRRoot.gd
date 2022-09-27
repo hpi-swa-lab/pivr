@@ -198,6 +198,19 @@ func create_node(update):
 	
 	return instance
 
+func deserialize_args(args):
+	var i = 0
+	for arg in args:
+		if arg is EncodedObjectAsID:
+			args[i] = instance_from_id(arg.object_id)
+		i += 1
+	return args
+
+func deserialize_arg(arg):
+	if arg is EncodedObjectAsID:
+		return instance_from_id(arg.object_id)
+	return arg
+
 func apply_prop(instance, key, value):
 	if key == 'groups':
 		for group in value:
@@ -209,7 +222,7 @@ func apply_prop(instance, key, value):
 		if not instance.has_method(key):
 			print("No method named " + key + " on " + str(instance))
 			return
-		instance.callv(key, value)
+		instance.callv(key, deserialize_args(value))
 		return
 	
 	if key.begins_with('sqsubcall_'):
@@ -221,7 +234,7 @@ func apply_prop(instance, key, value):
 		s.instance = instance
 		s.key = key
 		s.callback_id = value[0]
-		s.call_arguments = value[1]
+		s.call_arguments = deserialize_args(value[1])
 		subscriptions.append(s)
 		return
 	
@@ -255,7 +268,7 @@ func apply_prop(instance, key, value):
 		print("No property named " + key + " on " + str(instance))
 		return
 	
-	instance.set(key, value)
+	instance.set(key, deserialize_arg(value))
 
 # no variadic arguments, so have one signature per needed count of arguments...
 func note_signal0(callback_id):
