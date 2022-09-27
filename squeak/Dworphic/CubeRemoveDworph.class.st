@@ -33,8 +33,8 @@ CubeRemoveDworph >> renderActive: props [
 			id := GRReactCurrentSession value
 				callOn: area
 				method: 'get_meta'
-				arguments: {'id'. nil}.
-			(triggerStrength > 0.6 and: [id notNil]) ifTrue: [
+				arguments: {'id'. 0}.
+			(triggerStrength > 0.6 and: [id ~~ 0]) ifTrue: [
 				cubes set: [:c |
 					self assert: (c anySatisfy: [:cube | cube third = id]).
 					c select: [:cube | cube third ~= id]]]]

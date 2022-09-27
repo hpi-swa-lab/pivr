@@ -55,7 +55,7 @@ ControllerToolDworph >> render: props [
 			#onTransform -> transformSub}.
 		grabbed get = 0 ifTrue: [ | pickableNode |
 			pickableNode := (self godot: #Area)
-				meta_id: (props at: #id ifAbsent: nil);
+				meta: #id set: (props at: #id ifAbsent: nil);
 				area_entered: enteredSub;
 				area_exited: exitedSub;
 				children: {(props at: #passive) value. self colliderShape: props}.

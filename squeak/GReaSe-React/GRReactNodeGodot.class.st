@@ -20,6 +20,12 @@ GRReactNodeGodot class >> for: aSymbol [
 ]
 
 { #category : #accessing }
+GRReactNodeGodot >> call: aMethodString arguments: aCollection [
+
+	properties at: 'sqcall_', aMethodString put: aCollection
+]
+
+{ #category : #accessing }
 GRReactNodeGodot >> children [
 
 	^ children
@@ -128,6 +134,12 @@ GRReactNodeGodot >> key: anObject [
 	godotId := key
 ]
 
+{ #category : #accessing }
+GRReactNodeGodot >> meta: aSymbol set: anObject [
+
+	properties at: 'sqmeta_', aSymbol put: anObject
+]
+
 { #category : #printing }
 GRReactNodeGodot >> printOn: aStream [
 
@@ -228,7 +240,7 @@ GRReactNodeGodot >> subscribeCall: aMethodString with: aCollection do: aCallback
 
 	| id |
 	"append an index to the id. unlike properties, subscribing multiple times make sense if it's different arguments each time"
-	id := 'call_', aMethodString.
+	id := 'sqsubcall_', aMethodString.
 	id := id, '_', (properties keys count: [:key | key beginsWith: id]).
 	properties
 		at: id
@@ -238,7 +250,7 @@ GRReactNodeGodot >> subscribeCall: aMethodString with: aCollection do: aCallback
 { #category : #accessing }
 GRReactNodeGodot >> subscribeTo: aPropertyNameString do: aCallbackClosure [
 
-	properties at: 'subscribe_', aPropertyNameString put: aCallbackClosure
+	properties at: 'sqsubscribe_', aPropertyNameString put: aCallbackClosure
 ]
 
 { #category : #accessing }
