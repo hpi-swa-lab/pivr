@@ -22,7 +22,7 @@ GRCallbackRegistry >> get: anId [
 { #category : #'as yet unclassified' }
 GRCallbackRegistry >> initialize [
 
-	callbacks := Dictionary new
+	callbacks := WeakValueDictionary new
 ]
 
 { #category : #'as yet unclassified' }
