@@ -184,7 +184,13 @@ GRSocketListener class >> readVariantFrom: aStream [
 			Dictionary newFrom: ((1 to: count) collect: [:index | (self readVariantFrom: aStream) -> (self readVariantFrom: aStream)])].
 		[19] -> [ | count |
 			count := (aStream nextLittleEndianNumber: 4) bitAnd: 2147483647.
-			(1 to: count) collect: [:index | self readVariantFrom: aStream]]}
+			(1 to: count) collect: [:index | self readVariantFrom: aStream]].
+		[20] -> [ | count ret pad |
+			count := aStream nextLittleEndianNumber: 4.
+			ret := aStream next: count.
+			pad := count \\ 4 > 0 ifTrue: [4 - (count \\ 4)] ifFalse: [0].
+			aStream next: pad.
+			ret]}
 ]
 
 { #category : #'as yet unclassified' }
