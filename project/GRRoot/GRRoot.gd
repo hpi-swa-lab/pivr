@@ -160,7 +160,7 @@ func apply_updates(list):
 				var nodePaths = update[1]
 				var startIndex = update[2]
 				for path in nodePaths:
-					var child = get_node(path)
+					var child = get_node(root_path + path)
 					child.get_parent().move_child(child, startIndex - 1)
 					startIndex += 1
 			'replace':
@@ -194,10 +194,19 @@ func apply_prop(instance, key, value):
 			instance.add_to_group(group)
 		return
 	
-	if key.begins_with('call_'):
-		key = key.substr(5, key.find_last('_') - 5)
+	if key.begins_with('sqcall_'):
+		key = key.substr(7)
 		if not instance.has_method(key):
 			print("No method named " + key + " on " + str(instance))
+			return
+		instance.callv(key, value)
+		return
+	
+	if key.begins_with('sqsubcall_'):
+		key = key.substr(10, key.find_last('_') - 10)
+		if not instance.has_method(key):
+			print("No method named " + key + " on " + str(instance))
+			return
 		var s = Subscription.new()
 		s.instance = instance
 		s.key = key
@@ -206,8 +215,8 @@ func apply_prop(instance, key, value):
 		subscriptions.append(s)
 		return
 	
-	if key.begins_with('subscribe_'):
-		key = key.substr(10)
+	if key.begins_with('sqsubscribe_'):
+		key = key.substr(12)
 		if not key in instance:
 			print("No property named " + key + " on " + str(instance))
 			return
@@ -218,8 +227,8 @@ func apply_prop(instance, key, value):
 		subscriptions.append(s)
 		return
 	
-	if key.begins_with('meta_'):
-		key = key.substr(5)
+	if key.begins_with('sqmeta_'):
+		key = key.substr(7)
 		instance.set_meta(key, value)
 		return
 	
