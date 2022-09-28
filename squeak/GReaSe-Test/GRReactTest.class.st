@@ -84,6 +84,24 @@ GRReactTest >> testLoopWithKeyedObjects [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testNoRerenderOnSetInEffect [
+
+	| once |
+	once := true.
+	self openComponentBlock: [ | state |
+		state := CMFReact useState: 0.
+		CMFReact
+			useEffect: [
+				self assert: once.
+				state set: [:c | c + 1].
+				once := false]
+			dependencies: {}.
+		nil].
+	self tick.
+	self tick
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testOptionalChildNestedInPortal [
 
 	self openComponentBlock: [ | count portal |

@@ -56,6 +56,20 @@ DworphicToolTest >> testCantGrabMultipleThings [
 ]
 
 { #category : #'as yet unclassified' }
+DworphicToolTest >> testKeyboardNoRenderLoop [
+	"smoke test for openingi keyboard (plus, there used to be a bug where the useEffect/setState combo in the keyboard would cause an infinite render loop"
+	<timeout: 0.1>
+
+	self openComponentBlock: [WorldDworph new children: {VirtualKeyboardDworph new}].
+	
+	self tick: {
+		(self controllerNode: #right) toggleGrip: true.
+		(godotTree firstNodeThat: [:node | node properties includesKey: #'area_entered'])
+			signal: #'area_entered'
+			with: {self controllerCollider: #right}}
+]
+
+{ #category : #'as yet unclassified' }
 DworphicToolTest >> testReleaseToolStayOrReturn [
 
 	| releasePos initialPos |

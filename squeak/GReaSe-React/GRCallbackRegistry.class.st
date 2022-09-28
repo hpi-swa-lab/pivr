@@ -22,7 +22,7 @@ GRCallbackRegistry >> get: anId [
 { #category : #'as yet unclassified' }
 GRCallbackRegistry >> initialize [
 
-	callbacks := WeakValueDictionary new
+	callbacks := (SBToggledCode comment: '' active: 1 do: {[Dictionary]. [WeakValueDictionary]}) new
 ]
 
 { #category : #'as yet unclassified' }

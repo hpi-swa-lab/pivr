@@ -108,10 +108,18 @@ GRMockNode >> firstNodeThat: aBlock [
 { #category : #internal }
 GRMockNode >> getNodeForPath: aPath [
 
-	| current |
+	| current stream |
 	current := self.
 	aPath ifEmpty: [^ self].
-	(aPath allButFirst splitBy: '/') do: [:part | current := current children detect: [:child | child name = part]].
+	stream := aPath readStream.
+	
+	"upToAnyOf: reads over the delimiter, so we always refer to the last below"
+	stream next.
+	[stream atEnd] whileFalse: [ | type part |
+		type := stream last.
+		part := stream upToAnyOf: '/:'.
+		type = $/ ifTrue: [current := current children detect: [:child | child name = part]].
+		type = $: ifTrue: [current := current properties at: part]].
 	^ current
 ]
 

@@ -48,11 +48,10 @@ VirtualKeyboardDworph >> renderActive: props [
 	worldPortal := self useWorldPortal.
 	pointerRef := self useRef: nil.
 	
-	SBToggledCode comment: '' active: 0 do: {
-		[
-			self
-				useEffect: [keyboardTransform set: (Matrix4x4 withRotation: 180 around: 0 @ 1 @ 0) * (Matrix4x4 withOffset: 0 @ 0 @ 1) * head get]
-				dependencies: {}]}.
+	self
+		useEffect: ["FIXME: doesnt seem quite right yet. and also not very convenient."
+		keyboardTransform set: (Matrix4x4 withRotation: head get rotation second negated around: 0 @ 1 @ 0) * (Matrix4x4 withOffset: 0 @ 0.1 @ -1)]
+		dependencies: {}.
 	
 	^ {
 		self renderPassive: props.
@@ -63,35 +62,41 @@ VirtualKeyboardDworph >> renderActive: props [
 						size: 0.002 @ 0.002 @ 10.0;
 						material: self material);
 					translation: 0 @ 0 @ -5.
-				(self godot: #CollisionShape) shape: ((self godot: #RayShape) length: 10.0)};
+				(self godot: #CollisionShape) shape: ((self godot: #RayShape) length: -10.0)};
 			ref: pointerRef.
-		SBToggledCode comment: '' active: 0 do: {
-			[
-				CMFReactNodePortal
-					child: ((self methodAsComponent: #renderKeyboard:) transform: keyboardTransform)
-					in: worldPortal]}}
+		CMFReactNodePortal
+			child: ((self methodAsComponent: #renderKeyboard:)
+				transform: keyboardTransform get;
+				pointer: pointerRef get)
+			in: worldPortal}
 ]
 
 { #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> renderKey: props [
 
-	| validCheck areaAndHovered |
-	validCheck := self
-		useCallback: [:node | node = (props at: #pointer)]
-		dependencies: {props at: #pointer}.
-	areaAndHovered := self useAreaWithIntersectionFor: validCheck.
+	| areaAndHovered |
+	areaAndHovered := self
+		useAreaWithIntersectionFor: [:node | node = (props at: #pointer)]
+		dependencies: {(props at: #pointer) ifNotNil: #objectId}.
 	
 	^ {
-		areaAndHovered second ifTrue: ["only subscribe to trigger events if we are currently hovered"
-		[:nestedProps | self useTriggerPressedDo: [(props at: #onPressed) value]] asComponent].
+		areaAndHovered second ifTrue: [
+			"only subscribe to trigger events if we are currently hovered"
+			[:nestedProps |
+				self useTriggerPressedDo: [(props at: #onPressed) value].
+				nil] asComponent].
 		areaAndHovered first
 			children: {
 				(self godot: #MeshInstance) mesh: ((self godot: #CubeMesh)
 					size: self keySize asPoint @ 0.02;
 					material: (areaAndHovered second ifTrue: [self hoveredMaterial] ifFalse: [self material])).
 				(self godot: #Label3D)
+					translation: 0 @ 0 @ 0.011;
 					text: (props at: #letter) asString;
-					font: ((self godot: #DynamicFont) font_data: ((self godot: #DynamicFontData) font_path: 'res://TSText/DejaVuSans.ttf')).
+					pixel_size: 0.001;
+					font: ((self godot: #DynamicFont)
+						font_data: ((self godot: #DynamicFontData) font_path: 'res://TSText/DejaVuSans.ttf');
+						size: 32).
 				(self godot: #CollisionShape) shape: ((self godot: #BoxShape) extents: self keySize asPoint / 2 @ 0.01)};
 			translation: (props at: #position) @ 0 * self keySize}
 ]
@@ -99,18 +104,25 @@ VirtualKeyboardDworph >> renderKey: props [
 { #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> renderKeyboard: props [
 
+	| layout |
+	layout := {'1234567890'. 'qwertzuiop'. 'asdfghjkl'. 'yxcvbnm'}.
+	
 	^ (self godot: #MeshInstance)
+		transform: (props at: #transform);
 		mesh: ((self godot: #CubeMesh)
-			size: 0.5 @ 0.3 @ 0.01;
+			size: (layout collect: #size) max * self keySize @ 0.3 @ 0.01;
 			material: self material);
-		children: ({'qwertzuiop'. 'asdfghjkl'. 'yxcvbnm'} withIndexCollect: [:row :rowIndex |
-			row asOrderedCollection withIndexCollect: [:letter :columnIndex |
-				(self methodAsComponent: #renderKey:)
-					key: letter;
-					letter: letter;
-					pointer: nil;
-					position: columnIndex @ rowIndex;
-					onPressed: [Transcript showln: letter]]])
+		children: {
+			(self godot: #Spatial)
+				translation: (layout collect: #size) max - 1 * self keySize / -2 @ (self keySize * -1.5) @ 0;
+				children: (layout withIndexCollect: [:row :rowIndex |
+					row asOrderedCollection withIndexCollect: [:letter :columnIndex |
+						(self methodAsComponent: #renderKey:)
+							key: letter;
+							letter: letter;
+							pointer: (props at: #pointer);
+							position: columnIndex - 1 @ (layout size - (rowIndex - 1));
+							onPressed: [Transcript showln: letter]]])}
 ]
 
 { #category : #'as yet unclassified' }

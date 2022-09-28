@@ -86,16 +86,17 @@ GRComponent >> godot: aClassName [
 ]
 
 { #category : #hooks }
-GRComponent >> useAreaWithIntersectionFor: aBlock [
+GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 
-	| intersected entered exited |
+	| intersected entered exited block |
 	intersected := self useState: false.
+	block := self useCallback: aBlock dependencies: aCollection.
 	entered := self
-		useCallback: [:node | (aBlock value: node) ifTrue: [intersected set: true]]
-		dependencies: {aBlock}.
+		useCallback: [:node | (block value: node) ifTrue: [intersected set: true]]
+		dependencies: {block}.
 	exited := self
-		useCallback: [:node | (aBlock value: node) ifTrue: [intersected set: false]]
-		dependencies: {aBlock}.
+		useCallback: [:node | (block value: node) ifTrue: [intersected set: false]]
+		dependencies: {block}.
 	^ {
 		(self godot: #Area)
 			area_entered: entered;
