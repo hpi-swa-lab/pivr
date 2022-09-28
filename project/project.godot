@@ -268,7 +268,7 @@ enabled=PoolStringArray( "res://addons/godot-openxr/plugin.cfg" )
 
 [gdnative]
 
-singletons=[ "res://addons/godot-openxr/config/godot_openxr.gdnlib", "res://addons/squeak/libsqplugin.gdnlib" ]
+singletons=[ "res://addons/godot-openxr/config/godot_openxr.gdnlib" ]
 
 [global]
 
@@ -279,6 +279,11 @@ color=false
 capitalize={
 "deadzone": 0.5,
 "events": [ Object(InputEventJoypadMotion,"resource_local_to_scene":false,"resource_name":"","device":-1,"axis":1,"axis_value":1.0,"script":null)
+ ]
+}
+quit={
+"deadzone": 0.5,
+"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":true,"meta":false,"command":true,"pressed":false,"scancode":87,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
  ]
 }
 
