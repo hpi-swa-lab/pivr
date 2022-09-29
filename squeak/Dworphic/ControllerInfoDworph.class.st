@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 ControllerInfoDworph class >> grip [
 
-	^ 6
+	^ 2
 ]
 
 { #category : #rendering }

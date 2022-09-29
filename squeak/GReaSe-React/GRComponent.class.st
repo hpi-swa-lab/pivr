@@ -173,16 +173,30 @@ GRComponent >> useTeleport [
 { #category : #hooks }
 GRComponent >> useTriggerPressedDo: aBlock [
 
+	self useTriggerPressedDo: aBlock releasedDo: []
+]
+
+{ #category : #hooks }
+GRComponent >> useTriggerPressedDo: pressedBlock releasedDo: releasedBlock [
+
 	| trigger ready |
 	trigger := self useTriggerStrength.
 	ready := self useRef: true.
 	self
 		useEffect: [
-			(trigger > 0.6 and: [ready get]) ifTrue: [
+			(trigger > 0.8 and: [ready get]) ifTrue: [
 				ready set: false.
-				aBlock value].
-			trigger = 0.0 ifTrue: [ready set: true]]
-		dependencies: {aBlock. trigger}
+				pressedBlock value].
+			trigger < 0.6 ifTrue: [
+				ready get ifFalse: [releasedBlock value].
+				ready set: true]]
+		dependencies: {pressedBlock. releasedBlock. trigger}
+]
+
+{ #category : #hooks }
+GRComponent >> useTriggerReleasedDo: aBlock [
+
+	self useTriggerPressedDo: [] releasedDo: aBlock
 ]
 
 { #category : #hooks }

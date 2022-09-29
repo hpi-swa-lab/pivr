@@ -57,7 +57,10 @@ GRReact class >> questRestartApp [
 GRReact class >> startGodot [
 
 	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
-		RunningGodotProcess ifNotNil: #terminate.
+		RunningGodotProcess ifNotNil: [
+			RunningGodotProcess class caseOf: {
+				[ExternalUnixOSProcess] -> [RunningGodotProcess terminate].
+				[ExternalWindowsOSProcess] -> [RunningGodotProcess threads do: [:thread | thread terminate]]}].
 		GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
 		RunningGodotProcess := shell isWindows
 			ifTrue: [OSProcess command: ('{1} --path {2}' format: {GodotPath. (self pivrPath / 'project') asString})]

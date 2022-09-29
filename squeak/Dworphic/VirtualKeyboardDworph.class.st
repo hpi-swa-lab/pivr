@@ -104,8 +104,11 @@ VirtualKeyboardDworph >> renderKey: props [
 { #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> renderKeyboard: props [
 
-	| layout |
+	| layout readyForNextLetter |
 	layout := {'1234567890'. 'qwertzuiop'. 'asdfghjkl'. 'yxcvbnm'}.
+	
+	readyForNextLetter := self useState: true.
+	self useTriggerReleasedDo: [readyForNextLetter set: true].
 	
 	^ (self godot: #MeshInstance)
 		transform: (props at: #transform);
@@ -122,7 +125,10 @@ VirtualKeyboardDworph >> renderKeyboard: props [
 							letter: letter;
 							pointer: (props at: #pointer);
 							position: columnIndex - 1 @ (layout size - (rowIndex - 1));
-							onPressed: [Transcript showln: letter]]])}
+							onPressed: [
+								readyForNextLetter get ifTrue: [
+									Transcript showln: letter.
+									readyForNextLetter set: false]]]])}
 ]
 
 { #category : #'as yet unclassified' }
