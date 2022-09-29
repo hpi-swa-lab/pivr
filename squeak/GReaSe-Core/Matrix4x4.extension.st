@@ -7,6 +7,12 @@ Matrix4x4 >> grEqual: anObject [
 ]
 
 { #category : #'*GReaSe-Core' }
+Matrix4x4 >> localTranslatedBy: aVector3 [
+
+	^ self * (self class withOffset: aVector3)
+]
+
+{ #category : #'*GReaSe-Core' }
 Matrix4x4 >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 13.
@@ -38,6 +44,22 @@ Matrix4x4 >> rotateVector3: aVector3 [
 	rw := x * self a14 + (y * self a24) + (z * self a34) + 1.
 	
 	^ Vector3 x: rx / rw y: ry / rw z: rz / rw
+]
+
+{ #category : #'*GReaSe-Core' }
+Matrix4x4 >> rotatedGlobalBy: aDegreesNumber around: aVector [
+
+	| out |
+	out := self copy translation: 0 @ 0 @ 0.
+	^ (self class withRotation: aDegreesNumber around: aVector) * out translation: self translation
+]
+
+{ #category : #'*GReaSe-Core' }
+Matrix4x4 >> rotatedLocalBy: aDegreesNumber around: aVector [
+
+	| out |
+	out := self copy translation: 0 @ 0 @ 0.
+	^ out * (self class withRotation: aDegreesNumber around: aVector) translation: self translation
 ]
 
 { #category : #'*GReaSe-Core' }

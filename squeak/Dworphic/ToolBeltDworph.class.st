@@ -13,7 +13,7 @@ ToolBeltDworph >> render: props [
 		active: 2
 		do: {[-1 @ 0.5 @ -1]. [self useHeadTransform translation]}.
 	^ (self godot: #MeshInstance)
-		translation: head - (0 @ 0.3 @ 0.05);
+		translation: head - (0 @ 0.5 @ 0.05);
 		mesh: ((self godot: #CubeMesh) size: 0.2 @ 0.07 @ 0.01);
 		children: {
 			(self godot: #Spatial)

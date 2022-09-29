@@ -194,11 +194,19 @@ func apply_updates(list):
 			_:
 				print("Unknown update: " + update[0])
 
+# Place to register custom classes
+func new_instance_for_name(name):
+	match name:
+		'GREvents':
+			return preload("res://GRRoot/GREvents.gd").new()
+		_:
+			return ClassDB.instance(name)
+
 func create_node(update):
 	var gd_class_name = update[4]
 	var props_dictionary = update[5]
 	
-	var instance = ClassDB.instance(gd_class_name)
+	var instance = new_instance_for_name(gd_class_name)
 	for key in props_dictionary.keys():
 		apply_prop(instance, key, props_dictionary[key])
 	
