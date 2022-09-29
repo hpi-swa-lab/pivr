@@ -128,6 +128,65 @@ GRReactTest >> testOptionalChildNestedInPortal [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testReloadWithHooks [
+
+	| change |
+	change := false.
+	self openComponentBlock: [ | label |
+		change ifTrue: [CMFReact useState: 2].
+		label := CMFReact useState: 'initial'.
+		(self godot: #Label)
+			text: label get;
+			click: [label set: 'changed']].
+	self tick: {(godotTree firstNodeOfType: #Label) signal: #click}.
+	self assert: 'changed' equals: (godotTree firstNodeOfType: #Label) text.
+	
+	change := true.
+	react onCodeChanged.
+	self tick.
+	self assert: 'initial' equals: (godotTree firstNodeOfType: #Label) text
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testReloadWithHooksAndRenderChange [
+
+	| change |
+	change := false.
+	self openComponentBlock: [ | label |
+		change ifTrue: [CMFReact useState: 2].
+		label := CMFReact useState: 'initial'.
+		(self godot: (change ifTrue: [#Other] ifFalse: [#Label]))
+			text: label get;
+			click: [label set: 'changed']].
+	self tick: {(godotTree firstNodeOfType: #Label) signal: #click}.
+	self assert: 'changed' equals: (godotTree firstNodeOfType: #Label) text.
+	
+	change := true.
+	react onCodeChanged.
+	self tick.
+	self assert: 'initial' equals: (godotTree firstNodeOfType: #Other) text
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testReloadWithHooksChangeType [
+
+	| change |
+	change := false.
+	self openComponentBlock: [ | label |
+		label := change ifTrue: [CMFReact useRef: 'change'] ifFalse: [CMFReact useState: 'initial'].
+		(self godot: #Label)
+			text: label get;
+			click: [label set: 'changed']].
+	self tick: {(godotTree firstNodeOfType: #Label) signal: #click}.
+	self assert: 'changed' equals: (godotTree firstNodeOfType: #Label) text.
+	
+	change := true.
+	react onCodeChanged.
+	self tick.
+	self assert: 'change' equals: (godotTree firstNodeOfType: #Label) text
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testUnregistersCallbacks [
 
 	self openComponentBlock: [(self godot: #Button) pressed: []].
