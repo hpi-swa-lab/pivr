@@ -143,6 +143,15 @@ GRSocketListener class >> readVariantFrom: aStream [
 				ifTrue: [Float fromIEEE64Bit: (aStream nextLittleEndianNumber: 8)]
 				ifFalse: [Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)]].
 		[4] -> [self readStringFrom: aStream].
+		[5] -> [
+			Vector2
+				x: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
+				y: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))].
+		[7] -> [
+			Vector3
+				x: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
+				y: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
+				z: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))].
 		[13] -> [
 			self flag: #todo.
 			"is the rotation in the right order? translation is correct"
