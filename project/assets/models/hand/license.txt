@@ -1,0 +1,11 @@
+Model Information:
+* title:	Hand (low poly)
+* source:	https://sketchfab.com/3d-models/hand-low-poly-d6c802a74a174c8c805deb20186d1877
+* author:	scribbletoad (https://sketchfab.com/scribbletoad)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Hand (low poly)" (https://sketchfab.com/3d-models/hand-low-poly-d6c802a74a174c8c805deb20186d1877) by scribbletoad (https://sketchfab.com/scribbletoad) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

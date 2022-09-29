@@ -13,5 +13,6 @@ BlockCodeExampleVR >> editorTranslation [
 { #category : #'as yet unclassified' }
 BlockCodeExampleVR >> interactionComponent [
 
-	^ WorldDworph asReactNodeBuilder build
+	"^ WorldDworph asReactNodeBuilder build"
+	^ Avatar new
 ]

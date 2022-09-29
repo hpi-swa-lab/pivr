@@ -18,6 +18,12 @@ GRSocketSession >> bindRefs: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRSocketSession >> callOn: anObject method: aString [
+
+	^ self callOn: anObject method: aString arguments: #()
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketSession >> callOn: anObject method: aString arguments: aCollection [
 
 	| response |
