@@ -33,6 +33,8 @@ BlockCodeExample >> interactionComponent [
 { #category : #'as yet unclassified' }
 BlockCodeExample >> render: props [
 
+	self useCenterOnScreen: 1.
+
 	^ (self godot: #Spatial)
 		children: {
 			BlockCodeEditor new
@@ -43,4 +45,26 @@ BlockCodeExample >> render: props [
 					morphicScale: 0.003).
 			self interactionComponent.
 		}
+]
+
+{ #category : #'as yet unclassified' }
+BlockCodeExample >> useCenterOnScreen: screenIndex [
+
+	^ self useEffect: [ | screenSize session windowSize doCenter |
+		session := GRReactCurrentSession value.
+		doCenter := [
+			session callOn: 'OS'
+				method: 'set_current_screen'
+				arguments: {screenIndex}].
+		
+		doCenter value.
+		screenSize := session callOn: 'OS'
+			method: 'get_screen_size'.
+		windowSize := session callOn: 'OS'
+			method: 'get_real_window_size'.
+		session callOn: 'OS'
+			method: 'set_window_position'
+			arguments: {(screenSize - windowSize) / 2}.
+		"We need to center again because for some reason Godot will put the window on the original screen after the previous call"
+		doCenter value.]
 ]
