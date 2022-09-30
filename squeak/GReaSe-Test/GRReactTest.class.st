@@ -66,6 +66,23 @@ GRReactTest >> testDeleteInKeyedCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testInsertInNestedComponent [
+
+	self openComponentBlock: [ | toggle |
+		toggle := CMFReact useState: false.
+		(self godot: #VBoxContainer) children: {
+			toggle get
+				ifTrue: [[(self godot: #Label) text: 'a'] asComponent]
+				ifFalse: [(self godot: #Label) text: 'a'].
+			(self godot: #Label) text: 'b'.
+			(self godot: #Timer) timeout: [toggle set: [:t | t not]]}].
+	
+	self assert: #('a' 'b') equals: ((godotTree allNodesOfType: #Label) collect: [:l | l text]).
+	self tick: {(godotTree firstNodeOfType: #Timer) signal: #timeout}.
+	self assert: #('a' 'b') equals: ((godotTree allNodesOfType: #Label) collect: [:l | l text])
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testLoopWithKeyedObjects [
 
 	| nestedComponent |
