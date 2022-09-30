@@ -6,7 +6,8 @@ Class {
 		'sessionId',
 		'stream',
 		'communicationLock',
-		'codeChanged'
+		'codeChanged',
+		'renderingErrored'
 	],
 	#category : #'GReaSe-Core'
 }
@@ -47,6 +48,7 @@ GRSocketSession >> close [
 GRSocketSession >> codeChanged: event [
 
 	event isDoIt ifTrue: [^ self].
+	renderingErrored := false.
 	self synchronousCodeReload ifFalse: [
 		codeChanged := true.
 		^ self].
@@ -96,35 +98,56 @@ GRSocketSession >> get: aString of: anObject [
 	^ response third
 ]
 
+{ #category : #'as yet unclassified' }
+GRSocketSession >> handleError: anError [
+	"spawn a new handler loop process so that we can debug the error'ed one"
+
+	self spawnHandlerProcess.
+	ToolSet debugException: anError
+]
+
 { #category : #communication }
 GRSocketSession >> handleMessage: aMessage [
 
-	aMessage first caseOf: {
-		[GRSocketListener messageTypeTickFromGodot] -> [
-			[
-				[
-					self tick: aMessage third updatesDo: [:updates |
-						self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
-						updates second ifNotEmpty: [ | refsMessage |
-							refsMessage := GRSocketListener readMessageFrom: stream.
-							self assert: refsMessage first = GRSocketListener messageTypeRefsFromGodot.
-							self bindRefs: refsMessage third]]] ensure: [self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}]]
-				on: ConnectionClosed, SocketPrimitiveFailed
-				do: [:error | ^ false]
-				on: Error
-				do: [:error |
-					self spawnHandlerProcess.
-					error signal]].
-		[GRSocketListener messageTypeInitializeSessionFromGodot] -> [self putVariant: {GRSocketListener messageTypeInitializedSessionFromSqueak. self sessionId. GRObjectId new objectId: 0}].
+	^ aMessage first caseOf: {
+		[GRSocketListener messageTypeTickFromGodot] -> [self handleRenderMessage: aMessage].
+		[GRSocketListener messageTypeInitializeSessionFromGodot] -> [
+			self putVariant: {GRSocketListener messageTypeInitializedSessionFromSqueak. self sessionId. GRObjectId new objectId: 0}.
+			true].
 		[GRSocketListener messageTypeQuitFromGodot] -> [
 			SBToggledCode
 				comment: ''
 				active: 0
 				do: {[ | sessions |sessions removeKey: aMessage second]}.
 			self close.
-			^ false].
-		[GRSocketListener messageTypeResponseToCallFromGodot] -> [self error: 'message sent on wrong thread? response arrived in listener loop']}.
-	^ true
+			false]}
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketSession >> handleRenderMessage: aMessage [
+
+	renderingErrored ifTrue: [
+		Transcript showln: 'Ignoring update from Godot until next code change because of error.'.
+		self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
+		^ true].
+	
+	^ [
+		self tick: aMessage third updatesDo: [:updates |
+			self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
+			updates second ifNotEmpty: [ | refsMessage |
+				refsMessage := GRSocketListener readMessageFrom: stream.
+				self assert: refsMessage first = GRSocketListener messageTypeRefsFromGodot.
+				self bindRefs: refsMessage third]].
+		self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
+		true]
+		on: ConnectionClosed, SocketPrimitiveFailed
+		do: [:error | false]
+		on: Error
+		do: [:error |
+			self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
+			renderingErrored := true.
+			self handleError: error.
+			false]
 ]
 
 { #category : #'as yet unclassified' }
@@ -133,13 +156,20 @@ GRSocketSession >> initialize [
 	super initialize.
 	
 	codeChanged := false.
-	communicationLock := Mutex new
+	communicationLock := Mutex new.
+	renderingErrored := false
 ]
 
 { #category : #'as yet unclassified' }
 GRSocketSession >> putVariant: anObject [
 
 	GRSocketListener putVariant: anObject on: stream
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketSession >> react: aReact [
+
+	react := aReact
 ]
 
 { #category : #'as yet unclassified' }

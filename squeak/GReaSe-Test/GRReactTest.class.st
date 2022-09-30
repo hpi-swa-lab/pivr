@@ -66,6 +66,35 @@ GRReactTest >> testDeleteInKeyedCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testDisablesRenderingOnError [
+
+	| changeWithError session |
+	changeWithError := false.
+	
+	self openComponentBlock: [ | state |
+		state := CMFReact useState: 0.
+		changeWithError ifTrue: [self error].
+		(self godot: #Timer) timeout: [state set: [:s | s + 1]]].
+	session := GRTestSocketSession new
+		react: react;
+		socketStream: (WriteStream on: ByteArray new).
+	
+	session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}.
+	changeWithError := true.
+	self
+		should: [session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}]
+		raise: Error.
+	self
+		shouldnt: [session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}]
+		raise: Error.
+	
+	session codeChanged: (AddedEvent class: self class category: 'GReaSe-Test').
+	self
+		should: [session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}]
+		raise: Error
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testInsertInNestedComponent [
 
 	self openComponentBlock: [ | toggle |
