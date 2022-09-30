@@ -2,6 +2,8 @@ extends Node
 
 const root_path = '/root/DworphicWorld/'
 
+var resource_cache = {}
+
 enum MessageType {
 	tick_from_godot = 0
 	tick_completed_from_squeak = 1
@@ -179,18 +181,6 @@ func apply_updates(list):
 					var child = get_node(root_path + path)
 					child.get_parent().move_child(child, startIndex - 1)
 					startIndex += 1
-			'replace':
-				var old_path = update[1]
-				var is_resource = update[2]
-				var id_or_prop_name = update[3]
-				var instance = create_node(update)
-				if is_resource:
-					var target = get_node_and_resource(root_path + old_path)
-					# FIXME probably wrong, always get_parent()?
-					(target[1] if target[1] else target[0]).get_parent().set(id_or_prop_name, instance)
-				else:
-					instance.name = id_or_prop_name
-					get_node(root_path + old_path).replace_by(instance)
 			_:
 				print("Unknown update: " + update[0])
 
