@@ -159,11 +159,18 @@ func apply_updates(list):
 				var parent_path = update[1]
 				var is_resource = update[2]
 				var id_or_prop_name = update[3]
-				var instance = create_node(update)
 				if is_resource:
+					# FIXME should check if the resource if eligible for caching
+					# meaning that there is no ref pointing to it
+					var key = hash([update[4], update[5]])
+					var instance = resource_cache.get(key)
+					if not instance:
+						instance = create_node(update)
+						resource_cache[key] = weakref(instance)
 					var target = get_node_and_resource(root_path + parent_path)
 					(target[1] if target[1] else target[0]).set(id_or_prop_name, instance)
 				else:
+					var instance = create_node(update)
 					instance.name = id_or_prop_name
 					get_node(root_path + parent_path).add_child(instance)
 			'update':
