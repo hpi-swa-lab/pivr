@@ -14,8 +14,7 @@ GRComponent class >> inGodot [
 { #category : #deploy }
 GRComponent class >> start [
 
-	self inGodot.
-	GRReact startGodot
+	self startWithArguments: #()
 ]
 
 { #category : #deploy }
@@ -23,6 +22,13 @@ GRComponent class >> startQuest [
 
 	self inGodot.
 	GRReact questRestartApp
+]
+
+{ #category : #deploy }
+GRComponent class >> startWithArguments: aStringCollection [
+
+	self inGodot.
+	GRReact startGodotWithArguments: aStringCollection
 ]
 
 { #category : #hooks }
