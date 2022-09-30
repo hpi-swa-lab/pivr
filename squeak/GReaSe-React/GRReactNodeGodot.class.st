@@ -19,6 +19,14 @@ GRReactNodeGodot class >> for: aSymbol [
 	^ self new godotClass: aSymbol
 ]
 
+{ #category : #testing }
+GRReactNodeGodot >> assertNoRefOnResource [
+
+	self
+		assert: (isResource not or: [ref isNil])
+		description: 'Currently, all resources are shared. It is thus not save to reference a particular resource. Please report your use case.'
+]
+
 { #category : #accessing }
 GRReactNodeGodot >> call: aMethodString arguments: aCollection [
 
@@ -118,7 +126,8 @@ GRReactNodeGodot >> isResource [
 { #category : #accessing }
 GRReactNodeGodot >> isResource: aBoolean [
 
-	isResource := aBoolean
+	isResource := aBoolean.
+	self assertNoRefOnResource
 ]
 
 { #category : #accessing }
@@ -165,6 +174,12 @@ GRReactNodeGodot >> propertiesToSetFor: aReact [
 	^ out
 ]
 
+{ #category : #converting }
+GRReactNodeGodot >> putVariantOn: aStream [
+
+	^ self shouldNotImplement
+]
+
 { #category : #accessing }
 GRReactNodeGodot >> ref [
 
@@ -174,7 +189,8 @@ GRReactNodeGodot >> ref [
 { #category : #accessing }
 GRReactNodeGodot >> ref: aRef [
 
-	ref := aRef
+	ref := aRef.
+	self assertNoRefOnResource
 ]
 
 { #category : #rendering }
