@@ -66,6 +66,23 @@ GRReactTest >> testDeleteInKeyedCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testInsertInNestedComponent [
+
+	self openComponentBlock: [ | toggle |
+		toggle := CMFReact useState: false.
+		(self godot: #VBoxContainer) children: {
+			toggle get
+				ifTrue: [[(self godot: #Label) text: 'a'] asComponent]
+				ifFalse: [(self godot: #Label) text: 'a'].
+			(self godot: #Label) text: 'b'.
+			(self godot: #Timer) timeout: [toggle set: [:t | t not]]}].
+	
+	self assert: #('a' 'b') equals: ((godotTree allNodesOfType: #Label) collect: [:l | l text]).
+	self tick: {(godotTree firstNodeOfType: #Timer) signal: #timeout}.
+	self assert: #('a' 'b') equals: ((godotTree allNodesOfType: #Label) collect: [:l | l text])
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testLoopWithKeyedObjects [
 
 	| nestedComponent |
@@ -125,6 +142,65 @@ GRReactTest >> testOptionalChildNestedInPortal [
 	self tick: {(godotTree firstNodeOfType: #Spatial) signal: #pressed}.
 	self assert: 2 equals: (godotTree firstNodeOfType: #Spatial) children size.
 	self assert: 0 equals: (godotTree firstNodeOfType: #Other) children size
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testReloadWithHooks [
+
+	| change |
+	change := false.
+	self openComponentBlock: [ | label |
+		change ifTrue: [CMFReact useState: 2].
+		label := CMFReact useState: 'initial'.
+		(self godot: #Label)
+			text: label get;
+			click: [label set: 'changed']].
+	self tick: {(godotTree firstNodeOfType: #Label) signal: #click}.
+	self assert: 'changed' equals: (godotTree firstNodeOfType: #Label) text.
+	
+	change := true.
+	react onCodeChanged.
+	self tick.
+	self assert: 'initial' equals: (godotTree firstNodeOfType: #Label) text
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testReloadWithHooksAndRenderChange [
+
+	| change |
+	change := false.
+	self openComponentBlock: [ | label |
+		change ifTrue: [CMFReact useState: 2].
+		label := CMFReact useState: 'initial'.
+		(self godot: (change ifTrue: [#Other] ifFalse: [#Label]))
+			text: label get;
+			click: [label set: 'changed']].
+	self tick: {(godotTree firstNodeOfType: #Label) signal: #click}.
+	self assert: 'changed' equals: (godotTree firstNodeOfType: #Label) text.
+	
+	change := true.
+	react onCodeChanged.
+	self tick.
+	self assert: 'initial' equals: (godotTree firstNodeOfType: #Other) text
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testReloadWithHooksChangeType [
+
+	| change |
+	change := false.
+	self openComponentBlock: [ | label |
+		label := change ifTrue: [CMFReact useRef: 'change'] ifFalse: [CMFReact useState: 'initial'].
+		(self godot: #Label)
+			text: label get;
+			click: [label set: 'changed']].
+	self tick: {(godotTree firstNodeOfType: #Label) signal: #click}.
+	self assert: 'changed' equals: (godotTree firstNodeOfType: #Label) text.
+	
+	change := true.
+	react onCodeChanged.
+	self tick.
+	self assert: 'change' equals: (godotTree firstNodeOfType: #Label) text
 ]
 
 { #category : #'as yet unclassified' }
