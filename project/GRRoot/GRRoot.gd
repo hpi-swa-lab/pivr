@@ -174,7 +174,14 @@ func apply_updates(list):
 				var target = get_node_and_resource(root_path + path)
 				apply_prop(target[1] if target[1] else target[0], key, value)
 			'delete':
-				get_node(root_path + update[1]).queue_free()
+				var instance = get_node(root_path + update[1])
+				var toDelete = []
+				for sub in subscriptions:
+					if sub.instance == instance:
+						toDelete.append(sub)
+				for delete in toDelete:
+					subscriptions.remove(subscriptions.find(delete))
+				instance.queue_free()
 			'move':
 				var nodePaths = update[1]
 				var startIndex = update[2]
