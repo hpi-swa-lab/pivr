@@ -1,0 +1,11 @@
+SmalltalkCISpec {
+  #loading : [
+    SCIMetacelloLoadSpec {
+      #baseline : 'GReaSe',
+      #platforms : [ #squeak ],
+      #directory: 'squeak'
+    }
+  ],
+  #testing : {
+  }
+}
