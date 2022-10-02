@@ -11,7 +11,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRTestCase >> controllerCollider: aSideSymbol [
 
-	^ (self controllerNode: aSideSymbol) firstNodeOfType: #Area
+	^ GRObjectId new objectId: ((self controllerNode: aSideSymbol) firstNodeOfType: #Area) path
 ]
 
 { #category : #'as yet unclassified' }
@@ -45,6 +45,12 @@ GRTestCase >> openComponentBlock: aBlock [
 		session: GRMockSession new;
 		init: aBlock asReactNodeBuilder build.
 	godotTree := GRMockNode new.
+	
+	react session for: 'find_interface' reply: (GDARVRInterface basicNew objectId: 1).
+	react session for: 'initialize' reply: true.
+	react session for: 'get_main_loop' reply: (GDSceneTree basicNew objectId: 2).
+	react session for: 'root' reply: (GDViewport basicNew objectId: 2).
+	
 	self tick
 ]
 

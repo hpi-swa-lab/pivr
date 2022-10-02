@@ -240,7 +240,6 @@ WorldDworph >> renderSimulatedHUD: props [
 WorldDworph >> renderVR: props [
 
 	| headTransform headTransformSubscription worldRef teleport |
-	self useVR.
 	headTransform := self useState: Matrix4x4 identity.
 	headTransformSubscription := self useCallback: [:t | headTransform set: t] dependencies: {}.
 	teleport := self useState: Matrix4x4 identity.
@@ -280,10 +279,10 @@ WorldDworph >> useVRIfSupported: aBlock otherwise: anotherBlock loading: aThirdB
 			openxr
 				ifNotNil: [ | viewport |
 					openxr initialize ifFalse: [self error: 'failed to initialize openxr'].
-					viewport := GD_Engine instance getMainLoop root.
-					viewport hdr: true.
+					viewport := (GD_Engine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport.
 					GD_OS instance vsyncEnabled: true.
 					GD_Engine instance iterationsPerSecond: 90.
+					viewport hdr: true.
 					viewport arvr: true.
 					supportsVR set: true]
 				ifNil: [supportsVR set: false]]

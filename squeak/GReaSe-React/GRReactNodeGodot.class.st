@@ -200,16 +200,7 @@ GRReactNodeGodot >> render: react properties: aDictionary renderInfo: renderInfo
 	aDictionary keysAndValuesDo: [:key :value |
 		value isGodotNode ifTrue: [ | newNode |
 			newNode := react renderNode: value forceReRender: false.
-			(renderInfo reusingOldNodes and: [newNode godotId = ((renderInfo oldNode properties at: key ifAbsent: nil) ifNotNil: [:o | o godotId])]) ifFalse: [
-				SBToggledCode
-					comment: ''
-					active: 0
-					do: {[react addUpdate: {#update. renderInfo treeEntry godotPath. key. newNode}]}].
-			aDictionary at: key put: newNode].
-		SBToggledCode comment: '' active: 0 do: {
-			[
-				value isBlock ifTrue: [aDictionary at: key put: (react registerCallback: value)].
-				(value isKindOf: GRBlockWithArguments) ifTrue: [aDictionary at: key put: {react registerCallback: value block. value arguments}]]}].
+			aDictionary at: key put: newNode]].
 	^ aDictionary
 ]
 

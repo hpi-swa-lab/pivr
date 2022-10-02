@@ -68,7 +68,7 @@ GDBaseObject >> get: aSymbol return: aClassNameSymbol [
 { #category : #'as yet unclassified' }
 GDBaseObject >> grAsClass: aSymbol [
 
-	^ (Smalltalk classNamed: aSymbol) new objectId: self objectId
+	^ (Smalltalk classNamed: aSymbol) basicNew objectId: self objectId
 ]
 
 { #category : #'as yet unclassified' }

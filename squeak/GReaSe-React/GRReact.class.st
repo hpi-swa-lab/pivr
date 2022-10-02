@@ -174,12 +174,18 @@ GRReact >> replaceOldMorphsInWorld: old by: new isRoot: isRoot [
 ]
 
 { #category : #accessing }
+GRReact >> session [
+
+	^ session
+]
+
+{ #category : #accessing }
 GRReact >> session: aSession [
 
 	session := aSession
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #lifecycle }
 GRReact >> subscribeToCodeChanges [
 	"noop, conflict with our global listener"
 

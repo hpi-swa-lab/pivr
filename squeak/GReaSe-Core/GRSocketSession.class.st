@@ -115,10 +115,6 @@ GRSocketSession >> handleMessage: aMessage [
 			self putVariant: {GRSocketListener messageTypeInitializedSessionFromSqueak. self sessionId. GRObjectId new objectId: 0}.
 			true].
 		[GRSocketListener messageTypeQuitFromGodot] -> [
-			SBToggledCode
-				comment: ''
-				active: 0
-				do: {[ | sessions |sessions removeKey: aMessage second]}.
 			self close.
 			false]}
 ]

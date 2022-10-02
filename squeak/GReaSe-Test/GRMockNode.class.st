@@ -175,6 +175,18 @@ GRMockNode >> parent: aNode [
 	parent := aNode
 ]
 
+{ #category : #'as yet unclassified' }
+GRMockNode >> path [
+
+	| current out |
+	current := self.
+	out := ''.
+	[current parent] whileNotNil: [
+		out := '/', current name, out.
+		current := current parent].
+	^ out
+]
+
 { #category : #printing }
 GRMockNode >> printOn: aStream [
 
@@ -238,7 +250,7 @@ GRMockNode >> tick: aReact updates: aCollection [
 		self applyUpdates: updates.
 		
 		aReact waitingRefs
-			with: (updates second collect: [:path | self getNodeForPath: path])
+			with: (updates second collect: [:path | GRObjectId new objectId: path])
 			do: [:ref :node | ref set: node]].
 	^ allUpdates
 ]
