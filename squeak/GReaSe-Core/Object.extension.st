@@ -1,6 +1,12 @@
 Extension { #name : #Object }
 
 { #category : #'*GreaSe-Core' }
+Object >> grAsClass: aSymbol [
+
+	^ self
+]
+
+{ #category : #'*GreaSe-Core' }
 Object >> grEqual: anObject [
 
 	^ self == anObject

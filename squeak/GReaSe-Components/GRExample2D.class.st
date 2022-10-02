@@ -7,31 +7,25 @@ Class {
 { #category : #'as yet unclassified' }
 GRExample2D >> render: props [
 
-	| count rootRef pressed pressedSub toggledSub |
+	| count pressed pressedSub toggledSub |
 	count := self useState: 0.
 	pressed := self useState: false.
-	rootRef := self useRef: nil.
 	
 	pressedSub := self useCallback: [count set: [:c | c + 1]] dependencies: {}.
 	toggledSub := self useCallback: [:b | pressed set: b] dependencies: {}.
-	self
-		useEffect: [Transcript showln: {'dep'. count get. pressed get}]
-		dependencies: {count get. pressed get}.
 	
-	^ (self godot: #VBoxContainer)
-		ref: rootRef;
-		children: {
-			(self godot: #Button)
-				text: 'Click me ', count get asString;
-				pressed: pressedSub.
-			(self godot: #CheckButton)
-				text: 'Checked';
-				toggled: toggledSub.
-			(self godot: #Button)
-				text: 'Reset';
-				pressed: [count set: 0].
-			(self godot: #TextureRect)
-				texture: ((self godot: #ImageTexture) call: #load arguments: {'res://icon.png'});
-				rect_size: 50 @ 50.
-			(self godot: #CollisionShape2D) shape: ((self godot: #RectangleShape2D) extents: (Vector2 x: 100 * count get y: 30))}, ((1 to: count get) collect: [:i | (self godot: #Label) text: 'Hello world'])
+	^ GDVBoxContainer new children: {
+		GDButton new
+			text: 'Click me ', count get asString;
+			onPressed: pressedSub.
+		GDCheckButton new
+			text: 'Checked';
+			onToggled: toggledSub.
+		GDButton new
+			text: 'Reset';
+			onPressed: [count set: 0].
+		GDTextureRect new
+			texture: (GDImageTexture new call: #load arguments: {'res://icon.png'});
+			rectSize: 50 @ 50.
+		GDCollisionShape2D new shape: (GDRectangleShape2D new extents: (Vector2 x: 100 * count get y: 30))}, ((1 to: count get) collect: [:i | GDLabel new text: 'Hello world'])
 ]

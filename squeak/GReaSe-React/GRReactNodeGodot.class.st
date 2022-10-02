@@ -154,7 +154,7 @@ GRReactNodeGodot >> meta: aSymbol set: anObject [
 GRReactNodeGodot >> printOn: aStream [
 
 	aStream nextPut: $<.
-	aStream nextPutAll: godotClass.
+	aStream nextPutAll: self godotClass.
 	aStream nextPut: $ .
 	aStream nextPut: $/.
 	aStream nextPut: $>
@@ -273,5 +273,5 @@ GRReactNodeGodot >> subscribeTo: aPropertyNameString do: aCallbackClosure [
 { #category : #accessing }
 GRReactNodeGodot >> type [
 
-	^ {#godot. godotClass}
+	^ {#godot. self godotClass}
 ]

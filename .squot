@@ -4,5 +4,6 @@ OrderedDictionary {
 	'squeak/GReaSe-Components' : #SquotTonelSerializer,
 	'squeak/GReaSe-React' : #SquotTonelSerializer,
 	'squeak/Dworphic' : #SquotTonelSerializer,
-	'squeak/GReaSe-Test' : #SquotTonelSerializer
+	'squeak/GReaSe-Test' : #SquotTonelSerializer,
+	'squeak/Godot-Internal-Generation' : #SquotTonelSerializer
 }

@@ -299,3 +299,17 @@ GRReactTest >> testUnregistersCallbacks [
 	(react instVarNamed: #callbacks) clean.
 	self assert: 2 equals: (react instVarNamed: #callbacks) size
 ]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testUseEffectNoDependencies [
+
+	| runs |
+	runs := OrderedCollection new.
+	self openComponentBlock: [
+		CMFReact
+			useEffect: [
+				runs add: #effect.
+				[runs add: #cleanup]]
+			dependencies: {}].
+	self assert: #(#effect) equals: runs asArray
+]

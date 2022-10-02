@@ -30,7 +30,10 @@ WorldDworph >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
 { #category : #rendering }
 WorldDworph >> render: props [
 
-	^ (self methodAsComponent: #renderSimulated:) props: props
+	^ self
+		useVRIfSupported: [(self methodAsComponent: #renderVR:) props: props]
+		otherwise: [(self methodAsComponent: #renderSimulated:) props: props]
+		loading: [nil]
 ]
 
 { #category : #'rendering - simulated' }
@@ -80,10 +83,9 @@ WorldDworph >> renderFirstPersonControls: props [
 	
 	self
 		useEffect: [
-			GRReactCurrentSession value
-				callOn: 'Input'
-				method: #'set_mouse_mode'
-				arguments: {isMouseLocked get ifTrue: [2] ifFalse: [0]}]
+			GDInput instance mouseMode: (isMouseLocked get
+				ifTrue: [GDInput mouseModeCaptured]
+				ifFalse: [GDInput mouseModeVisible])]
 		dependencies: {isMouseLocked get}.
 	buttonCallback := self
 		useCallback: [:pressed :button :position | isMouseLocked set: pressed]
@@ -113,7 +115,7 @@ WorldDworph >> renderFirstPersonControls: props [
 					timer := self
 						useCallback: [transform set: [:t | t localTranslatedBy: 0 @ 0 @ (-0.04 * moving get)]]
 						dependencies: {}.
-					(self godot: #Timer)
+					GDTimer new
 						autostart: true;
 						wait_time: 0.01;
 						timeout: timer] asComponent]};
@@ -267,29 +269,26 @@ WorldDworph >> renderVR: props [
 										(self godot: #Spatial) ref: [:node | worldRef set: node]}, (props at: #children ifAbsent: [{}])}]}]}
 ]
 
-{ #category : #'rendering - vr' }
-WorldDworph >> useVR [
+{ #category : #rendering }
+WorldDworph >> useVRIfSupported: aBlock otherwise: anotherBlock loading: aThirdBlock [
 
+	| supportsVR |
+	supportsVR := self useState: nil.
 	self
 		useEffect: [ | openxr |
-			openxr := GRReactCurrentSession value
-				callOn: 'ARVRServer'
-				method: 'find_interface'
-				arguments: {'OpenXR'}.
-			openxr ifNotNil: [ | sceneTree viewport |
-				GRReactCurrentSession value
-					callOn: openxr
-					method: 'initialize'
-					arguments: {}.
-				sceneTree := GRReactCurrentSession value
-					callOn: 'Engine'
-					method: 'get_main_loop'
-					arguments: {}.
-				viewport := GRReactCurrentSession value get: 'root' of: sceneTree.
-				GRReactCurrentSession value set: 'hdr' of: viewport to: false.
-				GRReactCurrentSession value set: 'vsync_enabled' of: 'OS' to: true.
-				GRReactCurrentSession value set: 'iterations_per_second' of: 'Engine' to: 90.
-				GRReactCurrentSession value set: 'arvr' of: viewport to: true].
-			nil]
-		dependencies: {}
+			openxr := GDARVRServer instance findInterfaceName: 'OpenXR'.
+			openxr
+				ifNotNil: [ | viewport |
+					openxr initialize ifFalse: [self error: 'failed to initialize openxr'].
+					viewport := GD_Engine instance getMainLoop root.
+					viewport hdr: true.
+					GD_OS instance vsyncEnabled: true.
+					GD_Engine instance iterationsPerSecond: 90.
+					viewport arvr: true.
+					supportsVR set: true]
+				ifNil: [supportsVR set: false]]
+		dependencies: {}.
+	
+	supportsVR get == nil ifTrue: [^ aThirdBlock value].
+	^ supportsVR get ifTrue: [aBlock value] ifFalse: [anotherBlock value]
 ]
