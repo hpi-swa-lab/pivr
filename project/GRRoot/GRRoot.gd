@@ -160,13 +160,7 @@ func apply_updates(list):
 				var is_resource = update[2]
 				var id_or_prop_name = update[3]
 				if is_resource:
-					# FIXME should check if the resource if eligible for caching
-					# meaning that there is no ref pointing to it
-					var key = hash([update[4], update[5]])
-					var instance = resource_cache.get(key)
-					if not instance:
-						instance = create_node(update)
-						resource_cache[key] = weakref(instance)
+					var instance = get_or_create_resource(update)
 					var target = get_node_and_resource(root_path + parent_path)
 					(target[1] if target[1] else target[0]).set(id_or_prop_name, instance)
 				else:
@@ -207,6 +201,25 @@ func create_node(update):
 	for key in props_dictionary.keys():
 		apply_prop(instance, key, props_dictionary[key])
 	
+	return instance
+
+func get_or_create_resource(update):
+	if true:
+		return create_node(update)
+	# FIXME Draft for resource sharing. Some issues that haven't been solved:
+	# * Nested resources are not set in the props dict but get set later, so taking
+	#   the hash of the props dict doesn't know when e.g. a Mesh has identical props
+	#   but the material it is later assigned is different each time
+	# * we need a way to check that there is no ref pointing to the resource,
+	#   otherwise the user may perform side effects
+	var key = hash([update[4], update[5]])
+	var instance = resource_cache.get(key)
+	print([update[4], update[5]])
+	if not instance or not instance.get_ref():
+		instance = create_node(update)
+		resource_cache[key] = weakref(instance)
+	else:
+		instance = instance.get_ref()
 	return instance
 
 func deserialize_args(args):
