@@ -184,6 +184,8 @@ GRSocketListener class >> readVariantFrom: aStream [
 				(1 to: subnameCount) do: [
 					aStream nextPut: $:.
 					stream nextPutAll: (self readStringFrom: aStream)]]].
+		[16] -> ["seems like RIDs are not serialized, so we just return a marker"
+		#rid].
 		[17] -> [ | objectId |
 			self assert: (type bitAnd: (1 bitShift: 16)) ~= 0.
 			objectId := aStream nextLittleEndianNumber: 8.

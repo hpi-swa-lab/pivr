@@ -233,6 +233,61 @@ GRReactTest >> testReloadWithHooksChangeType [
 ]
 
 { #category : #'as yet unclassified' }
+GRReactTest >> testSetStateInUseEffect [
+
+	| runs |
+	runs := OrderedCollection new.
+	self openComponentBlock: [ | state |
+		state := CMFReact useState: nil.
+		CMFReact
+			useEffect: [
+				runs add: #effect.
+				state set: true.
+				[runs add: #cleanup]]
+			dependencies: {}].
+	self assert: #(#effect) equals: runs asArray
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testSetStateInUseEffectFromSetState [
+
+	| runs |
+	runs := OrderedCollection new.
+	self openComponentBlock: [ | state visible |
+		visible := CMFReact useState: false.
+		state := CMFReact useState: nil.
+		{
+			(self godot: #Button) pressed: [visible set: true].
+			visible get ifTrue: [
+				[
+					CMFReact
+						useEffect: [
+							runs add: #effect.
+							state set: true.
+							[runs add: #cleanup]]
+						dependencies: {state get}.
+					nil] asComponent]}].
+	self tick: {(godotTree firstNodeOfType: #Button) signal: #pressed}.
+	self assert: #(#effect #cleanup #effect) equals: runs asArray
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testSetStateInUseEffectWithDep [
+
+	| runs |
+	runs := OrderedCollection new.
+	self openComponentBlock: [ | state |
+		state := CMFReact useState: nil.
+		CMFReact
+			useEffect: [
+				runs add: #effect.
+				state set: true.
+				[runs add: #cleanup]]
+			dependencies: {state get}].
+	self assert: #(#effect #cleanup #effect) equals: runs asArray
+]
+
+{ #category : #'as yet unclassified' }
 GRReactTest >> testUnregistersCallbacks [
 
 	self openComponentBlock: [(self godot: #Button) pressed: []].
