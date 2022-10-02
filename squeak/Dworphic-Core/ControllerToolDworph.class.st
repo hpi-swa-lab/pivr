@@ -1,7 +1,7 @@
 Class {
 	#name : #ControllerToolDworph,
 	#superclass : #GRComponent,
-	#category : #Dworphic
+	#category : #'Dworphic-Core'
 }
 
 { #category : #rendering }

@@ -1,7 +1,7 @@
 Class {
 	#name : #DworphicToolTest,
 	#superclass : #GRTestCase,
-	#category : #'GReaSe-Test'
+	#category : #'Dworphic-Test'
 }
 
 { #category : #'as yet unclassified' }

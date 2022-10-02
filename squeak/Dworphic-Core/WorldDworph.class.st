@@ -1,7 +1,7 @@
 Class {
 	#name : #WorldDworph,
 	#superclass : #GRComponent,
-	#category : #Dworphic
+	#category : #'Dworphic-Core'
 }
 
 { #category : #'rendering - simulated' }

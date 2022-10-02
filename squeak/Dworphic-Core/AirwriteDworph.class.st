@@ -1,7 +1,7 @@
 Class {
 	#name : #AirwriteDworph,
 	#superclass : #GRComponent,
-	#category : #Dworphic
+	#category : #'Dworphic-Core'
 }
 
 { #category : #detection }

@@ -1,7 +1,7 @@
 Class {
 	#name : #ControllerInfoDworph,
 	#superclass : #GRComponent,
-	#category : #Dworphic
+	#category : #'Dworphic-Core'
 }
 
 { #category : #'as yet unclassified' }
