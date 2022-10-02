@@ -31,3 +31,9 @@ BaselineOfGReaSe >> baseline: spec [
 		spec group: 'default' with: #('GreaSe-Components' 'Dworphic').
 		spec group: 'test' with: #('Dworphic-Test' 'GReaSe-Test')]
 ]
+
+{ #category : #'as yet unclassified' }
+BaselineOfGReaSe >> postLoad [
+
+	GDApiObjectsGenerator generate
+]
