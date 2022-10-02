@@ -10,6 +10,12 @@ ControllerInfoDworph class >> grip [
 	^ 2
 ]
 
+{ #category : #'as yet unclassified' }
+ControllerInfoDworph class >> triggerAxis [
+
+	^ 2
+]
+
 { #category : #rendering }
 ControllerInfoDworph >> render: props [
 
@@ -21,7 +27,7 @@ ControllerInfoDworph >> render: props [
 	transform := self useState: Matrix4x4 identity.
 	transformSub := self useCallback: [:t | transform set: t] dependencies: {}.
 	
-	axes := {{2. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state subscriber |
+	axes := {{self class triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state subscriber |
 		state := self useState: 0.0.
 		subscriber := self useCallback: [:s | state set: s] dependencies: {}.
 		axis, {state. subscriber}].
