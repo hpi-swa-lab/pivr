@@ -30,6 +30,7 @@ GRReactNodeGodot >> assertNoRefOnResource [
 { #category : #accessing }
 GRReactNodeGodot >> call: aMethodString arguments: aCollection [
 
+	self assert: (aCollection isCollection and: [aCollection isString not]).
 	properties at: 'sqcall_', aMethodString put: aCollection
 ]
 
