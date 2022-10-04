@@ -62,10 +62,12 @@ func _ready():
 	var error = tcp.connect_to_host(ip(), 8292)
 	if error != OK:
 		print("Failed to connect: " + str(error))
+		quit = true
 		return
 	while tcp.get_status() != 2:
 		if tcp.get_status() == 3:
 			print("Failed to connect")
+			quit = true
 			return
 	tcp.set_no_delay(true)
 	tcp.put_var([MessageType.initialize_session_from_godot])
