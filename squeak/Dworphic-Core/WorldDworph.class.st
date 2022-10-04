@@ -117,8 +117,8 @@ WorldDworph >> renderFirstPersonControls: props [
 						dependencies: {}.
 					GDTimer new
 						autostart: true;
-						wait_time: 0.01;
-						timeout: timer] asComponent]};
+						waitTime: 0.01;
+						onTimeout: timer] asComponent]};
 		subscribeTo: #'relative_mouse_motion' do: mouseSub;
 		button: buttonCallback;
 		keyboard: keyboardCallback

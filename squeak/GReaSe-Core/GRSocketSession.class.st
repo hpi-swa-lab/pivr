@@ -171,9 +171,15 @@ GRSocketSession >> react: aReact [
 { #category : #'as yet unclassified' }
 GRSocketSession >> reactComponent: aComponentClass [
 
-	react := GRReact new
-		session: self;
-		init: aComponentClass new
+	react := true
+		ifTrue: [
+			GRReact new
+				session: self;
+				init: aComponentClass new]
+		ifFalse: [
+			CMFReact2 new
+				hostConfig: (CMFHostConfigGodot new session: self);
+				renderRoot: aComponentClass new in: {#add. ''. false. ''}]
 ]
 
 { #category : #communication }
@@ -232,5 +238,5 @@ GRSocketSession >> tick: aCollection updatesDo: aBlock [
 	codeChanged ifTrue: [
 		react onCodeChanged.
 		codeChanged := false].
-	^ react tick: aCollection updatesDo: aBlock
+	^ react hostConfig tick: aCollection updatesDo: aBlock
 ]

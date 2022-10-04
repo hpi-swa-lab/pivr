@@ -106,6 +106,10 @@ GDBaseObject >> putVariantOn: aWriteStream [
 GDBaseObject >> set: aSymbol to: anObject [
 
 	objectId
-		ifNil: [properties at: aSymbol put: anObject]
+		ifNil: [
+			anObject isGodotNode ifTrue: [
+				anObject isResource: true.
+				anObject godotId: aSymbol].
+			properties at: aSymbol put: anObject]
 		ifNotNil: [GRReactCurrentSession value set: aSymbol of: self to: anObject]
 ]

@@ -1,6 +1,6 @@
 Class {
 	#name : #GRProvider,
-	#superclass : #CMFReactNodeComponent,
+	#superclass : #CMFReactNode,
 	#instVars : [
 		'children',
 		'values',
@@ -48,7 +48,7 @@ GRProvider >> hasSymbol: aSymbol [
 { #category : #'as yet unclassified' }
 GRProvider >> key [
 
-	^ self shouldNotImplement
+	^ nil
 ]
 
 { #category : #'as yet unclassified' }
@@ -71,6 +71,12 @@ GRProvider >> namespace: aSymbol values: aDictionary children: aCollection [
 GRProvider >> render: react renderInfo: renderInfo userCodeResult: userCodeResult [
 
 	^ react renderNodes: children
+]
+
+{ #category : #'as yet unclassified' }
+GRProvider >> type [
+
+	^ {#grProvider}
 ]
 
 { #category : #'as yet unclassified' }

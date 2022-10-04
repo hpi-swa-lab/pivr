@@ -31,58 +31,6 @@ GRComponent class >> startWithArguments: aStringCollection [
 	GRReact startGodotWithArguments: aStringCollection
 ]
 
-{ #category : #hooks }
-GRComponent class >> useProvided: aSymbol [
-
-	| hook react |
-	react := CMFCurrentReact value.
-	hook := react getHook: GRHookUseProvided IfAbsent: [:node |
-		GRHookUseProvided new
-			symbol: aSymbol node: node;
-			yourself].
-	^ hook getValueBasedOnNodeTree: react elementTree setLastValue: true
-]
-
-{ #category : #hooks }
-GRComponent class >> useProvided: aSymbol namespace: anotherSymbol [
-
-	| hook react |
-	react := CMFCurrentReact value.
-	hook := react getHook: GRHookUseProvided IfAbsent: [:node |
-		GRHookUseProvided new
-			symbol: aSymbol node: node;
-			namespace: anotherSymbol;
-			yourself].
-	hook namespace: anotherSymbol.
-	^ hook getValueBasedOnNodeTree: react elementTree setLastValue: true
-]
-
-{ #category : #hooks }
-GRComponent class >> useProvidedRef: aSymbol [
-
-	| hook react |
-	react := CMFCurrentReact value.
-	hook := react getHook: GRHookUseProvidedRef IfAbsent: [:node |
-		GRHookUseProvidedRef new
-			symbol: aSymbol node: node;
-			yourself].
-	^ hook
-]
-
-{ #category : #hooks }
-GRComponent class >> useProvidedRef: aSymbol namespace: anotherSymbol [
-
-	| hook react |
-	react := CMFCurrentReact value.
-	hook := react getHook: GRHookUseProvidedRef IfAbsent: [:node |
-		GRHookUseProvidedRef new
-			symbol: aSymbol node: node;
-			namespace: anotherSymbol;
-			yourself].
-	hook namespace: anotherSymbol.
-	^ hook
-]
-
 { #category : #constructors }
 GRComponent >> godot: aClassName [
 
@@ -149,25 +97,25 @@ GRComponent >> useHeadTransform [
 { #category : #hooks }
 GRComponent >> useProvided: aSymbol [
 
-	^ self class useProvided: aSymbol
+	^ CMFCurrentReact value useProvided: aSymbol
 ]
 
 { #category : #hooks }
 GRComponent >> useProvided: aSymbol namespace: anotherSymbol [
 
-	^ self class useProvided: aSymbol namespace: anotherSymbol
+	^ CMFCurrentReact value useProvided: aSymbol namespace: anotherSymbol
 ]
 
 { #category : #hooks }
 GRComponent >> useProvidedRef: aSymbol [
 
-	^ self class useProvidedRef: aSymbol
+	^ CMFCurrentReact value useProvidedRef: aSymbol
 ]
 
 { #category : #hooks }
 GRComponent >> useProvidedRef: aSymbol namespace: anotherSymbol [
 
-	^ self class useProvidedRef: aSymbol namespace: anotherSymbol
+	^ CMFCurrentReact value useProvidedRef: aSymbol namespace: anotherSymbol
 ]
 
 { #category : #hooks }

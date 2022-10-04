@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRReactTest >> expectedFailures [
 
-	^ #(#testUnregistersCallbacks #testInsertInNestedComponent)
+	^ #(#testUnregistersCallbacks)
 ]
 
 { #category : #'as yet unclassified' }
@@ -132,7 +132,28 @@ GRReactTest >> testLoopWithKeyedObjects [
 			nestedComponent asReactNodeBuilder
 				props: {#key -> index};
 				build])].
-	self assert: (self tick: {(godotTree firstNodeOfType: #MeshInstance) signal: #pressed}) first size = 3
+	self
+		assert: 3
+		equals: (self tick: {(godotTree firstNodeOfType: #MeshInstance) signal: #pressed}) first size
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testNoChangesMadeOnError [
+
+	| changeWithError session |
+	changeWithError := false.
+	
+	self openComponentBlock: [
+		{
+			changeWithError ifTrue: [self godot: #NewNode] ifFalse: [nil].
+			[(self godot: #Other) field: (changeWithError ifTrue: [self error] ifFalse: [1])] asComponent}].
+	session := GRTestSocketSession new
+		react: react;
+		socketStream: (WriteStream on: ByteArray new).
+	
+	changeWithError := true.
+	self should: [self tick] raise: Error.
+	react elementTree allEntriesDo: [:entry | (entry node isGodotNode and: [entry node godotClass = #NewNode]) ifTrue: [self assert: false]]
 ]
 
 { #category : #'as yet unclassified' }
@@ -160,23 +181,35 @@ GRReactTest >> testOptionalChildNestedInPortal [
 		count := CMFReact useState: 0.
 		portal := CMFReact useRef: nil.
 		{
-			(self godot: #Other)
-				key: #other;
-				ref: [:node | portal set: node].
+			(self godot: #Portal)
+				key: #portal;
+				ref: portal.
 			(self godot: #Spatial)
 				key: #Spatial;
 				pressed: [count set: [:c | c + 1]];
 				children: {
 					self godot: #Child1.
 					count get = 0
-						ifTrue: [(self godot: #Nested) children: {CMFReactNodePortal child: (self godot: #OptionalChild) in: portal}]
+						ifTrue: [
+							(self godot: #Nested)
+								key: #nested;
+								children: {CMFReactNodePortal child: (self godot: #OptionalChild) in: portal}]
 						ifFalse: [nil].
 					self godot: #Child2}}].
-	self assert: 1 equals: (godotTree firstNodeOfType: #Other) children size.
+	self assert: 1 equals: (godotTree firstNodeOfType: #Portal) children size.
 	self assert: 3 equals: (godotTree firstNodeOfType: #Spatial) children size.
 	self tick: {(godotTree firstNodeOfType: #Spatial) signal: #pressed}.
 	self assert: 2 equals: (godotTree firstNodeOfType: #Spatial) children size.
-	self assert: 0 equals: (godotTree firstNodeOfType: #Other) children size
+	self assert: 0 equals: (godotTree firstNodeOfType: #Portal) children size
+]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testPortal [
+
+	self openComponentBlock: [ | portal |
+		portal := CMFReact useRef: nil.
+		{(self godot: #Portal) ref: portal. CMFReactNodePortal child: (self godot: #Teleported) in: portal}].
+	(godotTree firstNodeOfType: #Portal) firstNodeOfType: #Teleported
 ]
 
 { #category : #'as yet unclassified' }

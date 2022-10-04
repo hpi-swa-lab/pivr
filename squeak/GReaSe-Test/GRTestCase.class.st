@@ -41,15 +41,23 @@ GRTestCase >> openComponent: aComponentClass [
 { #category : #'as yet unclassified' }
 GRTestCase >> openComponentBlock: aBlock [
 
-	react := GRReact new
-		session: GRMockSession new;
-		init: aBlock asReactNodeBuilder build.
+	react := true
+		ifTrue: [
+			GRReact new
+				session: GRMockSession new;
+				init: aBlock asComponent]
+		ifFalse: [
+			CMFReact2 new
+				hostConfig: (CMFHostConfigGodot new session: GRMockSession new);
+				renderRoot: aBlock asComponent in: {#add. ''. false. ''}].
+	
 	godotTree := GRMockNode new.
 	
-	react session for: 'find_interface' reply: (GDARVRInterface basicNew objectId: 1).
-	react session for: 'initialize' reply: true.
-	react session for: 'get_main_loop' reply: (GDSceneTree basicNew objectId: 2).
-	react session for: 'root' reply: (GDViewport basicNew objectId: 2).
+	react hostConfig session
+		for: 'find_interface' reply: (GDARVRInterface basicNew objectId: 1);
+		for: 'initialize' reply: true;
+		for: 'get_main_loop' reply: (GDSceneTree basicNew objectId: 2);
+		for: 'root' reply: (GDViewport basicNew objectId: 2).
 	
 	self tick
 ]

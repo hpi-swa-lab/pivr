@@ -15,7 +15,7 @@ GRHookUseProvidedRef >> get [
 
 	| validNamespaces |
 	validNamespaces := OrderedCollection with: namespace.
-	^ (node orParentSatisfying: [:entry |
+	^ ((fiber ifNil: [node]) orParentSatisfying: [:entry |
 		entry node class == GRUseProviderNamespace ifTrue: [validNamespaces add: entry node namespace].
 		entry node class == GRProvider and: [(validNamespaces includes: entry node namespace) and: [entry node hasSymbol: symbol]]])
 		ifNotNil: [:entry | entry get: symbol]

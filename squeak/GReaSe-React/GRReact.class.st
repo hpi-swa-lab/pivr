@@ -121,6 +121,12 @@ GRReact >> deleteChildrenFrom: aNumber in: aParentNode [
 	^ super deleteChildrenFrom: aNumber in: aParentNode
 ]
 
+{ #category : #'as yet unclassified' }
+GRReact >> hostConfig [
+
+	^ self
+]
+
 { #category : #'initialize-release' }
 GRReact >> initialize [
 

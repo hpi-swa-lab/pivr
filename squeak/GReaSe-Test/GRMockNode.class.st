@@ -51,6 +51,14 @@ GRMockNode >> applyUpdate: anUpdate [
 			anUpdate third ifTrue: [parent properties at: anUpdate fourth put: node] ifFalse: [
 				parent addChild: node.
 				node name: anUpdate fourth]].
+		[#insert] -> [ | parent node |
+			parent := self getNodeForPath: anUpdate second.
+			node := GRMockNode new
+				godotClass: anUpdate fifth;
+				properties: anUpdate sixth copy.
+			anUpdate third ifTrue: [parent properties at: anUpdate fourth put: node] ifFalse: [
+				parent insertChild: node before: (self getNodeForPath: anUpdate seventh).
+				node name: anUpdate fourth]].
 		[#update] -> [
 			(self getNodeForPath: anUpdate second) properties
 				at: anUpdate third
@@ -142,6 +150,13 @@ GRMockNode >> initialize [
 	
 	children := OrderedCollection new.
 	properties := Dictionary new
+]
+
+{ #category : #internal }
+GRMockNode >> insertChild: aChild before: aSibling [
+
+	(children includes: aChild) ifTrue: [children remove: aChild].
+	children add: aChild before: aSibling
 ]
 
 { #category : #accessing }
@@ -243,13 +258,13 @@ GRMockNode >> tick: aReact updates: aCollection [
 
 	| allUpdates |
 	allUpdates := {OrderedCollection new. OrderedCollection new}.
-	aReact tick: aCollection updatesDo: [:updates |
+	aReact hostConfig tick: aCollection updatesDo: [:updates |
 		allUpdates first addAll: updates first.
 		allUpdates second addAll: updates second.
 		
 		self applyUpdates: updates.
 		
-		aReact waitingRefs
+		aReact hostConfig waitingRefs
 			with: (updates second collect: [:path | GRObjectId new objectId: path])
 			do: [:ref :node | ref set: node]].
 	^ allUpdates
