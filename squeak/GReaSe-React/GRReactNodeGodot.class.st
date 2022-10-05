@@ -49,7 +49,7 @@ GRReactNodeGodot >> children: aCollection [
 { #category : #converting }
 GRReactNodeGodot >> createInfoFor: aReact [
 
-	^ {self isResource. self godotId. self godotClass. self propertiesToSetFor: aReact}
+	^ {self isResource. self godotId. self godotClass. self propertiesToSetFor: aReact. nil}
 ]
 
 { #category : #accessing }

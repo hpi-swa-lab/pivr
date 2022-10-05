@@ -53,6 +53,12 @@ GRReact class >> questRestartApp [
 		shell waitForCommand: 'adb shell am start -n org.godotengine.vrandsqueaktest/com.godot.game.GodotApp']
 ]
 
+{ #category : #'as yet unclassified' }
+GRReact class >> resetGodotId [
+
+	CurrentGodotId := 0
+]
+
 { #category : #deploy }
 GRReact class >> startGodotWithArguments: aStringCollection [
 
@@ -81,6 +87,12 @@ GRReact class >> stopAll [
 
 	GRSocketListener stopAll.
 	RunningGodotProcess ifNotNil: #terminate
+]
+
+{ #category : #testing }
+GRReact class >> useFibers [
+
+	^ true
 ]
 
 { #category : #reconciliation }

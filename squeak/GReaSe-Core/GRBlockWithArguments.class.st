@@ -11,7 +11,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRBlockWithArguments >> = anotherBlock [
 
-	^ self block = anotherBlock block and: [self arguments = anotherBlock arguments]
+	^ self class = anotherBlock class and: [self block = anotherBlock block and: [self arguments = anotherBlock arguments]]
 ]
 
 { #category : #'as yet unclassified' }

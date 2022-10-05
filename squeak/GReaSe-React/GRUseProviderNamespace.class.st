@@ -1,6 +1,6 @@
 Class {
 	#name : #GRUseProviderNamespace,
-	#superclass : #CMFReactNodeComponent,
+	#superclass : #CMFReactNode,
 	#instVars : [
 		'children',
 		'namespace'
@@ -29,7 +29,7 @@ GRUseProviderNamespace >> hasKey [
 { #category : #'as yet unclassified' }
 GRUseProviderNamespace >> key [
 
-	^ self shouldNotImplement
+	^ nil
 ]
 
 { #category : #'as yet unclassified' }
@@ -46,7 +46,19 @@ GRUseProviderNamespace >> namespace: aSymbol children: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRUseProviderNamespace >> printOn: aStream [
+
+	aStream nextPutAll: '<GRUseProviderNamespace />'
+]
+
+{ #category : #'as yet unclassified' }
 GRUseProviderNamespace >> render: react renderInfo: renderInfo userCodeResult: userCodeResult [
 
 	^ react renderNodes: children
+]
+
+{ #category : #'as yet unclassified' }
+GRUseProviderNamespace >> type [
+
+	^ {#grUseNamespace}
 ]

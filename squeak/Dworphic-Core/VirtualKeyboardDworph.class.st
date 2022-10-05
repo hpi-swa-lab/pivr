@@ -46,7 +46,7 @@ VirtualKeyboardDworph >> renderActive: props [
 	keyboardTransform := self useState: Matrix4x4 identity.
 	head := self useProvidedRef: #headTransform.
 	worldPortal := self useWorldPortal.
-	pointerRef := self useRef: nil.
+	pointerRef := self useRemoteRef.
 	
 	self
 		useEffect: ["FIXME: doesnt seem quite right yet. and also not very convenient."

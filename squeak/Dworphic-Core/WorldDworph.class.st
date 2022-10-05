@@ -40,7 +40,7 @@ WorldDworph >> render: props [
 WorldDworph >> renderControllerControls: props [
 
 	| buttonCallback ref controllerTransform keyboardCallback pressedButtons trigger |
-	ref := self useRef: nil.
+	ref := self useRemoteRef.
 	
 	controllerTransform := self useProvided: #setControllerTransform.
 	pressedButtons := self useProvided: #setPressedButtons.
@@ -151,7 +151,7 @@ WorldDworph >> renderSimulated: props [
 												(self godot: #Camera) transform: headTransform get.
 												leftControllerNode.
 												rightControllerNode.
-												(self godot: #Spatial) ref: [:node | worldRef set: node]}, (props at: #children ifAbsent: [{}])}]}]}}
+												(self godot: #Spatial) ref: worldRef}, (props at: #children ifAbsent: [{}])}]}]}}
 ]
 
 { #category : #'rendering - simulated' }
@@ -162,7 +162,7 @@ WorldDworph >> renderSimulatedController: props [
 	handIsFree := self useState: true.
 	pressedButtons := self useState: {}.
 	handPortal := self useRef: nil.
-	handArea := self useRef: nil.
+	handArea := self useRemoteRef.
 	
 	axes := {{ControllerInfoDworph triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state |
 		state := self useState: 0.0.
@@ -177,11 +177,11 @@ WorldDworph >> renderSimulatedController: props [
 						margin: 0.001;
 						radius: 0.01)};
 				ref: handArea.
-			(self godot: #Spatial) ref: [:node | handPortal set: node].
+			(self godot: #Spatial) ref: handPortal.
 			(self godot: #MeshInstance) mesh: ((self godot: #SphereMesh)
 				radius: 0.01;
 				height: 0.02;
-				material: ((self godot: #SpatialMaterial) albedo_color: Color red))}.
+				material: ((self godot: #SpatialMaterial) albedo_color: (Color r: 1 g: 0.0 b: 0.0)))}.
 	
 	^ GRProvider
 		namespace: ((props at: #left) == true ifTrue: [#left] ifFalse: [#right])
@@ -265,7 +265,7 @@ WorldDworph >> renderVR: props [
 													do: headTransformSubscription.
 												rightControllerNode.
 												leftControllerNode}.
-										(self godot: #Spatial) ref: [:node | worldRef set: node]}, (props at: #children ifAbsent: [{}])}]}]}
+										(self godot: #Spatial) ref: worldRef}, (props at: #children ifAbsent: [{}])}]}]}
 ]
 
 { #category : #rendering }

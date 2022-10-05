@@ -47,3 +47,11 @@ CMFReact2 >> useProvidedRef: aSymbol namespace: anotherSymbol [
 	hook namespace: anotherSymbol.
 	^ hook
 ]
+
+{ #category : #'*GRease-React' }
+CMFReact2 >> useRemoteRef [
+
+	^ currentFiber
+		getHook: GRHookUseRemoteRef
+		IfAbsent: [:node | GRHookUseRemoteRef new hostConfig: self hostConfig]
+]

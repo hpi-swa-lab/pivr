@@ -30,6 +30,7 @@ DworphicToolTest >> testCanUseControllerIndependentHooksInTool [
 { #category : #'as yet unclassified' }
 DworphicToolTest >> testCantGrabMultipleThings [
 
+	GRReact resetGodotId.
 	self openComponentBlock: [
 		WorldDworph new children: {
 			ControllerToolDworph new

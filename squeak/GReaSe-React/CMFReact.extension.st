@@ -47,3 +47,9 @@ CMFReact >> useProvidedRef: aSymbol namespace: anotherSymbol [
 	hook namespace: anotherSymbol.
 	^ hook
 ]
+
+{ #category : #'*GReaSe-React' }
+CMFReact >> useRemoteRef [
+
+	^ self getHook: GRHookUseRemoteRef IfAbsent: [:node | GRHookUseRemoteRef new hostConfig: self]
+]

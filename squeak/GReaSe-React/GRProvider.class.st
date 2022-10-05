@@ -68,6 +68,12 @@ GRProvider >> namespace: aSymbol values: aDictionary children: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRProvider >> printOn: aStream [
+
+	aStream nextPutAll: '<GRProvider />'
+]
+
+{ #category : #'as yet unclassified' }
 GRProvider >> render: react renderInfo: renderInfo userCodeResult: userCodeResult [
 
 	^ react renderNodes: children

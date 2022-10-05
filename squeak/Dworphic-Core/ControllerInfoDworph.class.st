@@ -21,7 +21,7 @@ ControllerInfoDworph >> render: props [
 
 	| handPortal transform transformSub buttonPressed buttonRelase pressedButtons controllerNode axes handArea handIsFree |
 	handPortal := self useRef: nil.
-	handArea := self useRef: nil.
+	handArea := self useRemoteRef.
 	
 	handIsFree := self useState: true.
 	transform := self useState: Matrix4x4 identity.
@@ -49,7 +49,7 @@ ControllerInfoDworph >> render: props [
 						margin: 0.001;
 						radius: 0.005)};
 				ref: handArea.
-			(self godot: #Spatial) ref: [:node | handPortal set: node].
+			(self godot: #Spatial) ref: handPortal.
 			(self godot: #MeshInstance) mesh: ((self godot: #SphereMesh)
 				radius: 0.005;
 				height: 0.01)};

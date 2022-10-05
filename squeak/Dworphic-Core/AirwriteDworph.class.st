@@ -150,7 +150,7 @@ AirwriteDworph >> renderActive: props [
 	controllerTranslation := controllerTransform translation.
 	buttonPressed := self useTriggerStrength > 0.6.
 	
-	curveRef := self useRef: nil.
+	curveRef := self useRemoteRef.
 	
 	self
 		useEffect: [

@@ -47,7 +47,7 @@ GRTestCase >> openComponentBlock: aBlock [
 				session: GRMockSession new;
 				init: aBlock asComponent]
 		ifFalse: [
-			CMFReact2 new
+			(Smalltalk at: #CMFReact2) new
 				hostConfig: (CMFHostConfigGodot new session: GRMockSession new);
 				renderRoot: aBlock asComponent in: {#add. ''. false. ''}].
 	

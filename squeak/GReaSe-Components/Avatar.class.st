@@ -24,36 +24,27 @@ Avatar >> mirrorFactorForSide: side [
 Avatar >> render: props [
 
 	| avatarRoot |
-	avatarRoot := self useRef: nil.
+	avatarRoot := self useRemoteRef.
 	
 	self useEffect: [ | viewport session |
 		session := GRReactCurrentSession value.
-		(session
-			callOn: 'ARVRServer'
-			method: 'find_interface'
-			arguments: {'OpenXR'})
+		(session callOn: 'ARVRServer' method: 'find_interface' arguments: {'OpenXR'})
 			ifNil: [self error: 'Did not find OpenXR interface']
 			ifNotNil: [:openxr |
-				session
-					callOn: openxr
-					method: 'initialize'.
-				viewport := session
-					callOn: avatarRoot get
-					method: 'get_viewport'.
+				session callOn: openxr method: 'initialize'.
+				viewport := session callOn: avatarRoot get method: 'get_viewport'.
 				session set: 'iterations_per_second' of: 'Engine' to: 90.
 				session set: 'hdr' of: viewport to: false.
 				session set: 'vsync_enabled' of: 'OS' to: true.
-				session set: 'arvr' of: viewport to: true.].
+				session set: 'arvr' of: viewport to: true].
 		nil].
-
+	
 	^ (self godot: #ARVROrigin)
 		ref: avatarRoot;
 		children: {
-			(self godot: #ARVRCamera).
-			(self methodAsComponent: #renderHand:)
-				side: #left.
-			(self methodAsComponent: #renderHand:)
-				side: #right}
+			self godot: #ARVRCamera.
+			(self methodAsComponent: #renderHand:) side: #left.
+			(self methodAsComponent: #renderHand:) side: #right}
 ]
 
 { #category : #'as yet unclassified' }

@@ -119,6 +119,12 @@ GRComponent >> useProvidedRef: aSymbol namespace: anotherSymbol [
 ]
 
 { #category : #hooks }
+GRComponent >> useRemoteRef [
+
+	^ CMFCurrentReact value useRemoteRef
+]
+
+{ #category : #hooks }
 GRComponent >> useTeleport [
 
 	^ self useProvided: #teleport

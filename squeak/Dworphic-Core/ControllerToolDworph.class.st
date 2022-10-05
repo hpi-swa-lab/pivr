@@ -93,8 +93,7 @@ ControllerToolDworph >> renderForHand: props [
 			(grabbed ~= 0 and: [gripPressed not]) ifTrue: [
 				({#stay. #drop} includes: onRelease) ifTrue: [(props at: #onTransform) value: (side = #left ifTrue: [controllerTransformLeft get] ifFalse: [controllerTransformRight get])].
 				(props at: #onGrabbed) value: 0.
-				handIsFree set: true].
-			nil]
+				handIsFree set: true]]
 		dependencies: {props at: #onGrabbed. props at: #intersecting. props at: #onTransform. gripPressed}.
 	
 	^ grabbed ~= 0 ifTrue: [

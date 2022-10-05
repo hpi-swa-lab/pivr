@@ -15,7 +15,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRSocketSession >> bindRefs: aCollection [
 
-	react waitingRefs with: aCollection do: [:ref :obj | ref set: obj]
+	react hostConfig waitingRefs with: aCollection do: [:ref :obj | ref set: obj]
 ]
 
 { #category : #'as yet unclassified' }
@@ -177,7 +177,7 @@ GRSocketSession >> reactComponent: aComponentClass [
 				session: self;
 				init: aComponentClass new]
 		ifFalse: [
-			CMFReact2 new
+			(Smalltalk at: #CMFReact2) new
 				hostConfig: (CMFHostConfigGodot new session: self);
 				renderRoot: aComponentClass new in: {#add. ''. false. ''}]
 ]
