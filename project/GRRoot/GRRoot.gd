@@ -161,14 +161,43 @@ func apply_updates(list):
 				var parent_path = update[1]
 				var is_resource = update[2]
 				var id_or_prop_name = update[3]
-				if is_resource:
-					var instance = get_or_create_resource(update)
-					var target = get_node_and_resource(root_path + parent_path)
-					(target[1] if target[1] else target[0]).set(id_or_prop_name, instance)
+				var full_path = root_path + parent_path + (':' if is_resource else '/') + id_or_prop_name
+				var existing = get_node_or_null(full_path)
+				if not is_resource and existing:
+					existing.get_parent().move_child(existing, existing.get_parent().get_child_count())
 				else:
-					var instance = create_node(update)
-					instance.name = id_or_prop_name
-					get_node(root_path + parent_path).add_child(instance)
+					if is_resource:
+						var instance = get_or_create_resource(update)
+						var target = get_node_and_resource(root_path + parent_path)
+						(target[1] if target[1] else target[0]).set(id_or_prop_name, instance)
+					else:
+						var instance = create_node(update)
+						instance.name = id_or_prop_name
+						get_node(root_path + parent_path).add_child(instance)
+			'insert':
+				var parent_path = update[1]
+				var is_resource = update[2]
+				var id_or_prop_name = update[3]
+				var full_path = root_path + parent_path + (':' if is_resource else '/') + id_or_prop_name
+				var existing = get_node_or_null(full_path)
+				var reference = get_node(root_path + update[6])
+				if existing and is_resource:
+					# don't need to move resources
+					continue
+				elif existing:
+					existing.get_parent().move_child(existing, reference.get_index())
+				else:
+					if is_resource:
+						var instance = get_or_create_resource(update)
+						var target = get_node_and_resource(root_path + parent_path)
+						(target[1] if target[1] else target[0]).set(id_or_prop_name, instance)
+					else:
+						var instance = create_node(update)
+						instance.name = id_or_prop_name
+						if reference.get_parent() != get_node(root_path + parent_path):
+							print("MISMATCH! " + reference.get_path() + " " + root_path + parent_path)
+							print(reference)
+						get_node(root_path + parent_path).add_child_below_node(reference, instance)
 			'update':
 				var path = update[1]
 				var key = update[2]
@@ -176,14 +205,18 @@ func apply_updates(list):
 				var target = get_node_and_resource(root_path + path)
 				apply_prop(target[1] if target[1] else target[0], key, value)
 			'delete':
-				var instance = get_node(root_path + update[1])
+				var target = get_node_and_resource(root_path + update[1])
+				var instance = target[1] if target[1] else target[0]
 				var toDelete = []
 				for sub in subscriptions:
 					if sub.instance == instance:
 						toDelete.append(sub)
 				for delete in toDelete:
 					subscriptions.remove(subscriptions.find(delete))
-				instance.queue_free()
+				if target[1]:
+					instance.set(target[2], null)
+				else:
+					instance.queue_free()
 			'move':
 				var nodePaths = update[1]
 				var startIndex = update[2]
@@ -192,7 +225,7 @@ func apply_updates(list):
 					child.get_parent().move_child(child, startIndex - 1)
 					startIndex += 1
 			_:
-				print("Unknown update: " + update[0])
+				push_error("Unknown update type: " + update[0])
 
 # Place to register custom classes
 func new_instance_for_name(name):
