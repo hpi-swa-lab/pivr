@@ -41,13 +41,13 @@ GRTestCase >> openComponent: aComponentClass [
 { #category : #'as yet unclassified' }
 GRTestCase >> openComponentBlock: aBlock [
 
-	react := true
+	react := GRReact useFibers
 		ifTrue: [
 			GRReact new
 				session: GRMockSession new;
 				init: aBlock asComponent]
 		ifFalse: [
-			(Smalltalk at: #CMFReact2) new
+			(Smalltalk at: #CMFReactWithFibers) new
 				hostConfig: (CMFHostConfigGodot new session: GRMockSession new);
 				renderRoot: aBlock asComponent in: {#add. ''. false. ''}].
 	

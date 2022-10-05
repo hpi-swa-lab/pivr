@@ -171,13 +171,13 @@ GRSocketSession >> react: aReact [
 { #category : #'as yet unclassified' }
 GRSocketSession >> reactComponent: aComponentClass [
 
-	react := true
+	react := GRReact useFibers
 		ifTrue: [
 			GRReact new
 				session: self;
 				init: aComponentClass new]
 		ifFalse: [
-			(Smalltalk at: #CMFReact2) new
+			(Smalltalk at: #CMFReactWithFibers) new
 				hostConfig: (CMFHostConfigGodot new session: self);
 				renderRoot: aComponentClass new in: {#add. ''. false. ''}]
 ]

@@ -1,7 +1,7 @@
-Extension { #name : #CMFReact2 }
+Extension { #name : #CMFReactWithFibers }
 
 { #category : #'*GRease-React' }
-CMFReact2 >> useProvided: aSymbol [
+CMFReactWithFibers >> useProvided: aSymbol [
 
 	| hook |
 	hook := currentFiber getHook: GRHookUseProvided IfAbsent: [:node |
@@ -12,7 +12,7 @@ CMFReact2 >> useProvided: aSymbol [
 ]
 
 { #category : #'*GRease-React' }
-CMFReact2 >> useProvided: aSymbol namespace: anotherSymbol [
+CMFReactWithFibers >> useProvided: aSymbol namespace: anotherSymbol [
 
 	| hook |
 	hook := currentFiber getHook: GRHookUseProvided IfAbsent: [:node |
@@ -25,7 +25,7 @@ CMFReact2 >> useProvided: aSymbol namespace: anotherSymbol [
 ]
 
 { #category : #'*GRease-React' }
-CMFReact2 >> useProvidedRef: aSymbol [
+CMFReactWithFibers >> useProvidedRef: aSymbol [
 
 	| hook |
 	hook := currentFiber getHook: GRHookUseProvidedRef IfAbsent: [:node |
@@ -36,7 +36,7 @@ CMFReact2 >> useProvidedRef: aSymbol [
 ]
 
 { #category : #'*GRease-React' }
-CMFReact2 >> useProvidedRef: aSymbol namespace: anotherSymbol [
+CMFReactWithFibers >> useProvidedRef: aSymbol namespace: anotherSymbol [
 
 	| hook |
 	hook := currentFiber getHook: GRHookUseProvidedRef IfAbsent: [:node |
@@ -49,7 +49,7 @@ CMFReact2 >> useProvidedRef: aSymbol namespace: anotherSymbol [
 ]
 
 { #category : #'*GRease-React' }
-CMFReact2 >> useRemoteRef [
+CMFReactWithFibers >> useRemoteRef [
 
 	^ currentFiber
 		getHook: GRHookUseRemoteRef
