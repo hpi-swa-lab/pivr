@@ -131,6 +131,12 @@ GRReactNodeGodot >> isResource: aBoolean [
 	self assertNoRefOnResource
 ]
 
+{ #category : #testing }
+GRReactNodeGodot >> isValidInsertSibling [
+
+	^ self isResource not
+]
+
 { #category : #accessing }
 GRReactNodeGodot >> key [
 
