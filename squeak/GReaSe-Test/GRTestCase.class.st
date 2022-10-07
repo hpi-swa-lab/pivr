@@ -31,9 +31,15 @@ GRTestCase >> godot: aClassName [
 { #category : #'as yet unclassified' }
 GRTestCase >> openComponent: aComponentClass [
 
-	react := GRReact new
-		session: GRMockSession new;
-		init: aComponentClass new.
+	GRReact useFibers
+		ifTrue: [
+			(Smalltalk at: #CMFReactWithFibers) new
+				hostConfig: (CMFHostConfigGodot new session: GRMockSession new);
+				renderRoot: aComponentClass new in: {#add. ''. false. ''}]
+		ifFalse: [
+			GRReact new
+				session: GRMockSession new;
+				init: aComponentClass new].
 	godotTree := GRMockNode new.
 	self tick
 ]
@@ -43,13 +49,13 @@ GRTestCase >> openComponentBlock: aBlock [
 
 	react := GRReact useFibers
 		ifTrue: [
-			GRReact new
-				session: GRMockSession new;
-				init: aBlock asComponent]
-		ifFalse: [
 			(Smalltalk at: #CMFReactWithFibers) new
 				hostConfig: (CMFHostConfigGodot new session: GRMockSession new);
-				renderRoot: aBlock asComponent in: {#add. ''. false. ''}].
+				renderRoot: aBlock asComponent in: {#add. ''. false. ''}]
+		ifFalse: [
+			GRReact new
+				session: GRMockSession new;
+				init: aBlock asComponent].
 	
 	godotTree := GRMockNode new.
 	

@@ -130,7 +130,7 @@ CMFHostConfigGodot >> update: aHostNode new: aNewNode hostUpdate: aHostUpdate [
 			#update.
 			aHostNode second, (aHostNode third ifTrue: [':'] ifFalse: ['/']), aHostNode fourth.
 			key.
-			aNewNode serializePropValue: value for: react}]
+			aNewNode serializePropValue: value for: react hostConfig}]
 ]
 
 { #category : #reconciliation }

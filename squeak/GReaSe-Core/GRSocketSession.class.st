@@ -173,13 +173,13 @@ GRSocketSession >> reactComponent: aComponentClass [
 
 	react := GRReact useFibers
 		ifTrue: [
-			GRReact new
-				session: self;
-				init: aComponentClass new]
-		ifFalse: [
 			(Smalltalk at: #CMFReactWithFibers) new
 				hostConfig: (CMFHostConfigGodot new session: self);
 				renderRoot: aComponentClass new in: {#add. ''. false. ''}]
+		ifFalse: [
+			GRReact new
+				session: self;
+				init: aComponentClass new]
 ]
 
 { #category : #communication }

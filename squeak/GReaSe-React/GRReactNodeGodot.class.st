@@ -194,6 +194,12 @@ GRReactNodeGodot >> propertiesToSetFor: aReact [
 	^ out
 ]
 
+{ #category : #'as yet unclassified' }
+GRReactNodeGodot >> props [
+
+	^ properties
+]
+
 { #category : #converting }
 GRReactNodeGodot >> putVariantOn: aStream [
 
