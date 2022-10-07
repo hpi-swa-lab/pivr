@@ -55,12 +55,12 @@ WorldDworph >> renderControllerControls: props [
 		dependencies: {}.
 	
 	keyboardCallback := self
-		useCallback: [:pressed :key :name |
-			name = 'Space' ifTrue: [
+		useCallback: [:pressed :scanCode :key |
+			scanCode = GDGlobalConstants keySpace ifTrue: [
 				pressed
 					ifTrue: [pressedButtons set: [:b | b copyWith: ControllerInfoDworph grip]]
 					ifFalse: [pressedButtons set: [:b | b copyWithout: ControllerInfoDworph grip]]].
-			name = 'Tab' ifTrue: [pressed ifTrue: [trigger set: 1.0] ifFalse: [trigger set: 0.0]]]
+			scanCode = GDGlobalConstants keyTab ifTrue: [pressed ifTrue: [trigger set: 1.0] ifFalse: [trigger set: 0.0]]]
 		dependencies: {}.
 	
 	^ (self godot: #Spatial)
@@ -91,7 +91,7 @@ WorldDworph >> renderFirstPersonControls: props [
 		useCallback: [:pressed :button :position | isMouseLocked set: pressed]
 		dependencies: {}.
 	keyboardCallback := self
-		useCallback: [:pressed :key :scanCode |
+		useCallback: [:pressed :scanCode :key |
 			key asCharacter = $w ifTrue: [moving set: (pressed ifTrue: [1] ifFalse: [0])].
 			key asCharacter = $s ifTrue: [moving set: (pressed ifTrue: [-1] ifFalse: [0])]]
 		dependencies: {}.
@@ -203,9 +203,9 @@ WorldDworph >> renderSimulatedControls: props [
 	controlling := self useState: #headset.
 	
 	keySub := self
-		useCallback: [:pressed :key :scanCode |
-			scanCode = 'Control' ifTrue: [controlling set: (pressed ifTrue: [#left] ifFalse: [#headset])].
-			scanCode = 'Alt' ifTrue: [controlling set: (pressed ifTrue: [#right] ifFalse: [#headset])]]
+		useCallback: [:pressed :scanCode :key |
+			scanCode = GDGlobalConstants keyControl ifTrue: [controlling set: (pressed ifTrue: [#left] ifFalse: [#headset])].
+			scanCode = GDGlobalConstants keyAlt ifTrue: [controlling set: (pressed ifTrue: [#right] ifFalse: [#headset])]]
 		dependencies: {}.
 	
 	^ {

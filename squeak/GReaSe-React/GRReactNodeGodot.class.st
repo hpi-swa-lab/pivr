@@ -50,7 +50,7 @@ GRReactNodeGodot >> children: aCollection [
 GRReactNodeGodot >> computeChildrenAndUpdate: aFiber for: aState caughtError: anErrorOrNil [
 
 	aFiber output ifNil: [aFiber output: (aState hostConfig create: self)].
-	^ (Array streamContents: [:stream | properties do: [:value | value isGodotNode ifTrue: [stream nextPut: value]]]), (self children ifNil: [#()])
+	^ (Array streamContents: [:stream | properties do: [:value | value isGodotNode ifTrue: [stream nextPut: value]]]), (self children ifNotNil: [:c | c isCollection ifTrue: [c] ifFalse: [{c}]] ifNil: [#()])
 ]
 
 { #category : #converting }

@@ -30,7 +30,7 @@ OrbitCameraDworph >> render: props [
 		useCallback: [:pressed :button :position | isMouseLocked set: pressed]
 		dependencies: {}.
 	keyboardCallback := self
-		useCallback: [:pressed :key :scanCode |
+		useCallback: [:pressed :scanCode :key |
 			key asCharacter = $w ifTrue: [moving set: (pressed ifTrue: [1] ifFalse: [0])].
 			key asCharacter = $s ifTrue: [moving set: (pressed ifTrue: [-1] ifFalse: [0])]]
 		dependencies: {}.
