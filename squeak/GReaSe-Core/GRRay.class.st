@@ -21,7 +21,7 @@ GRRay >> intersectPlane: aPlaneOriginVector normal: aPlaneNormalVector [
 	denom := aPlaneNormalVector dot: direction.
 	^ (denom closeTo: 0)
 		ifFalse: [ | t |
-			t := aPlaneOriginVector - origin / denom.
+			t := (aPlaneOriginVector - origin dot: aPlaneNormalVector) / denom.
 			origin + (t * direction)]
 		ifTrue: [nil]
 ]

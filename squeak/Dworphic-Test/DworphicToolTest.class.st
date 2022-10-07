@@ -71,6 +71,25 @@ DworphicToolTest >> testKeyboardNoRenderLoop [
 ]
 
 { #category : #'as yet unclassified' }
+DworphicToolTest >> testOpenWorld [
+	<timeout: 10>
+
+	| camera |
+	self openComponent: GRExampleVR.
+	
+	camera := godotTree firstNodeOfType: #ARVRCamera.
+	Transcript showln: 'tick'.
+	self tick: {
+		camera
+			subscribe: #'global_transform'
+			set: (Matrix4x4 withOffset: 100 atRandom @ 100 atRandom @ 100 atRandom)}.
+	self tick: {
+		camera
+			subscribe: #'global_transform'
+			set: (Matrix4x4 withOffset: 100 atRandom @ 100 atRandom @ 100 atRandom)}
+]
+
+{ #category : #'as yet unclassified' }
 DworphicToolTest >> testReleaseToolStayOrReturn [
 
 	| releasePos initialPos |

@@ -62,7 +62,7 @@ GDBaseObject >> doesNotUnderstand: aMessage [
 GDBaseObject >> get: aSymbol return: aClassNameSymbol [
 
 	self assert: objectId notNil.
-	(GRReactCurrentSession value get: aSymbol of: self) grAsClass: aClassNameSymbol
+	^ (GRReactCurrentSession value get: aSymbol of: self) grAsClass: aClassNameSymbol
 ]
 
 { #category : #'as yet unclassified' }

@@ -13,18 +13,19 @@ WorldDworph >> mouseSensitivity [
 { #category : #'rendering - simulated' }
 WorldDworph >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
 
-	| session sceneTree viewport camera origin normal state |
-	session := GRReactCurrentSession value.
-	sceneTree := session callOn: 'Engine' method: 'get_main_loop' arguments: {}.
-	viewport := session get: 'root' of: sceneTree.
-	camera := session callOn: viewport method: 'get_camera'.
-	origin := session callOn: camera method: #'project_ray_origin' arguments: {aPoint}.
-	normal := (session callOn: camera method: #'project_ray_normal' arguments: {aPoint}) * 100.
-	state := session get: #'direct_space_state' of: (session callOn: aRef get method: #'get_world').
-	(session
-		callOn: state
-		method: #'intersect_ray'
-		arguments: {origin. normal. {}. 2147483647. true. true}) ifNotEmpty: [:res | aBlock value: (res at: #position)]
+	| camera origin normal spatial |
+	spatial := aPoint get grAsClass: #Spatial.
+	camera := spatial getTree root getCamera.
+	
+	origin := camera projectRayOriginScreenPoint: aPoint.
+	normal := (camera projectRayNormalScreenPoint: aPoint) * 100.
+	^ (spatial getWorld directSpaceState
+		intersectRayFrom: origin
+		to: normal
+		exclude: {}
+		collisionLayer: 2147483647
+		collideWithBodies: true
+		collideWithAreas: true) ifNotEmpty: [:res | aBlock value: (res at: #position)]
 ]
 
 { #category : #rendering }
@@ -274,10 +275,9 @@ WorldDworph >> useVRIfSupported: aBlock otherwise: anotherBlock loading: aThirdB
 	| supportsVR |
 	supportsVR := self useState: nil.
 	self
-		useEffect: [ | openxr |
-			openxr := GDARVRServer instance findInterfaceName: 'OpenXR'.
-			openxr
-				ifNotNil: [ | viewport |
+		useEffect: [
+			(GDARVRServer instance findInterfaceName: 'OpenXR')
+				ifNotNil: [:openxr | | viewport |
 					openxr initialize ifFalse: [self error: 'failed to initialize openxr'].
 					viewport := (GD_Engine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport.
 					GD_OS instance vsyncEnabled: true.

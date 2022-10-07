@@ -22,9 +22,10 @@ GRReactNodeGodot class >> for: aSymbol [
 { #category : #testing }
 GRReactNodeGodot >> assertNoRefOnResource [
 
-	self
+	" currently not the case "
+	"self
 		assert: (isResource not or: [ref isNil])
-		description: 'Currently, all resources are shared. It is thus not save to reference a particular resource. Please report your use case.'
+		description: 'Currently, all resources are shared. It is thus not save to reference a particular resource. Please report your use case.'"
 ]
 
 { #category : #accessing }
@@ -159,8 +160,7 @@ GRReactNodeGodot >> key [
 { #category : #accessing }
 GRReactNodeGodot >> key: anObject [
 
-	key := anObject asString.
-	godotId := key
+	key := anObject asString
 ]
 
 { #category : #accessing }
@@ -252,10 +252,7 @@ GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObjec
 							react addUpdate: {#update. renderInfo treeEntry godotPath. key. self serializePropValue: newValue for: react}]]]]
 		ifFalse: [self render: react properties: self properties renderInfo: renderInfo].
 	children ifNotNil: [react renderNodes: children].
-	ref ifNotNil: [
-		ref isBlock
-			ifTrue: [ref value: react elementTree currentParentEntry]
-			ifFalse: [react addRef: ref for: renderInfo treeEntry godotPath]].
+	ref ifNotNil: [ref value: react elementTree currentParentEntry].
 	
 	^ node
 ]

@@ -128,9 +128,9 @@ GRSocketSession >> handleRenderMessage: aMessage [
 		^ true].
 	
 	^ [
-		self tick: aMessage third updatesDo: [:updates |
-			self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
-			updates second ifNotEmpty: [ | refsMessage |
+		GRDebug reportFrameTime: [
+			self tick: aMessage third updatesDo: [:updates | | refsMessage |
+				self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
 				refsMessage := GRSocketListener readMessageFrom: stream.
 				self assert: refsMessage first = GRSocketListener messageTypeRefsFromGodot.
 				self bindRefs: refsMessage third]].

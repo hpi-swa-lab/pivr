@@ -3,7 +3,8 @@ Class {
 	#superclass : #CMFReactHook,
 	#instVars : [
 		'state',
-		'hostConfig'
+		'hostConfig',
+		'godotClass'
 	],
 	#category : #'GReaSe-React'
 }
@@ -11,7 +12,7 @@ Class {
 { #category : #public }
 GRHookUseRemoteRef >> get [
 
-	^ state
+	^ godotClass ifNotNil: [state grAsClass: godotClass] ifNil: [state]
 ]
 
 { #category : #private }
@@ -29,5 +30,8 @@ GRHookUseRemoteRef >> set: aNode [
 { #category : #private }
 GRHookUseRemoteRef >> value: anObject [
 
-	hostConfig addRef: self for: anObject
+	godotClass := anObject isArray ifTrue: [(Smalltalk classNamed: 'GD', anObject fifth) ifNotNil: ['GD', anObject fifth]].
+	hostConfig
+		addRef: self
+		for: (anObject isArray ifTrue: [anObject] ifFalse: [anObject godotPath])
 ]

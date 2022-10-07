@@ -157,7 +157,9 @@ GRReact >> moveChild: aNode to: anotherNumber in: aParentNode [
 { #category : #rendering }
 GRReact >> performRenderChanges [
 
-	false ifTrue: [pendingUpdates do: [:u | Transcript showln: u]].
+	false ifTrue: [
+		Transcript showln: '------------'.
+		pendingUpdates do: [:u | Transcript showln: u]].
 	
 	waitingRefs := pendingRefs collect: #second.
 	changesBlock value: {pendingUpdates. pendingRefs collect: #first}.

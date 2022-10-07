@@ -29,33 +29,21 @@ GRTestCase >> godot: aClassName [
 ]
 
 { #category : #'as yet unclassified' }
-GRTestCase >> openComponent: aComponentClass [
+GRTestCase >> openComponent: aBlockOrClass [
 
-	GRReact useFibers
-		ifTrue: [
-			(Smalltalk at: #CMFReactWithFibers) new
-				hostConfig: (CMFHostConfigGodot new session: GRMockSession new);
-				renderRoot: aComponentClass new in: {#add. ''. false. ''}]
-		ifFalse: [
-			GRReact new
-				session: GRMockSession new;
-				init: aComponentClass new].
-	godotTree := GRMockNode new.
-	self tick
-]
-
-{ #category : #'as yet unclassified' }
-GRTestCase >> openComponentBlock: aBlock [
-
+	| component |
+	component := aBlockOrClass isBlock
+		ifTrue: [aBlockOrClass asComponent]
+		ifFalse: [aBlockOrClass new].
 	react := GRReact useFibers
 		ifTrue: [
 			(Smalltalk at: #CMFReactWithFibers) new
 				hostConfig: (CMFHostConfigGodot new session: GRMockSession new);
-				renderRoot: aBlock asComponent in: {#add. ''. false. ''}]
+				renderRoot: component in: {#add. ''. false. ''}]
 		ifFalse: [
 			GRReact new
 				session: GRMockSession new;
-				init: aBlock asComponent].
+				init: component].
 	
 	godotTree := GRMockNode new.
 	
@@ -66,6 +54,12 @@ GRTestCase >> openComponentBlock: aBlock [
 		for: 'root' reply: (GDViewport basicNew objectId: 2).
 	
 	self tick
+]
+
+{ #category : #'as yet unclassified' }
+GRTestCase >> openComponentBlock: aBlockOrClass [
+
+	^ self openComponent: aBlockOrClass
 ]
 
 { #category : #'as yet unclassified' }

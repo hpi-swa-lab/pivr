@@ -82,10 +82,12 @@ VirtualKeyboardDworph >> renderKey: props [
 	^ {
 		areaAndHovered second ifTrue: [
 			"only subscribe to trigger events if we are currently hovered"
-			[:nestedProps |
-				self useTriggerPressedDo: [(props at: #onPressed) value].
+			[:nestedProps | | callback |
+				callback := self useCallback: [(props at: #onPressed) value] dependencies: {}.
+				self useTriggerPressedDo: callback.
 				nil] asComponent].
 		areaAndHovered first
+			key: #KeyArea;
 			children: {
 				(self godot: #MeshInstance) mesh: ((self godot: #CubeMesh)
 					size: self keySize asPoint @ 0.02;

@@ -10,7 +10,7 @@ Class {
 { #category : #comparing }
 GRObjectId >> = anObject [
 
-	^ self class = anObject class and: [anObject objectId = self objectId]
+	^ (anObject respondsTo: #objectId) and: [anObject objectId = self objectId]
 ]
 
 { #category : #converting }
