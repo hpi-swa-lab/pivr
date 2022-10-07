@@ -278,6 +278,16 @@ func deserialize_arg(arg):
 		return instance_from_id(arg.object_id)
 	return arg
 
+func subscription_for(instance, key):
+	for sub in subscriptions:
+		if sub.instance == instance and sub.key == key:
+			return sub
+	var sub = Subscription.new()
+	sub.instance = instance
+	sub.key = key
+	subscriptions.append(sub)
+	return sub
+
 func apply_prop(instance, key, value):
 	if key == 'groups':
 		for group in value:
@@ -312,12 +322,9 @@ func apply_prop(instance, key, value):
 		if not instance.has_method(key):
 			print("No method named " + key + " on " + str(instance))
 			return
-		var s = Subscription.new()
-		s.instance = instance
-		s.key = key
+		var s = subscription_for(instance, key)
 		s.callback_id = value[0]
 		s.call_arguments = deserialize_args(value[1])
-		subscriptions.append(s)
 		return
 	
 	if key.begins_with('sqsubscribe_'):
@@ -325,11 +332,8 @@ func apply_prop(instance, key, value):
 		if not key in instance:
 			print("No property named " + key + " on " + str(instance))
 			return
-		var s = Subscription.new()
-		s.instance = instance
-		s.key = key
+		var s = subscription_for(instance, key)
 		s.callback_id = value
-		subscriptions.append(s)
 		return
 	
 	if key.begins_with('sqmeta_'):
