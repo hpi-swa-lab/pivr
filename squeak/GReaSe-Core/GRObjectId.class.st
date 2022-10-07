@@ -16,7 +16,7 @@ GRObjectId >> = anObject [
 { #category : #converting }
 GRObjectId >> grAsClass: aSymbol [
 
-	^ (Smalltalk classNamed: aSymbol) new objectId: self objectId
+	^ (Smalltalk classNamed: aSymbol) basicNew objectId: self objectId
 ]
 
 { #category : #converting }

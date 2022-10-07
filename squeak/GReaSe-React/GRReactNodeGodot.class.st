@@ -159,7 +159,7 @@ GRReactNodeGodot >> key [
 { #category : #accessing }
 GRReactNodeGodot >> key: anObject [
 
-	key := anObject.
+	key := anObject asString.
 	godotId := key
 ]
 

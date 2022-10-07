@@ -21,7 +21,7 @@ CMFHostConfigGodot >> addRef: aHostNode for: aPathString [
 { #category : #reconciliation }
 CMFHostConfigGodot >> appendChild: aHostNode in: aParentHostNode [
 
-	aHostNode at: 2 put: (aParentHostNode fourth
+	aHostNode at: 2 put: (aParentHostNode fourth asString
 		ifNotEmpty: [aParentHostNode second, (aParentHostNode third ifTrue: [':'] ifFalse: ['/']), aParentHostNode fourth]
 		ifEmpty: ['']).
 	pendingUpdates add: aHostNode
@@ -31,6 +31,25 @@ CMFHostConfigGodot >> appendChild: aHostNode in: aParentHostNode [
 CMFHostConfigGodot >> create: aNode [
 
 	^ {#add. nil}, (aNode createInfoFor: self)
+]
+
+{ #category : #reconciliation }
+CMFHostConfigGodot >> diffPropsFrom: anOldNode to: aNewNode [
+
+	^ anOldNode props
+		ifNotNil: [:oldProps | | changes |
+			changes := Dictionary new.
+			aNewNode props
+				ifNotNil: [:newProps |
+					"which props have a new value or were added?"
+					newProps keysAndValuesDo: [:key :value | (value isGodotNode not and: [((oldProps at: key ifAbsent: nil) grEqual: value) not]) ifTrue: [changes at: key put: value]].
+					"did some properties disappear?"
+					newProps size = oldProps size ifFalse: [oldProps keysDo: [:key | (newProps includesKey: key) ifFalse: [changes at: key put: nil]]]]
+				ifNil: ["all removed"
+				oldProps keysDo: [:key | changes at: key put: nil]].
+			changes ifEmpty: [nil]]
+		ifNil: ["all new"
+		aNewNode props ifNotNil: [:p | p copy ifEmpty: nil]]
 ]
 
 { #category : #reconciliation }
@@ -67,7 +86,7 @@ CMFHostConfigGodot >> insert: aHostNode before: aSiblingHostNode in: aParentHost
 { #category : #reconciliation }
 CMFHostConfigGodot >> prepareUpdateFrom: aNode to: anotherNode for: aHostNode [
 
-	^ (self diffPropsFrom: aNode to: anotherNode) ifNotNil: [:changes | changes select: [:val | val isGodotNode not]]
+	^ self diffPropsFrom: aNode to: anotherNode
 ]
 
 { #category : #'as yet unclassified' }

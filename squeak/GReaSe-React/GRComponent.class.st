@@ -39,6 +39,12 @@ GRComponent >> godot: aClassName [
 		yourself
 ]
 
+{ #category : #helpers }
+GRComponent >> nextGodotId [
+
+	^ GRReact nextGodotId
+]
+
 { #category : #hooks }
 GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 
