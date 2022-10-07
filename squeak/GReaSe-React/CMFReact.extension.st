@@ -4,7 +4,7 @@ Extension { #name : #CMFReact }
 CMFReact >> useProvided: aSymbol [
 
 	| hook |
-	hook := self getHook: GRHookUseProvided IfAbsent: [:node |
+	hook := self getHook: GRHookUseProvided ifAbsent: [:node |
 		GRHookUseProvided new
 			symbol: aSymbol node: node;
 			yourself].
@@ -15,7 +15,7 @@ CMFReact >> useProvided: aSymbol [
 CMFReact >> useProvided: aSymbol namespace: anotherSymbol [
 
 	| hook |
-	hook := self getHook: GRHookUseProvided IfAbsent: [:node |
+	hook := self getHook: GRHookUseProvided ifAbsent: [:node |
 		GRHookUseProvided new
 			symbol: aSymbol node: node;
 			namespace: anotherSymbol;
@@ -28,7 +28,7 @@ CMFReact >> useProvided: aSymbol namespace: anotherSymbol [
 CMFReact >> useProvidedRef: aSymbol [
 
 	| hook |
-	hook := self getHook: GRHookUseProvidedRef IfAbsent: [:node |
+	hook := self getHook: GRHookUseProvidedRef ifAbsent: [:node |
 		GRHookUseProvidedRef new
 			symbol: aSymbol node: node;
 			yourself].
@@ -39,7 +39,7 @@ CMFReact >> useProvidedRef: aSymbol [
 CMFReact >> useProvidedRef: aSymbol namespace: anotherSymbol [
 
 	| hook |
-	hook := self getHook: GRHookUseProvidedRef IfAbsent: [:node |
+	hook := self getHook: GRHookUseProvidedRef ifAbsent: [:node |
 		GRHookUseProvidedRef new
 			symbol: aSymbol node: node;
 			namespace: anotherSymbol;
@@ -51,5 +51,5 @@ CMFReact >> useProvidedRef: aSymbol namespace: anotherSymbol [
 { #category : #'*GReaSe-React' }
 CMFReact >> useRemoteRef [
 
-	^ self getHook: GRHookUseRemoteRef IfAbsent: [:node | GRHookUseRemoteRef new hostConfig: self]
+	^ self getHook: GRHookUseRemoteRef ifAbsent: [:node | GRHookUseRemoteRef new hostConfig: self]
 ]

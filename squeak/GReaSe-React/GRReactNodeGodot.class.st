@@ -46,6 +46,13 @@ GRReactNodeGodot >> children: aCollection [
 	children := aCollection
 ]
 
+{ #category : #rendering }
+GRReactNodeGodot >> computeChildrenAndUpdate: aFiber for: aState caughtError: anErrorOrNil [
+
+	aFiber output ifNil: [aFiber output: (aState hostConfig create: self)].
+	^ (Array streamContents: [:stream | properties do: [:value | value isGodotNode ifTrue: [stream nextPut: value]]]), (self children ifNil: [#()])
+]
+
 { #category : #converting }
 GRReactNodeGodot >> createInfoFor: aReact [
 
@@ -114,6 +121,12 @@ GRReactNodeGodot >> initialize [
 
 { #category : #testing }
 GRReactNodeGodot >> isGodotNode [
+
+	^ true
+]
+
+{ #category : #testing }
+GRReactNodeGodot >> isHostComponent [
 
 	^ true
 ]

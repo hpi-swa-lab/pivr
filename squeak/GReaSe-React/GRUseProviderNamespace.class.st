@@ -15,6 +15,12 @@ GRUseProviderNamespace class >> namespace: aSymbol children: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRUseProviderNamespace >> computeChildrenAndUpdate: aFiber for: aState caughtError: anErrorOrNil [
+
+	^ children
+]
+
+{ #category : #'as yet unclassified' }
 GRUseProviderNamespace >> executeUserCode: react renderInfo: renderInfo [
 
 	^ nil

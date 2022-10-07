@@ -352,3 +352,14 @@ GRReactTest >> testUseEffectNoDependencies [
 			dependencies: {}].
 	self assert: #(#effect) equals: runs asArray
 ]
+
+{ #category : #'as yet unclassified' }
+GRReactTest >> testUseProvided [
+
+	self openComponentBlock: [
+		GRProvider values: {#a -> 2} children: {
+			[ | count |
+				count := GRComponent basicNew useProvided: #a.
+				(self godot: #Label) text: count] asComponent}].
+	self assert: 2 equals: (godotTree firstNodeOfType: #Label) text
+]

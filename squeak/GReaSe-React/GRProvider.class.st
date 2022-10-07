@@ -22,6 +22,12 @@ GRProvider class >> values: aDictionary children: aCollection [
 ]
 
 { #category : #'as yet unclassified' }
+GRProvider >> computeChildrenAndUpdate: aFiber for: aState caughtError: anErrorOrNil [
+
+	^ children
+]
+
+{ #category : #'as yet unclassified' }
 GRProvider >> executeUserCode: react renderInfo: renderInfo [
 
 	^ nil

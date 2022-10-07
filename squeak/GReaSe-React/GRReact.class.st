@@ -92,7 +92,7 @@ GRReact class >> stopAll [
 { #category : #testing }
 GRReact class >> useFibers [
 
-	^ false
+	^ true
 ]
 
 { #category : #reconciliation }
