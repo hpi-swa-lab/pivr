@@ -1,7 +1,7 @@
 Class {
 	#name : #GREvents,
 	#superclass : #GDBaseObject,
-	#category : #'GReaSe-React'
+	#category : #'GReaSe-Components'
 }
 
 { #category : #'as yet unclassified' }
