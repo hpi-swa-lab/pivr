@@ -59,13 +59,14 @@ func _ready():
 	# return debug_print_bytes([])
 	
 	tcp = StreamPeerTCP.new()
+	print("Connecting to " + ip() + " ...")
 	var error = tcp.connect_to_host(ip(), 8292)
 	if error != OK:
 		print("Failed to connect: " + str(error))
 		quit = true
 		return
-	while tcp.get_status() != 2:
-		if tcp.get_status() == 3:
+	while tcp.get_status() != StreamPeerTCP.STATUS_CONNECTED:
+		if tcp.get_status() == StreamPeerTCP.STATUS_ERROR:
 			print("Failed to connect")
 			quit = true
 			return

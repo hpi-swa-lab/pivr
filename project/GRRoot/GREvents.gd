@@ -5,7 +5,7 @@ extends Node
 
 signal event(event)
 signal button(pressed, button, position)
-signal keyboard(pressed, key, scan_code)
+signal keyboard(pressed, scan_code, unicode)
 
 var mouse_position = Vector2(0, 0)
 var relative_mouse_motion = Vector2(0, 0)
@@ -18,4 +18,4 @@ func _input(event):
 	if event is InputEventMouseButton:
 		emit_signal("button", event.pressed, event.button_index, event.global_position)
 	if event is InputEventKey:
-		emit_signal("keyboard", event.pressed, event.unicode, OS.get_scancode_string(event.scancode))
+		emit_signal("keyboard", event.pressed, event.scancode, event.unicode)
