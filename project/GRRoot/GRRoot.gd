@@ -24,12 +24,13 @@ enum MessageType {
 class Subscription:
 	var instance: Object
 	var key: String
+	var method: String
 	var callback_id: int
 	var call_arguments = null
 	var last_value
 	
 	func update():
-		var current_value = instance.callv(key, call_arguments) if call_arguments else instance.get(key)
+		var current_value = instance.callv(method, call_arguments) if call_arguments else instance.get(method)
 		if last_value != current_value:
 			last_value = current_value
 			return [callback_id, current_value]
@@ -143,8 +144,6 @@ func do_quit():
 	get_tree().quit()
 
 func bind_refs(refs):
-	if refs.empty():
-		return
 	var response = []
 	for ref in refs:
 		var target = get_node_and_resource(root_path + ref)
@@ -195,9 +194,6 @@ func apply_updates(list):
 					else:
 						var instance = create_node(update)
 						instance.name = id_or_prop_name
-						if reference.get_parent() != get_node(root_path + parent_path):
-							print("MISMATCH! " + reference.get_path() + " " + root_path + parent_path)
-							print(reference)
 						get_node(root_path + parent_path).add_child_below_node(reference, instance)
 			'update':
 				var path = update[1]
@@ -281,6 +277,7 @@ func deserialize_arg(arg):
 func subscription_for(instance, key):
 	for sub in subscriptions:
 		if sub.instance == instance and sub.key == key:
+			sub.last_value = null
 			return sub
 	var sub = Subscription.new()
 	sub.instance = instance
@@ -318,21 +315,23 @@ func apply_prop(instance, key, value):
 		return
 	
 	if key.begins_with('sqsubcall_'):
-		key = key.substr(10, key.find_last('_') - 10)
-		if not instance.has_method(key):
-			print("No method named " + key + " on " + str(instance))
+		var method = key.substr(10, key.find_last('_') - 10)
+		if not instance.has_method(method):
+			print("No method named " + method + " on " + str(instance))
 			return
 		var s = subscription_for(instance, key)
+		s.method = method
 		s.callback_id = value[0]
 		s.call_arguments = deserialize_args(value[1])
 		return
 	
 	if key.begins_with('sqsubscribe_'):
-		key = key.substr(12)
-		if not key in instance:
-			print("No property named " + key + " on " + str(instance))
+		var property = key.substr(12)
+		if not property in instance:
+			print("No property named " + property + " on " + str(instance))
 			return
 		var s = subscription_for(instance, key)
+		s.method = property
 		s.callback_id = value
 		return
 	
