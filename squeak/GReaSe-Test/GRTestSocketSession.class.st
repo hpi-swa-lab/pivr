@@ -10,3 +10,10 @@ GRTestSocketSession >> handleError: anError [
 
 	anError signal
 ]
+
+{ #category : #'as yet unclassified' }
+GRTestSocketSession >> readRefs [
+	"don't do anything, not relevant to the test and would have to be mocked on binary packet level"
+
+	
+]

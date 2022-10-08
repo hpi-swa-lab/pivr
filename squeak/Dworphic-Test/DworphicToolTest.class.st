@@ -147,7 +147,5 @@ DworphicToolTest >> testRightHandVsLeftHand [
 	
 	self tick: {(self controllerNode: #left) toggleGrip: false}.
 	self should: [godotTree firstNodeOfType: #Active] raise: Error.
-	self
-		assert: leftTransform
-		equals: ((godotTree firstNodeOfType: #Passive) parent parent properties at: #transform)
+	self assert: leftTransform equals: react hostConfig session calls last last
 ]

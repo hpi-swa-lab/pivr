@@ -21,9 +21,9 @@ GRCallbackRegistry >> get: anId [
 
 { #category : #'as yet unclassified' }
 GRCallbackRegistry >> initialize [
-	"WeakValueDictionary"
 
-	callbacks := Dictionary new
+	callbacks := (GRReact useFibers ifTrue: [WeakValueDictionary] ifFalse: ["without fibers, we tend to have some leaks that then lead to crashes"
+	Dictionary]) new
 ]
 
 { #category : #'as yet unclassified' }

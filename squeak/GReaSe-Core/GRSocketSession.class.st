@@ -129,11 +129,9 @@ GRSocketSession >> handleRenderMessage: aMessage [
 	
 	^ [
 		GRDebug reportFrameTime: [
-			self tick: aMessage third updatesDo: [:updates | | refsMessage |
+			self tick: aMessage third updatesDo: [:updates |
 				self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
-				refsMessage := GRSocketListener readMessageFrom: stream.
-				self assert: refsMessage first = GRSocketListener messageTypeRefsFromGodot.
-				self bindRefs: refsMessage third]].
+				self readRefs]].
 		self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
 		true]
 		on: ConnectionClosed, SocketPrimitiveFailed
@@ -180,6 +178,15 @@ GRSocketSession >> reactComponent: aComponentClass [
 			GRReact new
 				session: self;
 				init: aComponentClass new]
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketSession >> readRefs [
+
+	| refsMessage |
+	refsMessage := GRSocketListener readMessageFrom: stream.
+	self assert: refsMessage first = GRSocketListener messageTypeRefsFromGodot.
+	self bindRefs: refsMessage third
 ]
 
 { #category : #communication }

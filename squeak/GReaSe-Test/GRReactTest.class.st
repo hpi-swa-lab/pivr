@@ -83,7 +83,7 @@ GRReactTest >> testDisablesRenderingOnError [
 		(self godot: #Timer) timeout: [state set: [:s | s + 1]]].
 	session := GRTestSocketSession new
 		react: react;
-		socketStream: (WriteStream on: ByteArray new).
+		socketStream: (ReadWriteStream on: ByteArray new).
 	
 	session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}.
 	changeWithError := true.
