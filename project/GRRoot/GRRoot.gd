@@ -30,7 +30,7 @@ class Subscription:
 	var last_value
 	
 	func update():
-		var current_value = instance.callv(method, call_arguments) if call_arguments else instance.get(method)
+		var current_value = instance.callv(method, call_arguments) if call_arguments != null else instance.get(method)
 		if last_value != current_value:
 			last_value = current_value
 			return [callback_id, current_value]
@@ -285,6 +285,15 @@ func subscription_for(instance, key):
 	subscriptions.append(sub)
 	return sub
 
+func delete_subscription_for(instance, key):
+	var index = 0
+	for sub in subscriptions:
+		if sub.instance == instance and sub.key == key:
+			subscriptions.remove(index)
+			return
+		index += 1
+	push_error("Did not find subscription for " + key + " on " + str(instance))
+
 func apply_prop(instance, key, value):
 	if key == 'groups':
 		for group in value:
@@ -315,6 +324,9 @@ func apply_prop(instance, key, value):
 		return
 	
 	if key.begins_with('sqsubcall_'):
+		if not value:
+			delete_subscription_for(instance, key)
+			return
 		var method = key.substr(10, key.find_last('_') - 10)
 		if not instance.has_method(method):
 			print("No method named " + method + " on " + str(instance))
@@ -326,6 +338,9 @@ func apply_prop(instance, key, value):
 		return
 	
 	if key.begins_with('sqsubscribe_'):
+		if not value:
+			delete_subscription_for(instance, key)
+			return
 		var property = key.substr(12)
 		if not property in instance:
 			print("No property named " + property + " on " + str(instance))
@@ -346,14 +361,70 @@ func apply_prop(instance, key, value):
 				var handler_name = 'note_signal' + str(len(s['args']))
 				if not instance.get_signal_connection_list(key).empty():
 					instance.disconnect(key, self, handler_name)
-				instance.connect(key, self, handler_name, [value])
+				if value:
+					instance.connect(key, self, handler_name, [value])
 		return
 	
 	if not key in instance:
 		print("No property named " + key + " on " + str(instance))
 		return
 	
-	instance.set(key, deserialize_arg(value))
+	instance.set(key, get_default_value(instance, key) if value == null else deserialize_arg(value))
+
+# Since we are reusing objects, we need to be able to reset properties.
+# Sadly, the reset functions are only exposed for the Editor in Godot.
+# Below is a best effort at efficiently finding an appropriate default value.
+# Just setting the value to null will most often just reject the assignment.
+var default_values_cache = {}
+func get_default_value(object, property):
+	var cls = object.get_class()
+	var props
+	if not cls in default_values_cache:
+		props = {}
+		default_values_cache[cls] = props
+	else:
+		props = default_values_cache[cls]
+	
+	if property in props:
+		return props[property]
+	else:
+		for desc in object.get_property_list():
+			if desc.name == property:
+				var value = default_for_type(desc['type'])
+				props[property] = value
+				return value
+
+func default_for_type(type):
+	# FIXME some of these require default args
+	match type:
+		TYPE_NIL: return null
+		TYPE_BOOL: return false
+		TYPE_INT: return 0
+		TYPE_REAL: return 0.0
+		TYPE_STRING: return ''
+		TYPE_VECTOR2: return Vector2()
+		TYPE_RECT2: return Rect2()
+		TYPE_VECTOR3: return Vector3()
+		TYPE_TRANSFORM2D: return Transform2D()
+		TYPE_PLANE: return Plane()
+		TYPE_QUAT: return Quat()
+		TYPE_AABB: return AABB()
+		TYPE_BASIS: return Basis()
+		TYPE_TRANSFORM: return Transform()
+		TYPE_COLOR: return Color.black
+		TYPE_NODE_PATH: return null
+		TYPE_RID: return null
+		TYPE_OBJECT: return null
+		TYPE_ARRAY: return []
+		TYPE_RAW_ARRAY: return PoolByteArray()
+		TYPE_INT_ARRAY: return PoolIntArray()
+		TYPE_REAL_ARRAY: return PoolRealArray()
+		TYPE_STRING_ARRAY: return PoolStringArray()
+		TYPE_VECTOR2_ARRAY: return PoolVector2Array()
+		TYPE_VECTOR3_ARRAY: return PoolVector3Array()
+		TYPE_COLOR_ARRAY: return PoolColorArray()
+		_:
+			push_error("Trying to reset unknown type: " + str(type))
 
 # no variadic arguments, so have one signature per needed count of arguments...
 func note_signal0(callback_id):
