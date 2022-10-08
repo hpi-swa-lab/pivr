@@ -278,13 +278,16 @@ WorldDworph >> useVRIfSupported: aBlock otherwise: anotherBlock loading: aThirdB
 		useEffect: [
 			(GDARVRServer instance findInterfaceName: 'OpenXR')
 				ifNotNil: [:openxr | | viewport |
-					openxr initialize ifFalse: [self error: 'failed to initialize openxr'].
-					viewport := (GD_Engine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport.
+					"OpenXR could report invalid interfaces, so as a fallback, we use simulated mode"
+					openxr initialize ifFalse: [
+						supportsVR set: false
+					] ifTrue: [
+						viewport := (GD_Engine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport.
 					GD_OS instance vsyncEnabled: true.
 					GD_Engine instance iterationsPerSecond: 90.
 					viewport hdr: true.
 					viewport arvr: true.
-					supportsVR set: true]
+					supportsVR set: true]]
 				ifNil: [supportsVR set: false]]
 		dependencies: {}.
 	
