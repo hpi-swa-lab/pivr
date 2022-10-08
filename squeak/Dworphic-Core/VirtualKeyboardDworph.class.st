@@ -23,6 +23,17 @@ VirtualKeyboardDworph >> keySize [
 ]
 
 { #category : #'as yet unclassified' }
+VirtualKeyboardDworph >> layout: aBool [
+
+	^ {
+	aBool ifFalse: {'1'. '2'. '3'. '4'. '5'. '6'. '7'. '8'. '9'. '0'} ifTrue: {'!'. '"'. '§'. '$'. '%'. '&'. '/'. '('. ')'. '='}.
+				{'Q'. 'W'. 'E'. 'R'. 'T'. 'Z'. 'U'. 'I'. 'O'. 'P'}.
+				{'A'. 'S'. 'D'. 'F'. 'G'. 'H'. 'J'. 'K'. 'L'}.
+	aBool ifFalse: {'Shift'. 'Y'. 'X'. 'C'. 'V'. 'B'. 'N'. 'M'. 'Comma'. 'Period'. 'Minus'} ifTrue: {'Shift'. 'Y'. 'X'. 'C'. 'V'. 'B'. 'N'. 'M'. 'Semicolon'. 'Colon'. 'Underscore'}.
+				{'Braceleft'. 'Bracketleft'. 'Space'. 'Bracketright'. 'Braceright'. 'Plus'. 'Asterisk'. 'Numbersign'. 'Apostrophe'}}
+]
+
+{ #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> material [
 
 	^ (self godot: #SpatialMaterial) albedo_color: (Color r: 0.37 g: 0.37 b: 0.37)
@@ -106,8 +117,9 @@ VirtualKeyboardDworph >> renderKey: props [
 { #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> renderKeyboard: props [
 
-	| layout readyForNextLetter |
-	layout := {'1234567890'. 'qwertzuiop'. 'asdfghjkl'. 'yxcvbnm'}.
+	| layout readyForNextLetter keyCode inputEvent shiftPressed|
+	shiftPressed := self useState: false.
+	layout := self layout: shiftPressed get.
 	
 	readyForNextLetter := self useState: true.
 	self useTriggerReleasedDo: [readyForNextLetter set: true].
@@ -122,14 +134,25 @@ VirtualKeyboardDworph >> renderKeyboard: props [
 				translation: (layout collect: #size) max - 1 * self keySize / -2 @ (self keySize * -1.5) @ 0;
 				children: (layout withIndexCollect: [:row :rowIndex |
 					row asOrderedCollection withIndexCollect: [:letter :columnIndex |
+						keyCode := GDGlobalConstants perform: (('key{1}' format: {letter}) asSymbol).
 						(self methodAsComponent: #renderKey:)
 							key: letter;
-							letter: letter;
+							letter: (self scancodeName: keyCode);
 							pointer: (props at: #pointer);
 							position: columnIndex - 1 @ (layout size - (rowIndex - 1));
 							onPressed: [
 								readyForNextLetter get ifTrue: [
-									Transcript showln: letter.
+									(keyCode = GDGlobalConstants keyShift) ifTrue:  [
+											shiftPressed set: (shiftPressed not).
+									] ifFalse: [
+										inputEvent := GDInputEventKey new.
+										inputEvent scancode: keyCode.
+										inputEvent pressed: true.
+										inputEvent shift: shiftPressed get.
+									
+										GDInput instance parseInputEvent: inputEvent.
+										shiftPressed set: false.
+										Transcript showln: letter].
 									readyForNextLetter set: false]]]])}
 ]
 
@@ -141,4 +164,27 @@ VirtualKeyboardDworph >> renderPassive: props [
 			size: 0.05 @ 0.07 @ 0.01;
 			material: self material);
 		rotation_degrees: 90 @ 180 @ 0
+]
+
+{ #category : #'as yet unclassified' }
+VirtualKeyboardDworph >> scancodeName: aScancode [
+	"This should work using
+		(GD_OS instance) getScancodeStringCode: (aScancode)
+	but right now it doesn't, so we're doing the conversion manually."
+
+	^ aScancode caseOf: {
+			[GDGlobalConstants keyShift] -> ['Shift'].
+			[GDGlobalConstants keyComma] -> [','].
+			[GDGlobalConstants keyPeriod] -> ['.'].
+			[GDGlobalConstants keyMinus] -> ['-'].
+			[GDGlobalConstants keySemicolon] -> [';'].
+			[GDGlobalConstants keyColon] -> [':'].
+			[GDGlobalConstants keyUnderscore] -> ['_'].
+			[GDGlobalConstants keyBraceleft] -> ['{'].
+			[GDGlobalConstants keyBracketleft] -> ['['].
+			[GDGlobalConstants keySpace] -> [' '].
+			[GDGlobalConstants keyBracketright] -> [']'].
+			[GDGlobalConstants keyBraceright] -> ['}'].
+		} otherwise: [
+			(Character value: aScancode) asString]
 ]
