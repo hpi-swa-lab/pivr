@@ -15,7 +15,7 @@ ControllerToolDworph >> colliderShape: props [
 { #category : #rendering }
 ControllerToolDworph >> render: props [
 
-	| controllerIntersecting enteredSub exitedSub rightHandId leftHandId grabbed onRelease rigidBodyPosInitialized transform grabbedSub transformSub |
+	| controllerIntersecting enteredSub exitedSub rightHandId leftHandId grabbed onRelease transform grabbedSub transformSub rigidBody |
 	onRelease := props at: #onRelease ifAbsent: [nil].
 	
 	grabbed := self useState: 0.
@@ -24,8 +24,7 @@ ControllerToolDworph >> render: props [
 	leftHandId := self useProvided: #handId namespace: #left.
 	rightHandId := self useProvided: #handId namespace: #right.
 	
-	transform := self useState: (props at: #transform ifAbsent: [Matrix4x4 identity]).
-	rigidBodyPosInitialized := self useRef: false.
+	transform := self useRef: (props at: #transform ifAbsent: [Matrix4x4 identity]).
 	
 	enteredSub := self
 		useCallback: [:other |
@@ -38,11 +37,11 @@ ControllerToolDworph >> render: props [
 			(controllerIntersecting get = 2 and: [other = rightHandId get]) ifTrue: [controllerIntersecting set: 0]]
 		dependencies: {}.
 	grabbedSub := self useCallback: [:val | grabbed set: val] dependencies: {}.
-	transformSub := self
-		useCallback: [:val |
-			transform set: val.
-			rigidBodyPosInitialized set: false]
-		dependencies: {}.
+	transformSub := self useCallback: [:val | transform set: val] dependencies: {}.
+	rigidBody := self useRemoteRef.
+	self
+		useEffect: [(grabbed get = 0 and: [onRelease = #drop]) ifTrue: [rigidBody get transform: transform get]]
+		dependencies: {grabbed get. onRelease}.
 	
 	^ {
 		(self methodAsComponent: #renderForHand:) props: props, {
@@ -60,14 +59,11 @@ ControllerToolDworph >> render: props [
 				area_exited: exitedSub;
 				children: {(props at: #passive) value. self colliderShape: props}.
 			onRelease = #drop
-				ifTrue: [ | node |
-					node := (self godot: #RigidBody)
+				ifTrue: [
+					(self godot: #RigidBody)
+						ref: rigidBody;
 						continuous_cd: true;
-						children: {pickableNode. self colliderShape: props}.
-					rigidBodyPosInitialized get ifFalse: [
-						node transform: transform get.
-						rigidBodyPosInitialized set: true].
-					node]
+						children: {pickableNode. self colliderShape: props}]
 				ifFalse: [pickableNode transform: transform get]]}
 ]
 

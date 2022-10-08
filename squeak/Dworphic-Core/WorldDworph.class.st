@@ -14,8 +14,8 @@ WorldDworph >> mouseSensitivity [
 WorldDworph >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
 
 	| camera origin normal spatial |
-	spatial := aPoint get grAsClass: #Spatial.
-	camera := spatial getTree root getCamera.
+	spatial := aRef get grAsClass: #GDSpatial.
+	camera := (spatial getTree root grAsClass: #GDViewport) getCamera.
 	
 	origin := camera projectRayOriginScreenPoint: aPoint.
 	normal := (camera projectRayNormalScreenPoint: aPoint) * 100.
@@ -23,7 +23,7 @@ WorldDworph >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
 		intersectRayFrom: origin
 		to: normal
 		exclude: {}
-		collisionLayer: 2147483647
+		collisionMask: 2147483647
 		collideWithBodies: true
 		collideWithAreas: true) ifNotEmpty: [:res | aBlock value: (res at: #position)]
 ]

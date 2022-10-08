@@ -180,7 +180,7 @@ AirwriteDworph >> renderActive: props [
 					curve: ((self godot: #Curve3D)
 						ref: curveRef;
 						bake_interval: 0.01);
-					key: 'path'.
+					name: 'path'.
 				(self godot: #CSGPolygon)
 					path_node: (GRNodePath path: '../path');
 					polygon: (GRPoolVector2Array new

@@ -169,6 +169,12 @@ GRReactNodeGodot >> meta: aSymbol set: anObject [
 	properties at: 'sqmeta_', aSymbol put: anObject
 ]
 
+{ #category : #'as yet unclassified' }
+GRReactNodeGodot >> name: aString [
+
+	godotId := aString
+]
+
 { #category : #printing }
 GRReactNodeGodot >> printOn: aStream [
 

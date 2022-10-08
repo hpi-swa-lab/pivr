@@ -107,6 +107,7 @@ GDBaseObject >> set: aSymbol to: anObject [
 
 	objectId
 		ifNil: [
+			aSymbol = #name ifTrue: [godotId := anObject].
 			anObject isGodotNode ifTrue: [
 				anObject isResource: true.
 				anObject godotId: aSymbol].
