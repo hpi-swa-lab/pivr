@@ -75,7 +75,7 @@ DworphicToolTest >> testOpenWorld [
 	<timeout: 10>
 
 	| camera |
-	self openComponent: GRExampleVR.
+	self openComponent: WorldDworph.
 	
 	camera := godotTree firstNodeOfType: #ARVRCamera.
 	Transcript showln: 'tick'.

@@ -14,6 +14,12 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GRSocketListener class >> current [
+
+	^ Current
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketListener class >> messageTypeCallFromSqueak [
 
 	^ 2

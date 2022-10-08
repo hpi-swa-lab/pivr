@@ -18,6 +18,12 @@ Class {
 	#category : #'GReaSe-React'
 }
 
+{ #category : #deploy }
+GRReact class >> current [
+
+	^ GRSocketListener current
+]
+
 { #category : #testing }
 GRReact class >> isValidRenderResult: anObject [
 
