@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 TeleportToolDworph >> collisionShape [
 
-	^ (self godot: #BoxShape) extents: 0.02 @ 0.005 @ 0.03
+	^ GDBoxShape new extents: 0.02 @ 0.005 @ 0.03
 ]
 
 { #category : #'as yet unclassified' }
@@ -45,16 +45,16 @@ TeleportToolDworph >> renderActive: props [
 	
 	^ {
 		self renderPassive: props.
-		(self godot: #MeshInstance)
-			mesh: ((self godot: #CubeMesh)
+		GDMeshInstance new
+			mesh: (GDCubeMesh new
 				size: 0.002 @ 0.002 @ 10.0;
 				material: self material);
 			translation: 0 @ 0 @ -5.
 		intersectionPoint ifNotNil: [
 			CMFReactNodePortal
-				child: ((self godot: #MeshInstance)
+				child: (GDMeshInstance new
 					key: #pointer;
-					mesh: ((self godot: #SphereMesh)
+					mesh: (GDSphereMesh new
 						material: self material;
 						radius: 0.02;
 						height: 0.04);
@@ -65,9 +65,9 @@ TeleportToolDworph >> renderActive: props [
 { #category : #'as yet unclassified' }
 TeleportToolDworph >> renderPassive: props [
 
-	^ (self godot: #MeshInstance)
-		mesh: ((self godot: #PrismMesh)
+	^ GDMeshInstance new
+		mesh: (GDPrismMesh new
 			size: 0.05 @ 0.07 @ 0.01;
 			material: self material);
-		rotation_degrees: 90 @ 180 @ 0
+		rotationDegrees: 90 @ 180 @ 0
 ]

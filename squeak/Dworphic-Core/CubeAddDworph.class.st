@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 CubeAddDworph >> collisionShape [
 
-	^ (self godot: #BoxShape) extents: (self size / 2.0) asVector3
+	^ GDBoxShape new extents: (self size / 2.0) asVector3
 ]
 
 { #category : #'as yet unclassified' }
@@ -34,9 +34,9 @@ CubeAddDworph >> renderActive: props [
 { #category : #'as yet unclassified' }
 CubeAddDworph >> renderPassive: props [
 
-	^ (self godot: #MeshInstance) mesh: ((self godot: #CubeMesh)
+	^ GDMeshInstance new mesh: (GDCubeMesh new
 		size: self size asVector3;
-		material: ((self godot: #SpatialMaterial) albedo_color: (Color r: 0.0 g: 1 b: 0.0)))
+		material: (GDSpatialMaterial new albedoColor: (Color r: 0.0 g: 1 b: 0.0)))
 ]
 
 { #category : #'as yet unclassified' }

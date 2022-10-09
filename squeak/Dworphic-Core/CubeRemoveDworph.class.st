@@ -27,9 +27,9 @@ CubeRemoveDworph >> renderActive: props [
 	| triggerStrength cubes |
 	triggerStrength := self useTriggerStrength.
 	cubes := self useProvided: #cubes.
-	^ (self godot: #Area)
-		children: {self renderPassive: props. (self godot: #CollisionShape) shape: self collisionShape};
-		area_entered: [:area | | id |
+	^ GDArea new
+		children: {self renderPassive: props. GDCollisionShape new shape: self collisionShape};
+		onAreaEntered: [:area | | id |
 			id := GRReactCurrentSession value
 				callOn: area
 				method: 'get_meta'
@@ -43,9 +43,9 @@ CubeRemoveDworph >> renderActive: props [
 { #category : #'as yet unclassified' }
 CubeRemoveDworph >> renderPassive: props [
 
-	^ (self godot: #MeshInstance) mesh: ((self godot: #CubeMesh)
+	^ GDMeshInstance new mesh: (GDCubeMesh new
 		size: self size asVector3;
-		material: ((self godot: #SpatialMaterial) albedo_color: (Color r: 1 g: 0.0 b: 0.0)))
+		material: (GDSpatialMaterial new albedoColor: (Color r: 1 g: 0.0 b: 0.0)))
 ]
 
 { #category : #'as yet unclassified' }

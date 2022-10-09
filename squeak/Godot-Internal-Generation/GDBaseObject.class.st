@@ -8,6 +8,23 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GDBaseObject class >> externalNew [
+
+	| wrapper |
+	wrapper := self basicNew.
+	wrapper objectId: (GRReactCurrentSession value createInstanceOf: wrapper godotClass) objectId.
+	^ wrapper
+]
+
+{ #category : #'as yet unclassified' }
+GDBaseObject class >> externalNewDuring: aBlock [
+
+	| instance |
+	instance := self externalNew.
+	^ [aBlock value: instance] ensure: [instance unreference]
+]
+
+{ #category : #'as yet unclassified' }
 GDBaseObject class >> toolIcon [
 
 	^ #godot
@@ -113,4 +130,11 @@ GDBaseObject >> set: aSymbol to: anObject [
 				anObject godotId: aSymbol].
 			properties at: aSymbol put: anObject]
 		ifNotNil: [GRReactCurrentSession value set: aSymbol of: self to: anObject]
+]
+
+{ #category : #'as yet unclassified' }
+GDBaseObject >> unreference [
+	"unreference a godot object created via externalNew"
+
+	GRReactCurrentSession value freeInstance: godotId
 ]

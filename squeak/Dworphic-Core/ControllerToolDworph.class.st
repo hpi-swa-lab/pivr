@@ -15,7 +15,7 @@ ControllerToolDworph >> colliderShape: props [
 { #category : #rendering }
 ControllerToolDworph >> render: props [
 
-	| controllerIntersecting enteredSub exitedSub rightHandId leftHandId grabbed onRelease transform grabbedSub transformSub rigidBody |
+	| controllerIntersecting rightHandId leftHandId grabbed onRelease transform rigidBody |
 	onRelease := props at: #onRelease ifAbsent: [nil].
 	
 	grabbed := self useState: 0.
@@ -26,18 +26,6 @@ ControllerToolDworph >> render: props [
 	
 	transform := self useRef: (props at: #transform ifAbsent: [Matrix4x4 identity]).
 	
-	enteredSub := self
-		useCallback: [:other |
-			other = leftHandId get ifTrue: [controllerIntersecting set: 1].
-			other = rightHandId get ifTrue: [controllerIntersecting set: 2]]
-		dependencies: {}.
-	exitedSub := self
-		useCallback: [:other |
-			(controllerIntersecting get = 1 and: [other = leftHandId get]) ifTrue: [controllerIntersecting set: 0].
-			(controllerIntersecting get = 2 and: [other = rightHandId get]) ifTrue: [controllerIntersecting set: 0]]
-		dependencies: {}.
-	grabbedSub := self useCallback: [:val | grabbed set: val] dependencies: {}.
-	transformSub := self useCallback: [:val | transform set: val] dependencies: {}.
 	rigidBody := self useRemoteRef.
 	self
 		useEffect: [(grabbed get = 0 and: [onRelease = #drop]) ifTrue: [rigidBody get transform: transform get]]
@@ -50,19 +38,23 @@ ControllerToolDworph >> render: props [
 				ifFalse: [#right]).
 			#intersecting -> (controllerIntersecting get ~= 0).
 			#grabbed -> grabbed get.
-			#onGrabbed -> grabbedSub.
-			#onTransform -> transformSub}.
+			#onGrabbed -> [:val | grabbed set: val].
+			#onTransform -> [:val | transform set: val]}.
 		grabbed get = 0 ifTrue: [ | pickableNode |
-			pickableNode := (self godot: #Area)
+			pickableNode := GDArea new
 				meta: #id set: (props at: #id ifAbsent: nil);
-				area_entered: enteredSub;
-				area_exited: exitedSub;
+				onAreaEntered: [:other |
+					other = leftHandId get ifTrue: [controllerIntersecting set: 1].
+					other = rightHandId get ifTrue: [controllerIntersecting set: 2]];
+				onAreaExited: [:other |
+					(controllerIntersecting get = 1 and: [other = leftHandId get]) ifTrue: [controllerIntersecting set: 0].
+					(controllerIntersecting get = 2 and: [other = rightHandId get]) ifTrue: [controllerIntersecting set: 0]];
 				children: {(props at: #passive) value. self colliderShape: props}.
 			onRelease = #drop
 				ifTrue: [
-					(self godot: #RigidBody)
+					GDRigidBody new
 						ref: rigidBody;
-						continuous_cd: true;
+						continuousCd: true;
 						children: {pickableNode. self colliderShape: props}]
 				ifFalse: [pickableNode transform: transform get]]}
 ]

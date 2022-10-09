@@ -12,23 +12,23 @@ ToolBeltDworph >> render: props [
 		comment: ''
 		active: 2
 		do: {[-1 @ 0.5 @ -1]. [self useHeadTransform translation]}.
-	^ (self godot: #MeshInstance)
+	^ GDMeshInstance new
 		translation: head - (0 @ 0.5 @ 0.05);
-		mesh: ((self godot: #CubeMesh) size: 0.2 @ 0.07 @ 0.01);
+		mesh: (GDCubeMesh new size: 0.2 @ 0.07 @ 0.01);
 		children: {
-			(self godot: #Spatial)
-				children: {VirtualKeyboardDworph new};
+			GDSpatial new
+				children: VirtualKeyboardDworph new;
 				translation: -0.08 @ 0.04 @ 0.
-			(self godot: #Spatial)
-				children: {AirwriteDworph new};
+			GDSpatial new
+				children: AirwriteDworph new;
 				translation: -0.04 @ 0.03 @ 0.
-			(self godot: #Spatial)
-				children: {CubeAddDworph new};
+			GDSpatial new
+				children: CubeAddDworph new;
 				translation: 0.0 @ 0.03 @ 0.
-			(self godot: #Spatial)
-				children: {CubeRemoveDworph new};
+			GDSpatial new
+				children: CubeRemoveDworph new;
 				translation: 0.04 @ 0.03 @ 0.
-			(self godot: #Spatial)
-				children: {TeleportToolDworph new};
+			GDSpatial new
+				children: TeleportToolDworph new;
 				translation: 0.08 @ 0.04 @ 0}
 ]

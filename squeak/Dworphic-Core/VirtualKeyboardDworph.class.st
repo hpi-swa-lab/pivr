@@ -117,7 +117,7 @@ VirtualKeyboardDworph >> renderKey: props [
 { #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> renderKeyboard: props [
 
-	| layout readyForNextLetter keyCode inputEvent shiftPressed|
+	| layout readyForNextLetter keyCode shiftPressed |
 	shiftPressed := self useState: false.
 	layout := self layout: shiftPressed get.
 	
@@ -145,12 +145,11 @@ VirtualKeyboardDworph >> renderKeyboard: props [
 									(keyCode = GDGlobalConstants keyShift) ifTrue:  [
 											shiftPressed set: (shiftPressed not).
 									] ifFalse: [
-										inputEvent := GDInputEventKey new.
-										inputEvent scancode: keyCode.
-										inputEvent pressed: true.
-										inputEvent shift: shiftPressed get.
-									
-										GDInput instance parseInputEvent: inputEvent.
+										GDInputEventKey externalNewDuring: [:inputEvent |.
+											inputEvent scancode: keyCode.
+											inputEvent pressed: true.
+											inputEvent shift: shiftPressed get.
+											GDInput instance parseInputEvent: inputEvent].
 										shiftPressed set: false.
 										Transcript showln: letter].
 									readyForNextLetter set: false]]]])}

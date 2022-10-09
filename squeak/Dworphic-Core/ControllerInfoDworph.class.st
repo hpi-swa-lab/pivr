@@ -31,21 +31,21 @@ ControllerInfoDworph >> render: props [
 		state := self useState: 0.0.
 		axis, {state. [:s | state set: s]}].
 	
-	controllerNode := (self godot: #ARVRController)
-		controller_id: ((props at: #left) == true ifTrue: [1] ifFalse: [2]);
+	controllerNode := GDARVRController new
+		controllerId: ((props at: #left) == true ifTrue: [1] ifFalse: [2]);
 		children: {
-			(self godot: #Area)
+			GDArea new
 				children: {
 					(self godot: #CollisionShape) shape: ((self godot: #SphereShape)
 						margin: 0.001;
 						radius: 0.005)};
 				ref: handArea.
-			(self godot: #Spatial) ref: handPortal.
-			(self godot: #MeshInstance) mesh: ((self godot: #SphereMesh)
+			GDSpatial new ref: handPortal.
+			GDMeshInstance new mesh: (GDSphereMesh new
 				radius: 0.005;
 				height: 0.01)};
-		button_pressed: [:button | pressedButtons set: [:b | b copyWith: button]];
-		button_release: [:button | pressedButtons set: [:b | b copyWithout: button]];
+		onButtonPressed: [:button | pressedButtons set: [:b | b copyWith: button]];
+		onButtonRelease: [:button | pressedButtons set: [:b | b copyWithout: button]];
 		subscribeTo: #'global_transform' do: [:t | transform set: t].
 	
 	axes do: [:axis | controllerNode subscribeCall: 'get_joystick_axis' with: {axis first} do: axis fourth].
