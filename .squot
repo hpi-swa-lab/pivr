@@ -7,5 +7,6 @@ OrderedDictionary {
 	'squeak/Godot-Internal-Generation' : #SquotTonelSerializer,
 	'squeak/Dworphic-Core' : #SquotTonelSerializer,
 	'squeak/Dworphic-Test' : #SquotTonelSerializer,
-	'squeak/BaselineOfGReaSe' : #SquotTonelSerializer
+	'squeak/BaselineOfGReaSe' : #SquotTonelSerializer,
+	'squeak/GReaSe-Signals' : #SquotTonelSerializer
 }

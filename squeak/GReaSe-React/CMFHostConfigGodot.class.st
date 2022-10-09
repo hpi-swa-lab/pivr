@@ -136,7 +136,7 @@ CMFHostConfigGodot >> tick: aCollectionOfPendingCallbacks updatesDo: aBlock [
 		ifNotEmpty: [
 			GRReactCurrentSession
 				value: session
-				during: [self updateFrameDo: [aCollectionOfPendingCallbacks do: [:callback | (callbacks get: callback first) valueWithArguments: callback allButFirst]]]]
+				during: [react updateFrameDo: [aCollectionOfPendingCallbacks do: [:callback | (callbacks get: callback first) valueWithArguments: callback allButFirst]]]]
 		ifEmpty: ["if there were no pending callbacks, it's a full update request"
 		react reRenderAll]
 ]
