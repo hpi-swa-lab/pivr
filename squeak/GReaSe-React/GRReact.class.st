@@ -139,7 +139,7 @@ GRReact >> deleteChildrenFrom: aNumber in: aParentNode [
 	^ super deleteChildrenFrom: aNumber in: aParentNode
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
 GRReact >> hostConfig [
 
 	^ self

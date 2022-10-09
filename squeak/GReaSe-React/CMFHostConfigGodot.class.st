@@ -27,6 +27,12 @@ CMFHostConfigGodot >> appendChild: aHostNode in: aParentHostNode [
 	pendingUpdates add: aHostNode
 ]
 
+{ #category : #'as yet unclassified' }
+CMFHostConfigGodot >> callbackFor: aNumber [
+
+	^ callbacks get: aNumber
+]
+
 { #category : #reconciliation }
 CMFHostConfigGodot >> create: aNode [
 
@@ -42,7 +48,14 @@ CMFHostConfigGodot >> diffPropsFrom: anOldNode to: aNewNode [
 			aNewNode props
 				ifNotNil: [:newProps |
 					"which props have a new value or were added?"
-					newProps keysAndValuesDo: [:key :value | (value isGodotNode not and: [((oldProps at: key ifAbsent: nil) grEqual: value) not]) ifTrue: [changes at: key put: value]].
+					newProps keysAndValuesDo: [:key :new | | old |
+						old := oldProps at: key ifAbsent: nil.
+						(new isBlock and: [old isBlock])
+							ifTrue: [old == new ifFalse: [changes at: key put: (GRBlockReplace new id: (callbacks idFor: old) block: new)]]
+							ifFalse: [
+								(new class == GRBlockWithArguments and: [old class == GRBlockWithArguments])
+									ifTrue: [old = new ifFalse: [changes at: key put: (GRBlockReplace new id: (callbacks idFor: old block) block: new block)]]
+									ifFalse: [(new isGodotNode not and: [(old grEqual: new) not]) ifTrue: [changes at: key put: new]]]].
 					"did some properties disappear?"
 					newProps size = oldProps size ifFalse: [oldProps keysDo: [:key | (newProps includesKey: key) ifFalse: [changes at: key put: nil]]]]
 				ifNil: ["all removed"
@@ -101,6 +114,12 @@ CMFHostConfigGodot >> removeChild: aHostNode in: aParentHostNode [
 	pendingUpdates add: {#delete. self fullPathFor: aHostNode. aHostNode fifth}
 ]
 
+{ #category : #'as yet unclassified' }
+CMFHostConfigGodot >> replaceCallback: aNumber with: aClosure [
+
+	^ callbacks replace: aNumber with: aClosure
+]
+
 { #category : #reconciliation }
 CMFHostConfigGodot >> resetAfterCommit [
 
@@ -145,11 +164,12 @@ CMFHostConfigGodot >> tick: aCollectionOfPendingCallbacks updatesDo: aBlock [
 CMFHostConfigGodot >> update: aHostNode new: aNewNode hostUpdate: aHostUpdate [
 
 	aHostUpdate keysAndValuesDo: [:key :value |
-		pendingUpdates add: {
-			#update.
-			aHostNode second, (aHostNode third ifTrue: [':'] ifFalse: ['/']), aHostNode fourth.
-			key.
-			aNewNode serializePropValue: value for: react hostConfig}]
+		aNewNode serializePropValue: value for: react hostConfig do: [:serialized |
+			pendingUpdates add: {
+				#update.
+				aHostNode second, (aHostNode third ifTrue: [':'] ifFalse: ['/']), aHostNode fourth.
+				key.
+				serialized}]]
 ]
 
 { #category : #reconciliation }

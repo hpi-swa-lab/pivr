@@ -196,7 +196,7 @@ GRReactNodeGodot >> propertiesToSetFor: aReact [
 
 	| out |
 	out := properties copyEmpty.
-	properties associationsDo: [:each | each value isGodotNode ifFalse: [out add: each key -> (self serializePropValue: each value for: aReact)]].
+	properties associationsDo: [:each | each value isGodotNode ifFalse: [self serializePropValue: each value for: aReact do: [:serialized | out add: each key -> serialized]]].
 	^ out
 ]
 
@@ -255,7 +255,10 @@ GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObjec
 					self properties keysAndValuesDo: [:key :newValue |
 						(newValue isGodotNode not and: [oldProps notNil and: [((oldProps at: key ifAbsent: nil) grEqual: newValue) not]]) ifTrue: [
 							self assert: renderInfo treeEntry node hasGodotId.
-							react addUpdate: {#update. renderInfo treeEntry godotPath. key. self serializePropValue: newValue for: react}]]]]
+							self
+								serializePropValue: newValue
+								for: react
+								do: [:serialized | react addUpdate: {#update. renderInfo treeEntry godotPath. key. serialized}]]]]]
 		ifFalse: [self render: react properties: self properties renderInfo: renderInfo].
 	children ifNotNil: [react renderNodes: children].
 	ref ifNotNil: [ref value: react elementTree currentParentEntry].
@@ -264,11 +267,12 @@ GRReactNodeGodot >> render: react renderInfo: renderInfo userCodeResult: anObjec
 ]
 
 { #category : #converting }
-GRReactNodeGodot >> serializePropValue: anObject for: aReact [
+GRReactNodeGodot >> serializePropValue: anObject for: aReact do: aBlock [
 
-	anObject isBlock ifTrue: [^ aReact registerCallback: anObject].
-	(anObject isKindOf: GRBlockWithArguments) ifTrue: [^ {aReact registerCallback: anObject block. anObject arguments}].
-	^ anObject
+	anObject isBlock ifTrue: [^ aBlock value: (aReact registerCallback: anObject)].
+	anObject class == GRBlockReplace ifTrue: [^ aReact replaceCallback: anObject id with: anObject block].
+	anObject class == GRBlockWithArguments ifTrue: [^ aBlock value: {aReact registerCallback: anObject block. anObject arguments}].
+	^ aBlock value: anObject
 ]
 
 { #category : #accessing }

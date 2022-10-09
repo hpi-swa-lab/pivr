@@ -20,6 +20,12 @@ GRCallbackRegistry >> get: anId [
 ]
 
 { #category : #'as yet unclassified' }
+GRCallbackRegistry >> idFor: aClosure [
+
+	^ callbacks keyAtValue: aClosure
+]
+
+{ #category : #'as yet unclassified' }
 GRCallbackRegistry >> initialize [
 
 	callbacks := (GRReact useFibers ifTrue: [WeakValueDictionary] ifFalse: ["without fibers, we tend to have some leaks that then lead to crashes"
@@ -34,6 +40,12 @@ GRCallbackRegistry >> registerCallback: aClosure [
 	id := GRReact nextGodotId.
 	callbacks at: id put: aClosure.
 	^ id
+]
+
+{ #category : #'as yet unclassified' }
+GRCallbackRegistry >> replace: anIdNumber with: aBlock [
+
+	callbacks at: anIdNumber put: aBlock
 ]
 
 { #category : #'as yet unclassified' }

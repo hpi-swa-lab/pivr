@@ -240,9 +240,8 @@ WorldDworph >> renderSimulatedHUD: props [
 { #category : #'rendering - vr' }
 WorldDworph >> renderVR: props [
 
-	| headTransform headTransformSubscription worldRef teleport |
+	| headTransform worldRef teleport |
 	headTransform := self useState: Matrix4x4 identity.
-	headTransformSubscription := self useCallback: [:t | headTransform set: t] dependencies: {}.
 	teleport := self useState: Matrix4x4 identity.
 	worldRef := self useRef: nil.
 	
@@ -263,7 +262,7 @@ WorldDworph >> renderVR: props [
 											children: {
 												(self godot: #ARVRCamera)
 													subscribeTo: #'global_transform'
-													do: headTransformSubscription.
+													do: [:t | headTransform set: t].
 												rightControllerNode.
 												leftControllerNode}.
 										(self godot: #Spatial) ref: worldRef}, (props at: #children ifAbsent: [{}])}]}]}

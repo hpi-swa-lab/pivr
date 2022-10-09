@@ -205,7 +205,7 @@ GRMockNode >> path [
 { #category : #printing }
 GRMockNode >> printOn: aStream [
 
-	aStream nextPutAll: self godotClass.
+	aStream nextPutAll: (self godotClass ifNil: ['[root]']).
 	aStream nextPut: $(.
 	aStream nextPutAll: self name asString.
 	aStream nextPut: $)

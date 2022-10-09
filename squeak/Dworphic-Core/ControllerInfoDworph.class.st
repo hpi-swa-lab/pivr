@@ -19,26 +19,17 @@ ControllerInfoDworph class >> triggerAxis [
 { #category : #rendering }
 ControllerInfoDworph >> render: props [
 
-	| handPortal transform transformSub buttonPressed buttonRelase pressedButtons controllerNode axes handArea handIsFree |
+	| handPortal transform pressedButtons controllerNode axes handArea handIsFree |
 	handPortal := self useRef: nil.
 	handArea := self useRemoteRef.
 	
 	handIsFree := self useState: true.
 	transform := self useState: Matrix4x4 identity.
-	transformSub := self useCallback: [:t | transform set: t] dependencies: {}.
-	
-	axes := {{self class triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state subscriber |
-		state := self useState: 0.0.
-		subscriber := self useCallback: [:s | state set: s] dependencies: {}.
-		axis, {state. subscriber}].
-	
 	pressedButtons := self useState: {}.
-	buttonPressed := self
-		useCallback: [:button | pressedButtons set: [:b | b copyWith: button]]
-		dependencies: {}.
-	buttonRelase := self
-		useCallback: [:button | pressedButtons set: [:b | b copyWithout: button]]
-		dependencies: {}.
+	
+	axes := {{self class triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state |
+		state := self useState: 0.0.
+		axis, {state. [:s | state set: s]}].
 	
 	controllerNode := (self godot: #ARVRController)
 		controller_id: ((props at: #left) == true ifTrue: [1] ifFalse: [2]);
@@ -53,9 +44,9 @@ ControllerInfoDworph >> render: props [
 			(self godot: #MeshInstance) mesh: ((self godot: #SphereMesh)
 				radius: 0.005;
 				height: 0.01)};
-		button_pressed: buttonPressed;
-		button_release: buttonRelase;
-		subscribeTo: #'global_transform' do: transformSub.
+		button_pressed: [:button | pressedButtons set: [:b | b copyWith: button]];
+		button_release: [:button | pressedButtons set: [:b | b copyWithout: button]];
+		subscribeTo: #'global_transform' do: [:t | transform set: t].
 	
 	axes do: [:axis | controllerNode subscribeCall: 'get_joystick_axis' with: {axis first} do: axis fourth].
 	

@@ -4,13 +4,13 @@ Class {
 	#category : #'GReaSe-Test'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #failures }
 GRReactTest >> expectedFailures [
 
-	^ #(#testUnregistersCallbacks)
+	^ #(#testDoesNotOverwriteSharedCallback)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testAssignsRefBeforeEffects [
 
 	self openComponentBlock: [ | ref |
@@ -23,7 +23,31 @@ GRReactTest >> testAssignsRefBeforeEffects [
 		(self godot: #Spatial) ref: ref]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
+GRReactTest >> testChangingCallbackDoesNotCauseUpdate [
+
+	| blockId |
+	self openComponent: [(self godot: #Spatial) subscribeTo: #'global_transform' do: [:transform | ]].
+	blockId := (godotTree firstNodeOfType: #Spatial) properties at: 'sqsubscribe_global_transform'.
+	self tick.
+	self
+		assert: blockId
+		equals: ((godotTree firstNodeOfType: #Spatial) properties at: 'sqsubscribe_global_transform')
+]
+
+{ #category : #tests }
+GRReactTest >> testChangingSubCallDoesNotCauseUpdate [
+
+	| blockId |
+	self openComponent: [(self godot: #Spatial) subscribeCall: 'get_joystick_axis' with: {1} do: [#other]].
+	blockId := ((godotTree firstNodeOfType: #Spatial) properties at: 'sqsubcall_get_joystick_axis_0') first.
+	self tick.
+	self
+		assert: blockId
+		equals: ((godotTree firstNodeOfType: #Spatial) properties at: 'sqsubcall_get_joystick_axis_0') first
+]
+
+{ #category : #tests }
 GRReactTest >> testConditionalReplace [
 
 	self openComponentBlock: [:props | | active |
@@ -42,7 +66,7 @@ GRReactTest >> testConditionalReplace [
 	self should: [godotTree firstNodeOfType: #Spatial] raise: Error
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testDeleteInKeyedCollection [
 
 	| data |
@@ -71,7 +95,7 @@ GRReactTest >> testDeleteInKeyedCollection [
 		equals: ((godotTree allNodesOfType: #Child) collect: [:node | node properties at: #id])
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testDisablesRenderingOnError [
 
 	| changeWithError session |
@@ -100,7 +124,31 @@ GRReactTest >> testDisablesRenderingOnError [
 		raise: Error
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
+GRReactTest >> testDoesNotOverwriteSharedCallback [
+
+	| switchOne |
+	switchOne := false.
+	self openComponent: [ | callback |
+		callback := [:transform | #original].
+		{
+			(self godot: #Spatial) subscribeTo: #'global_transform' do: callback.
+			(self godot: #Other)
+				subscribeTo: #'global_transform'
+				do: (switchOne ifTrue: [[:other | #other]] ifFalse: [callback])}].
+	
+	self
+		assert: #original
+		equals: ((react hostConfig callbackFor: ((godotTree firstNodeOfType: #Spatial) properties at: 'sqsubscribe_global_transform')) value: 1).
+	
+	switchOne := true.
+	self tick.
+	self
+		assert: #original
+		equals: ((react hostConfig callbackFor: ((godotTree firstNodeOfType: #Spatial) properties at: 'sqsubscribe_global_transform')) value: 1)
+]
+
+{ #category : #tests }
 GRReactTest >> testInsertInNestedComponent [
 
 	self openComponentBlock: [ | toggle |
@@ -117,7 +165,7 @@ GRReactTest >> testInsertInNestedComponent [
 	self assert: #('a' 'b') equals: ((godotTree allNodesOfType: #Label) collect: [:l | l text])
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testLoopWithKeyedObjects [
 
 	| nestedComponent |
@@ -137,7 +185,7 @@ GRReactTest >> testLoopWithKeyedObjects [
 		equals: (self tick: {(godotTree firstNodeOfType: #MeshInstance) signal: #pressed}) first size
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testNoChangesMadeOnError [
 
 	| changeWithError session |
@@ -156,7 +204,7 @@ GRReactTest >> testNoChangesMadeOnError [
 	react elementTree allEntriesDo: [:entry | (entry node isGodotNode and: [entry node godotClass = #NewNode]) ifTrue: [self assert: false]]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testNoRerenderOnSetInEffect [
 
 	| once |
@@ -174,7 +222,7 @@ GRReactTest >> testNoRerenderOnSetInEffect [
 	self tick
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testOptionalChildNestedInPortal [
 
 	self openComponentBlock: [ | count portal |
@@ -203,7 +251,7 @@ GRReactTest >> testOptionalChildNestedInPortal [
 	self assert: 0 equals: (godotTree firstNodeOfType: #Portal) children size
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testPortal [
 
 	self openComponentBlock: [ | portal |
@@ -212,7 +260,7 @@ GRReactTest >> testPortal [
 	(godotTree firstNodeOfType: #Portal) firstNodeOfType: #Teleported
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testReloadWithHooks [
 
 	| change |
@@ -232,7 +280,7 @@ GRReactTest >> testReloadWithHooks [
 	self assert: 'initial' equals: (godotTree firstNodeOfType: #Label) text
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testReloadWithHooksAndRenderChange [
 
 	| change |
@@ -252,7 +300,7 @@ GRReactTest >> testReloadWithHooksAndRenderChange [
 	self assert: 'initial' equals: (godotTree firstNodeOfType: #Other) text
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testReloadWithHooksChangeType [
 
 	| change |
@@ -271,7 +319,7 @@ GRReactTest >> testReloadWithHooksChangeType [
 	self assert: 'change' equals: (godotTree firstNodeOfType: #Label) text
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testSetStateInUseEffect [
 
 	| runs |
@@ -287,7 +335,7 @@ GRReactTest >> testSetStateInUseEffect [
 	self assert: #(#effect) equals: runs asArray
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testSetStateInUseEffectFromSetState [
 
 	| runs |
@@ -310,7 +358,7 @@ GRReactTest >> testSetStateInUseEffectFromSetState [
 	self assert: #(#effect #cleanup #effect) equals: runs asArray
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testSetStateInUseEffectWithDep [
 
 	| runs |
@@ -326,20 +374,23 @@ GRReactTest >> testSetStateInUseEffectWithDep [
 	self assert: #(#effect #cleanup #effect) equals: runs asArray
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testUnregistersCallbacks [
 
-	self openComponentBlock: [(self godot: #Button) pressed: []].
-	self assert: 1 equals: (react instVarNamed: #callbacks) size.
+	| gone |
+	gone := false.
+	self openComponentBlock: [gone ifTrue: [nil] ifFalse: [(self godot: #Button) pressed: []]].
+	self assert: 1 equals: (react hostConfig instVarNamed: #callbacks) size.
 	self tick.
+	gone := true.
 	self tick.
 	self tick.
 	Smalltalk garbageCollectMost.
-	(react instVarNamed: #callbacks) clean.
-	self assert: 2 equals: (react instVarNamed: #callbacks) size
+	(react hostConfig instVarNamed: #callbacks) clean.
+	self assert: 0 equals: (react hostConfig instVarNamed: #callbacks) size
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testUseEffectNoDependencies [
 
 	| runs |
@@ -353,7 +404,7 @@ GRReactTest >> testUseEffectNoDependencies [
 	self assert: #(#effect) equals: runs asArray
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 GRReactTest >> testUseProvided [
 
 	self openComponentBlock: [
