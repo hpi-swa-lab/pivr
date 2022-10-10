@@ -6,17 +6,10 @@ A prototypical programming environment using Godot's Virtual Reality and the Squ
 * Install the dependencies:
 ```smalltalk
 Metacello new
-	baseline: 'SBTreeSitter';
-	onConflict: [:ex | ex allow]; repository: 'github://hpi-swa-lab/sb-tree-sitter:master/packages';
-	load.
-Metacello new
-	baseline: 'CmfcmfReact';
-	repository: 'github://tom95/ReactS:alternative-renderers/packages';
-	load: #default.
-Metacello new
-	baseline: '3DTransform';
-	repository: 'github://hpi-swa-lab/squeak-graphics-opengl:main/3DTransform/src/';
-	load.
+	baseline: 'GReaSe';
+	onConflict: [:ex | ex allow];
+	repository: 'github://hpi-swa-lab/pivr:master/squeak';
+	get; load.
 ```
 * Clone this repo and add it via the GitBrowser, checkout the most recent commit
 * In Squeak, run in a workspace:
