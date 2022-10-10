@@ -96,6 +96,12 @@ GDBaseObject >> hash [
 ]
 
 { #category : #'as yet unclassified' }
+GDBaseObject >> isGodotNode [
+
+	^ objectId isNil
+]
+
+{ #category : #'as yet unclassified' }
 GDBaseObject >> objectId [
 
 	^ objectId
