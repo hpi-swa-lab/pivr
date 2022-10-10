@@ -28,7 +28,7 @@ GRCallbackRegistry >> idFor: aClosure [
 { #category : #'as yet unclassified' }
 GRCallbackRegistry >> initialize [
 
-	callbacks := (GRReact useFibers ifTrue: [WeakValueDictionary] ifFalse: ["without fibers, we tend to have some leaks that then lead to crashes"
+	callbacks := (GRReact useFibers ifTrue: [GRWeakIdentityValueDictionary] ifFalse: ["without fibers, we tend to have some leaks that then lead to crashes"
 	Dictionary]) new
 ]
 
