@@ -13,6 +13,12 @@ Avatar >> controllerIdForSide: side [
 ]
 
 { #category : #'as yet unclassified' }
+Avatar >> grabButton [
+
+	^ 2
+]
+
+{ #category : #'as yet unclassified' }
 Avatar >> mirrorFactorForSide: side [
 
 	^ side caseOf: {
@@ -26,51 +32,66 @@ Avatar >> render: props [
 	| avatarRoot |
 	avatarRoot := self useRemoteRef.
 	
-	self useEffect: [ | viewport session |
-		session := GRReactCurrentSession value.
-		(session callOn: 'ARVRServer' method: 'find_interface' arguments: {'OpenXR'})
+	self useEffect: [
+		(GDARVRServer instance findInterfaceName: 'OpenXR')
 			ifNil: [self error: 'Did not find OpenXR interface']
-			ifNotNil: [:openxr |
-				session callOn: openxr method: 'initialize'.
-				viewport := session callOn: avatarRoot get method: 'get_viewport'.
-				session set: 'iterations_per_second' of: 'Engine' to: 90.
-				session set: 'hdr' of: viewport to: false.
-				session set: 'vsync_enabled' of: 'OS' to: true.
-				session set: 'arvr' of: viewport to: true].
+			ifNotNil: [:openxr | | viewport |
+				 openxr initialize.
+				viewport := avatarRoot get getViewport.
+				GD_Engine instance iterationsPerSecond: 90.
+				viewport hdr: true.
+				GD_OS instance vsyncEnabled: true.
+				viewport arvr: true.].
 		nil].
-	
-	^ (self godot: #ARVROrigin)
+
+	^ GDARVROrigin new
 		ref: avatarRoot;
 		children: {
-			self godot: #ARVRCamera.
-			(self methodAsComponent: #renderHand:) side: #left.
-			(self methodAsComponent: #renderHand:) side: #right}
+			GDARVRCamera new.
+			(self methodAsComponent: #renderHand:)
+				side: #left.
+			(self methodAsComponent: #renderHand:)
+				side: #right}
 ]
 
 { #category : #'as yet unclassified' }
 Avatar >> renderHand: props [
 
-	| handMesh mirrorFactor |
-	handMesh := self useMemo: [
-		GRReactCurrentSession value
-			callOn: 'ResourceLoader'
-			method: 'load'
-			arguments: {'res://assets/models/hand/hand.tres'}]
+	| handMesh areaRef addHandArea removeHandArea getGrabReleaseCallbacks |
+	handMesh := self useMemo: [GD_ResourceLoader instance loadPath: 'res://assets/models/hand/hand.tres']
 		dependencies: #().
 	
-	mirrorFactor := self mirrorFactorForSide: (props at: #side).
+	areaRef := self useRemoteRef.
+	addHandArea := self useProvided: #addHandArea.
+	removeHandArea := self useProvided: #removeHandArea.
+	getGrabReleaseCallbacks := self useProvided: #getGrabReleaseCallbacks.
+	
+	self useEffect: [
+		addHandArea value: areaRef get.
+		[removeHandArea value: areaRef get]] dependencies: #().
 
-	^ (self godot: #ARVRController)
-		controller_id: (self controllerIdForSide: (props at: #side));
+	^ GDARVRController new
+		"This initial translation prevents the hand area overlapping with other areas before its translation is synchronized with VR"
+		translation: (Vector3 value: 99999);
+		controllerId: (self controllerIdForSide: (props at: #side));
+		onButtonPressed: [:button | button = self grabButton ifTrue: [
+				Transcript showln: getGrabReleaseCallbacks value.
+				getGrabReleaseCallbacks value do: [:callbacks |
+					(callbacks at: #onGrab) ifNotNil: [:block | block value: nil]]]];
+		onButtonRelease: [:button | button = self grabButton ifTrue: [
+				getGrabReleaseCallbacks value do: [:callbacks |
+					(callbacks at: #onRelease) ifNotNil: [:block | block value: nil]]]];
 		children: {
-			(self godot: #MeshInstance)
+			GDMeshInstance new
 				mesh: handMesh;
-				scale: (mirrorFactor @ 1 @ 1) * 0.25;
+				scale: ((self mirrorFactorForSide: (props at: #side)) @ 1 @ 1) * 0.25;
 				translation: 0 @ -0.07 @ 0.1;
 				rotation: -1.6 @ 0 @ 0.
-			(self godot: #Area)
+			GDArea new
+				ref: areaRef;
 				children: {
-					(self godot: #CollisionShape)
-						shape: ((self godot: #SphereShape)
-							radius: 0.1)}}
+					GDCollisionShape new
+						shape: (GDSphereShape new
+							radius: 0.05);
+						translation: 0 @ -0.07 @ 0.05}}
 ]

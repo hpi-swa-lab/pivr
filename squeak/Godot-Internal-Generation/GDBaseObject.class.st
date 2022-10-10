@@ -34,7 +34,7 @@ GDBaseObject class >> toolIcon [
 GDBaseObject >> = anObject [
 
 	objectId ifNil: [^ super = anObject].
-	^ self class = anObject class and: [anObject objectId = self objectId]
+	^ (anObject respondsTo: #objectId) and: [anObject objectId = self objectId]
 ]
 
 { #category : #'as yet unclassified' }
