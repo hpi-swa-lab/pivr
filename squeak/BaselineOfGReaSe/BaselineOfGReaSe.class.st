@@ -37,3 +37,9 @@ BaselineOfGReaSe >> postLoadGenerator [
 
 	GDApiObjectsGenerator generate
 ]
+
+{ #category : #'as yet unclassified' }
+BaselineOfGReaSe >> projectClass [
+
+	^ Smalltalk at: #MetacelloCypressBaselineProject ifAbsent: [super projectClass]
+]
