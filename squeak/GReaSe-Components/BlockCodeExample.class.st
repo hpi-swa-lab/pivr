@@ -33,32 +33,18 @@ BlockCodeExample >> interactionComponent [
 { #category : #'as yet unclassified' }
 BlockCodeExample >> render: props [
 
-	| handAreas grabReleaseCallbacks |
 	self useCenterOnScreen: 1.
-	handAreas := self useState: OrderedCollection new.
-	grabReleaseCallbacks := self useState: OrderedCollection new.
 
-	^ (GRProvider
-		values: {
-			#addHandArea -> [:area | Transcript showln: 'add'.handAreas set: (handAreas get copyWith: area)].
-			#removeHandArea -> [:area | Transcript showln: 'remove'.handAreas set: (handAreas get copyWithout: area)].
-			#getHandAreas -> [handAreas get].
-			#addGrabReleaseCallbacks -> [:callbacks |
-				grabReleaseCallbacks set: (grabReleaseCallbacks get copyWith: callbacks)].
-			#removeGrabReleaseCallbacks -> [:callbacks|
-				grabReleaseCallbacks set: (grabReleaseCallbacks get copyWithout: callbacks)].
-			#getGrabReleaseCallbacks -> [grabReleaseCallbacks get]}
-		children: {(self godot: #Spatial)
-			children: {
-				BlockCodeEditor new
-					translation: self editorTranslation;
-					structure: (self class exampleStructure);
-					layoutParams: (CodeBlockLayoutParamters new
-						blockDepth: 0.01;
-						morphicScale: 0.003).
-				self interactionComponent.
-				GrabbableCube new.
-			}})
+	^ GRAlternativeWorld new
+		children: {
+			BlockCodeEditor new
+				translation: self editorTranslation;
+				structure: (self class exampleStructure);
+				layoutParams: (CodeBlockLayoutParamters new
+					blockDepth: 0.01;
+					morphicScale: 0.003).
+			self interactionComponent.
+			GrabbableCube new}
 ]
 
 { #category : #'as yet unclassified' }

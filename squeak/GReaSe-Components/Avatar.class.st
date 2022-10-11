@@ -57,30 +57,51 @@ Avatar >> render: props [
 { #category : #'as yet unclassified' }
 Avatar >> renderHand: props [
 
-	| handMesh areaRef addHandArea removeHandArea getGrabReleaseCallbacks |
+	| handMesh areaRef addHandAreaHandlers removeHandAreaHandlers controllerRef createInteractiveEvent activeEventHandlers |
 	handMesh := self useMemo: [GD_ResourceLoader instance loadPath: 'res://assets/models/hand/hand.tres']
 		dependencies: #().
 	
+	controllerRef := self useRemoteRef.
 	areaRef := self useRemoteRef.
-	addHandArea := self useProvided: #addHandArea.
-	removeHandArea := self useProvided: #removeHandArea.
-	getGrabReleaseCallbacks := self useProvided: #getGrabReleaseCallbacks.
+	
+	activeEventHandlers := self useState: OrderedCollection new.
+	
+	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
+	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
+	
+	createInteractiveEvent := [
+		GRInteractiveAreaEvent new
+			controllerRef: controllerRef;
+			side: (props at: #side)].
 	
 	self useEffect: [
-		addHandArea value: areaRef get.
-		[removeHandArea value: areaRef get]] dependencies: #().
+		addHandAreaHandlers
+			value: areaRef get
+			value: (Dictionary withAll: {
+				#onAreaEntered -> [:eventHandlers |
+					Transcript showln: 'interactable entered hand'.
+					eventHandlers at: #onHover ifPresent: [:block | block cull: createInteractiveEvent value].
+					activeEventHandlers set: (activeEventHandlers get copyWith: eventHandlers)].
+				#onAreaExited -> [:eventHandlers |
+					Transcript showln: 'interactable exited hand'.
+					eventHandlers at: #onBlur ifPresent: [:block | block cull: createInteractiveEvent value].
+					activeEventHandlers set: (activeEventHandlers get copyWithout: eventHandlers)]}).
+		[removeHandAreaHandlers value: areaRef get]]
+		dependencies: #().
 
 	^ GDARVRController new
+		ref: controllerRef;
 		"This initial translation prevents the hand area overlapping with other areas before its translation is synchronized with VR"
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: [:button | button = self grabButton ifTrue: [
-				Transcript showln: getGrabReleaseCallbacks value.
-				getGrabReleaseCallbacks value do: [:callbacks |
-					(callbacks at: #onGrab) ifNotNil: [:block | block value: nil]]]];
+				Transcript showln: 'hand grabbed'.
+				activeEventHandlers get do: [:handlers |
+					handlers at: #onGrab ifPresent: [:block | block cull: createInteractiveEvent value]]]];
 		onButtonRelease: [:button | button = self grabButton ifTrue: [
-				getGrabReleaseCallbacks value do: [:callbacks |
-					(callbacks at: #onRelease) ifNotNil: [:block | block value: nil]]]];
+				Transcript showln: 'hand let go'.
+				activeEventHandlers get do: [:handlers |
+					handlers at: #onRelease ifPresent: [:block | block cull: createInteractiveEvent value]]]];
 		children: {
 			GDMeshInstance new
 				mesh: handMesh;
