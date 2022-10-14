@@ -292,7 +292,7 @@ GRSocketListener >> initialize [
 GRSocketListener >> spawnListener [
 
 	listener := Socket newTCP.
-	listener listenOn: 8292 backlogSize: 15.
+	listener listenOn: GRReact port backlogSize: 15.
 	listener isWaitingForConnection ifFalse: [^ self error: 'Failed to connect'].
 	
 	SystemChangeNotifier uniqueInstance

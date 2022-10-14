@@ -14,7 +14,7 @@ GRComponent class >> inGodot [
 { #category : #deploy }
 GRComponent class >> start [
 
-	self startWithArguments: #()
+	self startWithArguments: {GRReact port asString}
 ]
 
 { #category : #deploy }

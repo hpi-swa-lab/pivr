@@ -13,6 +13,7 @@ Class {
 	#classVars : [
 		'CurrentGodotId',
 		'GodotPath',
+		'Port',
 		'RunningGodotProcess'
 	],
 	#category : #'GReaSe-React'
@@ -51,6 +52,18 @@ GRReact class >> pivrPath [
 ]
 
 { #category : #deploy }
+GRReact class >> port [
+
+	^ Port ifNil: [8292]
+]
+
+{ #category : #deploy }
+GRReact class >> port: aNumber [
+
+	Port := aNumber
+]
+
+{ #category : #deploy }
 GRReact class >> questRestartApp [
 
 	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
@@ -59,10 +72,16 @@ GRReact class >> questRestartApp [
 		shell waitForCommand: 'adb shell am start -n org.godotengine.vrandsqueaktest/com.godot.game.GodotApp']
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #utils }
 GRReact class >> resetGodotId [
 
 	CurrentGodotId := 0
+]
+
+{ #category : #deploy }
+GRReact class >> resetPort [
+
+	Port := nil
 ]
 
 { #category : #deploy }
