@@ -43,11 +43,17 @@ var subscriptions = []
 var session_id: int
 var quit = false
 
+func port():
+	if OS.get_cmdline_args().size() < 1:
+		return 8292
+	else:
+		return int(OS.get_cmdline_args()[0])
+
 func ip():
-	if OS.get_cmdline_args().empty():
+	if OS.get_cmdline_args().size() < 2:
 		return '127.0.0.1'
 	else:
-		return OS.get_cmdline_args()[0]
+		return OS.get_cmdline_args()[1]
 
 func debug_print_bytes(obj):
 	var squeak_bytes = '#['
@@ -61,7 +67,7 @@ func _ready():
 	
 	tcp = StreamPeerTCP.new()
 	print("Connecting to " + ip() + " ...")
-	var error = tcp.connect_to_host(ip(), 8292)
+	var error = tcp.connect_to_host(ip(), port())
 	if error != OK:
 		print("Failed to connect: " + str(error))
 		quit = true
