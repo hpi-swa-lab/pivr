@@ -72,7 +72,7 @@ GRReact class >> startGodotWithArguments: aStringCollection [
 		RunningGodotProcess ifNotNil: [
 			RunningGodotProcess class caseOf: {
 				[ExternalUnixOSProcess] -> [RunningGodotProcess terminate].
-				[ExternalWindowsOSProcess] -> [RunningGodotProcess threads do: [:thread | thread terminate]]}].
+				[ExternalWindowsOSProcess] -> [OSProcess command: ('taskkill.exe /PID {1} /f' format: {RunningGodotProcess pid})]}].
 		GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
 		RunningGodotProcess := shell isWindows
 			ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {
@@ -92,7 +92,10 @@ GRReact class >> startGodotWithArguments: aStringCollection [
 GRReact class >> stopAll [
 
 	GRSocketListener stopAll.
-	RunningGodotProcess ifNotNil: #terminate
+	RunningGodotProcess ifNotNil: [
+		RunningGodotProcess class caseOf: {
+			[ExternalUnixOSProcess] -> [RunningGodotProcess terminate].
+			[ExternalWindowsOSProcess] -> [OSProcess command: ('taskkill.exe /PID {1} /f' format: {RunningGodotProcess pid})]}]
 ]
 
 { #category : #testing }
