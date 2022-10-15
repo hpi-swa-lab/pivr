@@ -443,3 +443,9 @@ func note_signal3(arg1, arg2, arg3, callback_id):
 	pending_signal_handlers.append([callback_id, arg1, arg2, arg3])
 func note_signal4(arg1, arg2, arg3, arg4, callback_id):
 	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4])
+func note_signal5(arg1, arg2, arg3, arg4, callback_id):
+	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4, arg5])
+func note_signal6(arg1, arg2, arg3, arg4, callback_id):
+	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4, arg5, arg6])
+func note_signal7(arg1, arg2, arg3, arg4, callback_id):
+	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4, arg5, arg6, arg7])
