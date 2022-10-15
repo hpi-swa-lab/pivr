@@ -50,6 +50,6 @@ OrbitCameraDworph >> render: props [
 						around: 1 @ 0 @ 0]]];
 		onButton: [:pressed :button :position | isMouseLocked set: pressed];
 		onKeyboard: [:pressed :scanCode :key |
-			key asCharacter = $w ifTrue: [moving set: (pressed ifTrue: [1] ifFalse: [0])].
-			key asCharacter = $s ifTrue: [moving set: (pressed ifTrue: [-1] ifFalse: [0])]]
+			scanCode = GDGlobalConstants keyW ifTrue: [moving set: (pressed ifTrue: [1] ifFalse: [0])].
+			scanCode = GDGlobalConstants keyS ifTrue: [moving set: (pressed ifTrue: [-1] ifFalse: [0])]]
 ]
