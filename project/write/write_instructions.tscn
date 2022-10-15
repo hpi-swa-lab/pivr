@@ -1,9 +1,0 @@
-[gd_scene load_steps=2 format=2]
-
-[ext_resource path="res://write/letters.svg" type="Texture" id=1]
-
-[node name="instructions" type="Sprite3D"]
-transform = Transform( 3.26736, 0, 0, 0, 3.26736, 0, 0, 0, 3.26736, 0.21205, 1, -2.27205 )
-pixel_size = 0.001
-texture = ExtResource( 1 )
-region_rect = Rect2( 0, 0, 304, 433 )

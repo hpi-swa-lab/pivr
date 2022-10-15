@@ -2,5 +2,5 @@
 
 [ext_resource path="res://GRRoot/GRRoot.gd" type="Script" id=1]
 
-[node name="DworphicWorld" type="Node"]
+[node name="GRRoot" type="Node"]
 script = ExtResource( 1 )

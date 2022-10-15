@@ -1,6 +1,6 @@
 extends Node
 
-const root_path = '/root/DworphicWorld/'
+const root_path = '/root/GRRoot/'
 
 var resource_cache = {}
 
