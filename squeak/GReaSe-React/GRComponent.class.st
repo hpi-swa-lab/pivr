@@ -5,29 +5,29 @@ Class {
 }
 
 { #category : #deploy }
-GRComponent class >> inGodot [
-	"replaces the current listener and opens a new one, serving this component class as the root"
-
-	^ GRSocketListener start: self
-]
-
-{ #category : #deploy }
 GRComponent class >> start [
 
 	self startWithArguments: {GRReact port asString}
 ]
 
 { #category : #deploy }
+GRComponent class >> startListener [
+	"replaces the current listener and opens a new one, serving this component class as the root"
+
+	^ GRSocketListener start: self
+]
+
+{ #category : #deploy }
 GRComponent class >> startQuest [
 
-	self inGodot.
+	self startListener.
 	GRReact questRestartApp
 ]
 
 { #category : #deploy }
 GRComponent class >> startWithArguments: aStringCollection [
 
-	self inGodot.
+	self startListener.
 	GRReact startGodotWithArguments: aStringCollection
 ]
 
