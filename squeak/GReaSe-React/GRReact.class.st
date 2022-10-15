@@ -49,6 +49,7 @@ GRReact class >> pivrPath [
 				gitRepository := each repository git.
 				each repository remoteNames anySatisfy: [:remote | (gitRepository remoteUrl: remote) includesSubstring: 'pivr']]]
 		ifFound: [:project | project repository git workingDir]
+		ifNone: [self error: 'PiVR repo missing?']
 ]
 
 { #category : #deploy }
