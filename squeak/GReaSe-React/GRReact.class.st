@@ -108,29 +108,31 @@ GRReact class >> resetPort [
 { #category : #deploy }
 GRReact class >> startGodotWithArguments: aStringCollection [
 
-	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
-		RunningGodotProcess ifNotNil: [
-			RunningGodotProcess class caseOf: {
-				[ExternalUnixOSProcess] -> [RunningGodotProcess terminate].
-				[ExternalWindowsOSProcess] -> [OSProcess command: ('taskkill.exe /PID {1} /f' format: {RunningGodotProcess pid})]}].
-		GodotPath ifNil: [
-			GodotPath := (FileDirectory default / '..' / '..' / '..' / 'godot' / (Smalltalk windowSystemName caseOf: {
-				['Windows'] -> ['Godot_v3.5.1-stable_win64.exe'].
-				['Win32'] -> ['Godot_v3.5.1-stable_win64.exe'].
-				['Aqua'] -> ['Godot.app'].
-				['X11'] -> ['Godot_v3.5.1-stable_x11.64']})) fullName].
-		(GodotPath isEmptyOrNil not and: [(shell isWindows and: [GodotPath first = $/]) or: [shell isWindows not and: [GodotPath first ~= $/]]]) ifTrue: [GodotPath := nil].
-		(GodotPath isEmptyOrNil not and: (FileDirectory on: GodotPath) exists) ifFalse: [GodotPath := nil].
-		GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
-		RunningGodotProcess := shell isWindows
-			ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {GodotPath. (self pivrPath / 'project') asString. aStringCollection joinSeparatedBy: ' '})]
-			ifFalse: [
-				ExternalUnixOSProcess
-					forkAndExec: GodotPath
-					arguments: aStringCollection
-					environment: nil
-					descriptors: nil
-					workingDir: (self pivrPath / 'project') asString]]
+	(Smalltalk classNamed: #OSProcess)
+		ifNotNil: [:shell |
+			RunningGodotProcess ifNotNil: [
+				RunningGodotProcess class caseOf: {
+					[ExternalUnixOSProcess] -> [RunningGodotProcess terminate].
+					[ExternalWindowsOSProcess] -> [OSProcess command: ('taskkill.exe /PID {1} /f' format: {RunningGodotProcess pid})]}].
+			GodotPath ifNil: [
+				GodotPath := (FileDirectory default / '..' / '..' / '..' / 'godot' / (Smalltalk windowSystemName caseOf: {
+					['Windows'] -> ['Godot_v3.5.1-stable_win64.exe'].
+					['Win32'] -> ['Godot_v3.5.1-stable_win64.exe'].
+					['Aqua'] -> ['Godot.app'].
+					['X11'] -> ['Godot_v3.5.1-stable_x11.64']})) fullName].
+			(GodotPath isEmptyOrNil not and: [(shell isWindows and: [GodotPath first = $/]) or: [shell isWindows not and: [GodotPath first ~= $/]]]) ifTrue: [GodotPath := nil].
+			(GodotPath isEmptyOrNil not and: [(FileDirectory forFileName: GodotPath) exists]) ifFalse: [GodotPath := nil].
+			GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
+			RunningGodotProcess := shell isWindows
+				ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {GodotPath. (self pivrPath / 'project') asString. aStringCollection joinSeparatedBy: ' '})]
+				ifFalse: [
+					ExternalUnixOSProcess
+						forkAndExec: GodotPath
+						arguments: aStringCollection
+						environment: nil
+						descriptors: nil
+						workingDir: (self pivrPath / 'project') asString]]
+		ifNil: [self error: 'starting godot requires OSProcess to be installed (or you can launch it externally)']
 ]
 
 { #category : #deploy }

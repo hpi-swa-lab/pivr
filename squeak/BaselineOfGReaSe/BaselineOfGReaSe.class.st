@@ -22,8 +22,11 @@ BaselineOfGReaSe >> baseline: spec [
 				loads: #('Core')].
 		spec
 			package: 'GReaSe-React' with: [spec requires: #('CmfcmfReact')];
-			package: 'GReaSe-Core' with: [spec requires: #('GReaSe-React' '3DTransform')];
-			package: 'Godot-Internal-Generation' with: [spec requires: #('GReaSe-Core'); postLoadDoIt: #postLoadGenerator];
+			package: 'GReaSe-Core' with: [spec requires: #('GReaSe-React' '3DTransform' 'OSProcess')];
+			package: 'Godot-Internal-Generation' with: [
+				spec
+					requires: #('GReaSe-Core');
+					postLoadDoIt: #postLoadGenerator];
 			package: 'GReaSe-Components' with: [spec requires: #('GReaSe-Core' 'Godot-Internal-Generation')];
 			package: 'GReaSe-Test' with: [spec requires: #('GReaSe-Core')];
 			package: 'Dworphic-Core' with: [spec requires: #('GReaSe-Core' 'Godot-Internal-Generation')];
