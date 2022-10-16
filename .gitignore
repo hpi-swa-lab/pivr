@@ -11,3 +11,8 @@ export_presets.cfg
 data_*/
 
 addons/squeak
+
+*.blend1
+*.blend2
+
+build
