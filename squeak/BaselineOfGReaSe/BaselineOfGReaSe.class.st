@@ -14,12 +14,7 @@ BaselineOfGReaSe >> baseline: spec [
 		spec
 			baseline: '3DTransform'
 			with: [spec repository: 'github://hpi-swa-lab/squeak-graphics-opengl:main/3DTransform/src/'].
-		spec project: 'OSProcess' with: [
-			spec
-				className: 'ConfigurationOfOSProcess';
-				repository: 'http://www.squeaksource.com/MetacelloRepository';
-				versionString: #stable;
-				loads: #('Core')].
+		spec project: 'OSProcess' with: [spec repository: 'http://www.squeaksource.com/OSProcess'].
 		spec
 			package: 'GReaSe-React' with: [spec requires: #('CmfcmfReact')];
 			package: 'GReaSe-Core' with: [spec requires: #('GReaSe-React' '3DTransform' 'OSProcess')];

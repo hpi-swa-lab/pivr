@@ -156,7 +156,7 @@ GRReact class >> update [
 		load.
 	
 	Metacello new
-		baseline: 'CMFReact';
+		baseline: 'CmfcmfReact';
 		onConflict: [:ex | ex allow];
 		repository: 'github://cmfcmf/ReactS:main/packages';
 		get;
