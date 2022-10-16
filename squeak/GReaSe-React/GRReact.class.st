@@ -25,6 +25,21 @@ GRReact class >> current [
 	^ GRSocketListener current
 ]
 
+{ #category : #setup }
+GRReact class >> findRepos [
+
+	| base |
+	base := FileDirectory default / '..' / '..' / '..'.
+	{'pivr'. 'pivr-tools'} do: [:name | | folder workingCopy |
+		folder := base / name.
+		workingCopy := SquotWorkingCopy newOnObjectMemory
+			name: name;
+			repository: (SquitRepository new initializeInDirectory: (FileSystem disk root resolve: folder fullName));
+			yourself.
+		workingCopy repository unitOfWork activateDuring: [workingCopy loadedHistorian: workingCopy repository headHistorian].
+		workingCopy register]
+]
+
 { #category : #testing }
 GRReact class >> isValidRenderResult: anObject [
 
@@ -40,15 +55,20 @@ GRReact class >> nextGodotId [
 	^ CurrentGodotId
 ]
 
-{ #category : #deploy }
+{ #category : #setup }
 GRReact class >> pivrPath [
+
+	^ self pivrRepo repository git workingDir
+]
+
+{ #category : #setup }
+GRReact class >> pivrRepo [
 
 	^ SquotWorkingCopy registered
 		detect: [:each | | gitRepository |
 			(each repository respondsTo: #git) and: [
 				gitRepository := each repository git.
 				each repository remoteNames anySatisfy: [:remote | (gitRepository remoteUrl: remote) includesSubstring: 'pivr']]]
-		ifFound: [:project | project repository git workingDir]
 		ifNone: [self error: 'PiVR repo missing?']
 ]
 
@@ -123,7 +143,7 @@ GRReact class >> stopAll [
 			[ExternalWindowsOSProcess] -> [OSProcess command: ('taskkill.exe /PID {1} /f' format: {RunningGodotProcess pid})]}]
 ]
 
-{ #category : #utils }
+{ #category : #setup }
 GRReact class >> update [
 
 	Metacello new
@@ -134,11 +154,13 @@ GRReact class >> update [
 		load.
 	
 	Metacello new
-		baseline: 'GReaSe';
+		baseline: 'CMFReact';
 		onConflict: [:ex | ex allow];
-		repository: 'github://hpi-swa-lab/pivr:master/squeak';
+		repository: 'github://cmfcmf/ReactS:main/packages';
 		get;
-		load
+		load.
+	
+	(SquitInteractivePullFromUpstream workingCopy: self pivrRepo) pull
 ]
 
 { #category : #testing }
