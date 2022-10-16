@@ -39,7 +39,7 @@ Installer installGitInfrastructure.
 Metacello new
 	baseline: 'GReaSe';
 	repository: 'github://hpi-swa-lab/pivr:master/squeak';
-	load: #tests.
+	load: #all.
 
 "modifications to standard settings and adding shortcuts"
 UIManager openToolsAttachedToMouseCursor: true.
@@ -108,4 +108,4 @@ EOF
 ./squeak.sh
 rm -r Squeak6.1alpha-22185-64bit-All-in-One.app/Contents/Resources/github-cache
 rm -r Squeak6.1alpha-22185-64bit-All-in-One.app/Contents/Resources/package-cache
-zip -r pivr-bundle.zip . -x run.sh
+zip -r pivr-bundle.zip .
