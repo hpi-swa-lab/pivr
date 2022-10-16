@@ -9,6 +9,16 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GRRay class >> forCamera: aSpatial [
+
+	| camera origin position direction |
+	camera := (aSpatial getTree root grAsClass: #GDViewport) getCamera.
+	origin := camera projectRayOriginScreenPoint: position.
+	direction := (camera projectRayNormalScreenPoint: position) normalized.
+	^ self origin: origin direction: direction
+]
+
+{ #category : #'as yet unclassified' }
 GRRay class >> origin: aVector direction: anotherVector [
 
 	^ self new origin: aVector direction: anotherVector
