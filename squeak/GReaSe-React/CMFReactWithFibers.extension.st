@@ -1,6 +1,14 @@
 Extension { #name : #CMFReactWithFibers }
 
 { #category : #'*GRease-React' }
+CMFReactWithFibers >> useGodotRef [
+
+	^ currentFiber
+		getHook: GRHookUseGodotRef
+		ifAbsent: [:node | GRHookUseGodotRef new hostConfig: self hostConfig]
+]
+
+{ #category : #'*GRease-React' }
 CMFReactWithFibers >> useProvided: aSymbol [
 
 	| hook |
@@ -46,12 +54,4 @@ CMFReactWithFibers >> useProvidedRef: aSymbol namespace: anotherSymbol [
 			yourself].
 	hook namespace: anotherSymbol.
 	^ hook
-]
-
-{ #category : #'*GRease-React' }
-CMFReactWithFibers >> useRemoteRef [
-
-	^ currentFiber
-		getHook: GRHookUseRemoteRef
-		ifAbsent: [:node | GRHookUseRemoteRef new hostConfig: self hostConfig]
 ]

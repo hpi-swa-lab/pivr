@@ -21,7 +21,7 @@ ControllerInfoDworph >> render: props [
 
 	| handPortal transform pressedButtons controllerNode axes handArea handIsFree |
 	handPortal := self useRef: nil.
-	handArea := self useRemoteRef.
+	handArea := self useGodotRef.
 	
 	handIsFree := self useState: true.
 	transform := self useState: Matrix4x4 identity.

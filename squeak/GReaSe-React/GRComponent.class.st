@@ -36,9 +36,9 @@ GRComponent >> cubeOfSize: aVector3OrNumber color: aColor [
 
 	^ GDCollisionShape new
 		shape: (GDBoxShape new extents: aVector3OrNumber asVector3 / 2.0);
-		children: (GDMeshInstance new
-			mesh: (GDCubeMesh new size: aVector3OrNumber asVector3);
-			material: (GDSpatialMaterial new albedoColor: aColor))
+		children: (GDMeshInstance new mesh: (GDCubeMesh new
+			size: aVector3OrNumber asVector3;
+			material: (GDSpatialMaterial new albedoColor: aColor)))
 ]
 
 { #category : #constructors }
@@ -78,6 +78,12 @@ GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 GRComponent >> useControllerTransform [
 
 	^ self useProvided: #controllerTransform
+]
+
+{ #category : #hooks }
+GRComponent >> useGodotRef [
+
+	^ CMFCurrentReact value useGodotRef
 ]
 
 { #category : #hooks }
@@ -132,12 +138,6 @@ GRComponent >> useProvidedRef: aSymbol [
 GRComponent >> useProvidedRef: aSymbol namespace: anotherSymbol [
 
 	^ CMFCurrentReact value useProvidedRef: aSymbol namespace: anotherSymbol
-]
-
-{ #category : #hooks }
-GRComponent >> useRemoteRef [
-
-	^ CMFCurrentReact value useRemoteRef
 ]
 
 { #category : #hooks }

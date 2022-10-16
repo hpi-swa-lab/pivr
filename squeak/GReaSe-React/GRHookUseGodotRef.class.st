@@ -1,5 +1,5 @@
 Class {
-	#name : #GRHookUseRemoteRef,
+	#name : #GRHookUseGodotRef,
 	#superclass : #CMFReactHook,
 	#instVars : [
 		'state',
@@ -10,25 +10,25 @@ Class {
 }
 
 { #category : #public }
-GRHookUseRemoteRef >> get [
+GRHookUseGodotRef >> get [
 
 	^ godotClass ifNotNil: [state grAsClass: godotClass] ifNil: [state]
 ]
 
 { #category : #private }
-GRHookUseRemoteRef >> hostConfig: aHost [
+GRHookUseGodotRef >> hostConfig: aHost [
 
 	hostConfig := aHost
 ]
 
 { #category : #private }
-GRHookUseRemoteRef >> set: aNode [
+GRHookUseGodotRef >> set: aNode [
 
 	state := aNode
 ]
 
 { #category : #private }
-GRHookUseRemoteRef >> value: anObject [
+GRHookUseGodotRef >> value: anObject [
 
 	godotClass := anObject isArray ifTrue: [(Smalltalk classNamed: 'GD', anObject fifth) ifNotNil: ['GD', anObject fifth]].
 	hostConfig

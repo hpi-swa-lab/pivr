@@ -41,7 +41,7 @@ WorldDworph >> render: props [
 WorldDworph >> renderControllerControls: props [
 
 	| buttonCallback ref controllerTransform keyboardCallback pressedButtons trigger |
-	ref := self useRemoteRef.
+	ref := self useGodotRef.
 	
 	controllerTransform := self useProvided: #setControllerTransform.
 	pressedButtons := self useProvided: #setPressedButtons.
@@ -163,7 +163,7 @@ WorldDworph >> renderSimulatedController: props [
 	handIsFree := self useState: true.
 	pressedButtons := self useState: {}.
 	handPortal := self useRef: nil.
-	handArea := self useRemoteRef.
+	handArea := self useGodotRef.
 	
 	axes := {{ControllerInfoDworph triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state |
 		state := self useState: 0.0.

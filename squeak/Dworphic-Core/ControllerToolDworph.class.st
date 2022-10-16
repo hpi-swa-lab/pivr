@@ -26,7 +26,7 @@ ControllerToolDworph >> render: props [
 	
 	transform := self useRef: (props at: #transform ifAbsent: [Matrix4x4 identity]).
 	
-	rigidBody := self useRemoteRef.
+	rigidBody := self useGodotRef.
 	self
 		useEffect: [(grabbed get = 0 and: [onRelease = #drop]) ifTrue: [rigidBody get transform: transform get]]
 		dependencies: {grabbed get. onRelease}.

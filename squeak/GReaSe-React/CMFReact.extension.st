@@ -1,6 +1,12 @@
 Extension { #name : #CMFReact }
 
 { #category : #'*GReaSe-React' }
+CMFReact >> useGodotRef [
+
+	^ self getHook: GRHookUseGodotRef ifAbsent: [:node | GRHookUseGodotRef new hostConfig: self]
+]
+
+{ #category : #'*GReaSe-React' }
 CMFReact >> useProvided: aSymbol [
 
 	| hook |
@@ -46,10 +52,4 @@ CMFReact >> useProvidedRef: aSymbol namespace: anotherSymbol [
 			yourself].
 	hook namespace: anotherSymbol.
 	^ hook
-]
-
-{ #category : #'*GReaSe-React' }
-CMFReact >> useRemoteRef [
-
-	^ self getHook: GRHookUseRemoteRef ifAbsent: [:node | GRHookUseRemoteRef new hostConfig: self]
 ]
