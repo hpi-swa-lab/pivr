@@ -1,10 +1,11 @@
 #!/bin/bash
 
+rm -rf build
 mkdir build
 cd build
 
 unzip ~/Downloads/Squeak6.1alpha-22185-64bit-All-in-One.zip
-git clone --filter=blob:limit=1k git@github.com:hpi-swa-lab/pivr.git
+git clone git@github.com:hpi-swa-lab/pivr.git # --filter=blob:limit=1k 
 git clone git@github.com:hpi-swa-lab/pivr-tools.git
 mkdir godot
 cd godot
@@ -24,6 +25,12 @@ Metacello new
 	load.
 
 "git browser, custom branch with external tools"
+Installer ss
+	project: 'OSProcess';
+	install: 'OSProcess'.
+Installer ss
+	project: 'CommandShell';
+	install: 'CommandShell'.
 Installer installGitInfrastructure.
 (Smalltalk at: #SquitBrowser) selfUpdateBranch: 'external-git-fetch-push'; selfUpdate.
 (Smalltalk at: #GitFeatureFlags) externalFetchAndPush: true.
@@ -43,12 +50,12 @@ PasteUpMorph compile: 'tryInvokeKeyboardShortcut: aKeyboardEvent
 	aKeyboardEvent commandKeyPressed ifFalse: [^ self].
 	
 	aKeyboardEvent keyCharacter caseOf: {
-		[$R] -> [Utilities browseRecentSubmissions].
-		[$L] -> [self findAFileList: aKeyboardEvent].
-		[$O] -> [self findAMonticelloBrowser].
-		[$P] -> [self findAPreferencesPanel: aKeyboardEvent].
-		"[$Z] -> [ChangeList browseRecentLog]."
-		[$Q] -> [Smalltalk snapshot: true andQuit: false].
+		[\$R] -> [Utilities browseRecentSubmissions].
+		[\$L] -> [self findAFileList: aKeyboardEvent].
+		[\$O] -> [self findAMonticelloBrowser].
+		[\$P] -> [self findAPreferencesPanel: aKeyboardEvent].
+		"[\$Z] -> [ChangeList browseRecentLog]."
+		[\$Q] -> [Smalltalk snapshot: true andQuit: false].
 	} otherwise: [^ self "no hit"].
 	
 	aKeyboardEvent ignore "hit!".'.
@@ -62,9 +69,9 @@ SystemWindow compile: 'filterEvent: aKeyboardEvent for: anObject
 	
 	aKeyboardEvent commandKeyPressed ifTrue: [
 		aKeyboardEvent keyCharacter caseOf: { 
-			[$\] -> [self class sendTopWindowToBack].
-			[$w] -> [self class deleteTopWindow].
-			[$/] -> [self class bringWindowUnderHandToFront].
+			[\$\] -> [self class sendTopWindowToBack].
+			[\$w] -> [self class deleteTopWindow].
+			[\$/] -> [self class bringWindowUnderHandToFront].
 		} otherwise: [^ aKeyboardEvent "no hit"].
 		^ aKeyboardEvent ignore "hit!"].
 	
@@ -87,7 +94,7 @@ SystemWindow compile: 'openAsTool
 	^ meOrSimilarWindow'.
 
 "cleanup windows and open default workspace"
-(SystemWindow windowsIn: self) do: [:w | w delete].
+(SystemWindow windowsIn: World) do: [:w | w delete].
 Workspace open contents: '" 1. Run: "
 GRReact findRepos.
 " 2. if on mac, download Godot: https://godotengine.org/download/osx and extract to the pivr-bundle/godot folder "
