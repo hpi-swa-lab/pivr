@@ -39,7 +39,7 @@ Installer installGitInfrastructure.
 Metacello new
 	baseline: 'GReaSe';
 	repository: 'github://hpi-swa-lab/pivr:master/squeak';
-	load.
+	load: #tests.
 
 "modifications to standard settings and adding shortcuts"
 UIManager openToolsAttachedToMouseCursor: true.
