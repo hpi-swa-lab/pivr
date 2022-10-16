@@ -78,14 +78,14 @@ Avatar >> renderHand: props [
 			addHandAreaHandlers value: areaRef get value: (Dictionary withAll: {
 				#onAreaEntered -> [:eventHandlers |
 					Transcript showln: 'interactable entered hand'.
-					eventHandlers
-						at: #onHover
-						ifPresent: [:block | block cull: createInteractiveEvent value].
-					activeEventHandlers set: (activeEventHandlers get copyWith: eventHandlers)].
+					(eventHandlers at: #onHover) get ifNotNil: [:block |
+						block cull: createInteractiveEvent value].
+					activeEventHandlers set: [:old | old copyWith: eventHandlers]].
 				#onAreaExited -> [:eventHandlers |
 					Transcript showln: 'interactable exited hand'.
-					eventHandlers at: #onBlur ifPresent: [:block | block cull: createInteractiveEvent value].
-					activeEventHandlers set: (activeEventHandlers get copyWithout: eventHandlers)]}).
+					(eventHandlers at: #onBlur) get ifNotNil: [:block |
+						block cull: createInteractiveEvent value].
+					activeEventHandlers set: [:old | old copyWithout: eventHandlers]]}).
 			[removeHandAreaHandlers value: areaRef get]]
 		dependencies: #().
 	
@@ -94,14 +94,17 @@ Avatar >> renderHand: props [
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: [:button |
-			"This initial translation prevents the hand area overlapping with other areas before its translation is synchronized with VR"
 			button = self grabButton ifTrue: [
 				Transcript showln: 'hand grabbed'.
-				activeEventHandlers get do: [:handlers | handlers at: #onGrab ifPresent: [:block | block cull: createInteractiveEvent value]]]];
+				activeEventHandlers get do: [:handlers |
+					(handlers at: #onGrab) get ifNotNil: [:block |
+						block cull: createInteractiveEvent value]]]];
 		onButtonRelease: [:button |
 			button = self grabButton ifTrue: [
 				Transcript showln: 'hand let go'.
-				activeEventHandlers get do: [:handlers | handlers at: #onRelease ifPresent: [:block | block cull: createInteractiveEvent value]]]];
+				activeEventHandlers get do: [:handlers |
+					(handlers at: #onRelease) get ifNotNil: [:block |
+						block cull: createInteractiveEvent value]]]];
 		children: {
 			GDMeshInstance new
 				mesh: handMesh;

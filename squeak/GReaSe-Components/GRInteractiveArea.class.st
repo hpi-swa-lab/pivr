@@ -8,33 +8,19 @@ Class {
 GRInteractiveArea >> render: props [
 
 	| handleAreaEnteredInteractable handleAreaExitedInteractable eventHandlers |
-	"getHandAreas := self useProvided: #getHandAreas.
-	addGrabReleaseCallbacks := self useProvided: #addGrabReleaseCallbacks.
-	 := self useProvided: #removeGrabReleaseCallbacks."
-	
-	"isHand := [:node | value includes: node]."
-	"isHand := self useProvided: #isHand."
 	handleAreaEnteredInteractable := self useProvided: #handleAreaEnteredInteractable.
 	handleAreaExitedInteractable := self useProvided: #handleAreaExitedInteractable.
-	"hasGrabRelease := (props includesKey: #onGrab) or: [props includesKey: #onRelease].
-	grabReleaseCallbacks := #(onGrab onRelease)
-		collect: [:symbol | symbol -> (props at: symbol ifAbsent: nil)]
-		as: Dictionary."
-	eventHandlers := (#(onHover onBlur onGrab onRelease)
-		select: [:symbol | props includesKey: symbol]
-		thenCollect: [:symbol | symbol -> (props at: symbol)])
+	eventHandlers := #(onHover onBlur onGrab onRelease)
+		collect: [:symbol | | ref |
+			ref := self useRef: nil.
+			ref set: (props at: symbol).
+			symbol -> ref]
 		as: Dictionary.
 
 	^ GDArea new
 		onAreaEntered: [:node |
-			handleAreaEnteredInteractable value: node value: eventHandlers.
-			"props at: #onHover ifPresent: [:block | block cull: node]."
-			"hasGrabRelease ifTrue: [
-				 value: grabReleaseCallbacks]"];
+			handleAreaEnteredInteractable value: node value: eventHandlers.];
 		onAreaExited: [:node |
-			handleAreaExitedInteractable value: node value: eventHandlers
-			"props at: #onBlur ifPresent: [:block | block cull: node]."
-			"hasGrabRelease ifTrue: [
-				removeGrabReleaseCallbacks value: grabReleaseCallbacks]"];
+			handleAreaExitedInteractable value: node value: eventHandlers];
 		children: (props at: #children)
 ]
