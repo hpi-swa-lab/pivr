@@ -31,6 +31,16 @@ GRComponent class >> startWithArguments: aStringCollection [
 	GRReact startGodotWithArguments: aStringCollection
 ]
 
+{ #category : #helpers }
+GRComponent >> cubeOfSize: aVector3OrNumber color: aColor [
+
+	^ GDCollisionShape new
+		shape: (GDBoxShape new extents: aVector3OrNumber asVector3 / 2.0);
+		children: (GDMeshInstance new
+			mesh: (GDCubeMesh new size: aVector3OrNumber asVector3);
+			material: (GDSpatialMaterial new albedoColor: aColor))
+]
+
 { #category : #constructors }
 GRComponent >> godot: aClassName [
 
