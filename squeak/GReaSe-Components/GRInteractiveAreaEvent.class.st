@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'controllerRef',
-		'side'
+		'side',
+		'transform'
 	],
 	#category : #'GReaSe-Components-BlockCode'
 }
@@ -30,4 +31,16 @@ GRInteractiveAreaEvent >> side [
 GRInteractiveAreaEvent >> side: aSymbol [
 
 	side := aSymbol
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> transform [
+
+	^ transform
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> transform: aMatrix4x4 [
+
+	transform := aMatrix4x4
 ]

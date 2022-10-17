@@ -7,16 +7,24 @@ Class {
 { #category : #'as yet unclassified' }
 GRGrabbableArea >> render: props [
 
-	| handRef component |
+	| handRef component translation isGrabbed |
 	handRef := self useState: nil.
-	component := handRef get
-		ifNil: [self methodAsComponent: #renderUngrabbed:]
-		ifNotNil: [self methodAsComponent: #renderGrabbed:].
+	isGrabbed := handRef get notNil.
+	
+	component := isGrabbed
+		ifTrue: [self methodAsComponent: #renderGrabbed:]
+		ifFalse: [self methodAsComponent: #renderUngrabbed:].
+		
+	translation := self useState: Vector3 zero.
 
 	^ component
 		props: props;
+		translation: (isGrabbed
+			ifTrue: [Vector3 zero]
+			ifFalse: [props at: #translation ifAbsent: [translation get]]);
 		getHandRef: [handRef get];
-		setHandRef: [:ref | handRef set: ref]
+		setHandRef: [:ref | handRef set: ref];
+		setTranslation: [:t | translation set: t]
 ]
 
 { #category : #'as yet unclassified' }
@@ -24,6 +32,7 @@ GRGrabbableArea >> renderArea: props [
 
 	^ GRInteractiveArea new
 		"props: props;"
+		translation: (props at: #translation);
 		onHover: (props at: #onHover);
 		onBlur: (props at: #onBlur);
 		onButtonPress: [:event |
@@ -37,10 +46,8 @@ GRGrabbableArea >> renderArea: props [
 			Transcript showln: 'release button'.
 			event button = 2 ifTrue: [ 
 				Transcript showln: 'release thing'.
-				Transcript showln: 'xxxxxxxx ', (GRReactCurrentSession value
-					callOn: event controllerRef get fourth
-					method: 'get'
-					arguments: {'translation'}).
+				(props at: #setTranslation) value: event transform translation.
+				Transcript showln: 'setting translation ', event transform translation.
 				(props at: #setHandRef) value: nil.
 				props at: #onRelease ifPresent: [:block | block cull: event]].
 			props at: #onButtonPress ifPresent: [:block | block cull: event]];

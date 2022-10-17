@@ -55,7 +55,7 @@ Avatar >> render: props [
 { #category : #'as yet unclassified' }
 Avatar >> renderHand: props [
 
-	| handMesh areaRef addHandAreaHandlers removeHandAreaHandlers controllerRef createInteractiveEvent activeEventHandlers createInteractiveButtonEvent |
+	| handMesh areaRef addHandAreaHandlers removeHandAreaHandlers controllerRef createInteractiveEvent activeEventHandlers createInteractiveButtonEvent transform |
 	handMesh := self
 		useMemo: [GD_ResourceLoader instance loadPath: 'res://assets/models/hand/hand.tres']
 		dependencies: #().
@@ -64,6 +64,7 @@ Avatar >> renderHand: props [
 	areaRef := self useGodotRef.
 	
 	activeEventHandlers := self useState: OrderedCollection new.
+	transform := self useRef: Matrix4x4.
 	
 	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
 	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
@@ -72,12 +73,14 @@ Avatar >> renderHand: props [
 	createInteractiveEvent := [
 		GRInteractiveAreaEvent new
 			controllerRef: controllerRef;
-			side: (props at: #side)].
+			side: (props at: #side);
+			transform: transform get].
 	
 	createInteractiveButtonEvent := [:button |
 		GRInteractiveAreaEventButton new
 			controllerRef: controllerRef;
 			side: (props at: #side);
+			transform: transform get;
 			button: button].
 	
 	self
@@ -98,6 +101,7 @@ Avatar >> renderHand: props [
 	
 	^ GDARVRController new
 		ref: controllerRef;
+		subscribeTo: #transform do: [:t | transform set: t];
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: [:button |

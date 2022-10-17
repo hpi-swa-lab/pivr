@@ -17,6 +17,8 @@ GRInteractiveArea >> render: props [
 			symbol -> ref]
 		as: Dictionary.
 
+	Transcript showln: 'transsss ', (props at: #translation).
+
 	^ GDArea new
 		"extracting these godot specific props from the dict is a temp solution"
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
