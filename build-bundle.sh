@@ -7,6 +7,11 @@ cd build
 unzip ~/Downloads/Squeak6.1alpha-22185-64bit-All-in-One.zip
 git clone git@github.com:hpi-swa-lab/pivr.git # --filter=blob:limit=1k 
 git clone git@github.com:hpi-swa-lab/pivr-tools.git
+
+pushd pivr
+git clone git@github.com:hpi-swa-lab/pivr-tools-assets.git
+popd
+
 mkdir godot
 cd godot
 unzip ~/Downloads/Godot_v3.5.1-stable_win64.exe.zip
