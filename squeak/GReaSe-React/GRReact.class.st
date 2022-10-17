@@ -130,10 +130,10 @@ GRReact class >> startGodotWithArguments: aStringCollection [
 				GodotPath := (FileDirectory default / '..' / '..' / '..' / 'godot' / (Smalltalk windowSystemName caseOf: {
 					['Windows'] -> ['Godot_v3.5.1-stable_win64.exe'].
 					['Win32'] -> ['Godot_v3.5.1-stable_win64.exe'].
-					['Aqua'] -> ['Godot.app'].
+					['Aqua'] -> ['Godot.app/Contents/MacOS/Godot'].
 					['X11'] -> ['Godot_v3.5.1-stable_x11.64']})) fullName].
 			(GodotPath isEmptyOrNil not and: [(shell isWindows and: [GodotPath first = $/]) or: [shell isWindows not and: [GodotPath first ~= $/]]]) ifTrue: [GodotPath := nil].
-			(GodotPath isEmptyOrNil not and: [(FileDirectory forFileName: GodotPath) exists]) ifFalse: [GodotPath := nil].
+			(GodotPath isEmptyOrNil not and: [(FileDirectory directoryEntryFor: GodotPath) notNil]) ifFalse: [GodotPath := nil].
 			GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
 			RunningGodotProcess := shell isWindows
 				ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {GodotPath. (self pivrPath / 'project') asString. aStringCollection joinSeparatedBy: ' '})]
