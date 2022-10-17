@@ -159,46 +159,40 @@ AirwriteDworph >> renderActive: props [
 				buttonPressed ifTrue: [ | position |
 					position := self tipPosition: controllerTransform.
 					points set: [:p | p copyWith: position].
-					GRReactCurrentSession value
-						callOn: curveRef get
-						method: 'add_point'
-						arguments: {position}]].
+					curveRef get addPointPosition: position]].
 			(points get notEmpty and: [buttonPressed not]) ifTrue: [
 				Transcript showln: (self detectChar: points get head: headPosition).
-				GRReactCurrentSession value
-					callOn: curveRef get
-					method: 'clear_points'
-					arguments: {}.
+				curveRef get clearPoints.
 				points set: {}]]
 		dependencies: {controllerTranslation. buttonPressed}.
 	
-	^ (self godot: #Spatial) children: {
+	^ GDSpatial new children: {
 		self renderPassive: props.
 		CMFReactNodePortal
 			child: {
-				(self godot: #Path)
-					curve: ((self godot: #Curve3D)
+				GDPath new
+					curve: (GDCurve3D new
 						ref: curveRef;
-						bake_interval: 0.01);
+						bakeInterval: 0.01);
 					name: 'path'.
-				(self godot: #CSGPolygon)
-					path_node: (GRNodePath path: '../path');
+				GDCSGPolygon new
+					pathNode: (GRNodePath path: '../path');
 					polygon: (GRPoolVector2Array new
 						add: (Vector2 x: -0.005 y: -0.005);
 						add: (Vector2 x: -0.005 y: 0.005);
 						add: (Vector2 x: 0.005 y: 0.005);
 						add: (Vector2 x: 0.005 y: -0.005);
 						yourself);
-					mode: 2;
-					path_interval_type: 0;
-					path_interval: 0.01;
-					path_simplify_angle: 0.0;
-					path_rotation: 2;
-					path_local: true;
-					path_joined: false;
-					path_continuous_u: true;
-					path_u_distance: 0.71;
-					smooth_faces: true}
+					mode: GDCSGPolygon modePath;
+					pathIntervalType: GDCSGPolygon pathIntervalDistance;
+					pathInterval: 0.01;
+					pathSimplifyAngle: 0.0;
+					pathRotation: GDCSGPolygon pathRotationPathFollow;
+					pathLocal: true;
+					pathJoined: false;
+					pathContinuousU: true;
+					pathUDistance: 0.71;
+					smoothFaces: true}
 			in: worldPortal}
 ]
 

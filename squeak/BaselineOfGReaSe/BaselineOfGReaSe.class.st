@@ -27,7 +27,8 @@ BaselineOfGReaSe >> baseline: spec [
 			package: 'Dworphic-Core' with: [spec requires: #('GReaSe-Core' 'Godot-Internal-Generation')];
 			package: 'Dworphic-Test' with: [spec requires: #('Dworphic-Core')].
 		spec group: 'default' with: #('GReaSe-Components' 'Dworphic-Core').
-		spec group: 'tests' with: #('Dworphic-Test' 'GReaSe-Test')]
+		spec group: 'tests' with: #('Dworphic-Test' 'GReaSe-Test').
+		spec group: 'all' with: #('GReaSe-Components' 'Dworphic-Core' 'GReaSe-Test' 'Dworphic-Test')]
 ]
 
 { #category : #'as yet unclassified' }

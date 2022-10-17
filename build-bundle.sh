@@ -7,6 +7,11 @@ cd build
 unzip ~/Downloads/Squeak6.1alpha-22185-64bit-All-in-One.zip
 git clone git@github.com:hpi-swa-lab/pivr.git # --filter=blob:limit=1k 
 git clone git@github.com:hpi-swa-lab/pivr-tools.git
+
+pushd pivr
+git clone git@github.com:hpi-swa-lab/pivr-tools-assets.git
+popd
+
 mkdir godot
 cd godot
 unzip ~/Downloads/Godot_v3.5.1-stable_win64.exe.zip
@@ -39,7 +44,7 @@ Installer installGitInfrastructure.
 Metacello new
 	baseline: 'GReaSe';
 	repository: 'github://hpi-swa-lab/pivr:master/squeak';
-	load.
+	load: #all.
 
 "modifications to standard settings and adding shortcuts"
 UIManager openToolsAttachedToMouseCursor: true.
@@ -108,4 +113,4 @@ EOF
 ./squeak.sh
 rm -r Squeak6.1alpha-22185-64bit-All-in-One.app/Contents/Resources/github-cache
 rm -r Squeak6.1alpha-22185-64bit-All-in-One.app/Contents/Resources/package-cache
-zip -r pivr-bundle.zip . -x run.sh
+zip -r pivr-bundle.zip .

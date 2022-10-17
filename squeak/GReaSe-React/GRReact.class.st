@@ -30,7 +30,7 @@ GRReact class >> findRepos [
 
 	| base |
 	base := FileDirectory default / '..' / '..' / '..'.
-	{'pivr'. 'pivr-tools'} do: [:name | | folder workingCopy |
+	{'pivr-tools'. 'pivr'} do: [:name | | folder workingCopy |
 		folder := base / name.
 		workingCopy := SquotWorkingCopy newOnObjectMemory
 			name: name;
@@ -64,12 +64,13 @@ GRReact class >> pivrPath [
 { #category : #setup }
 GRReact class >> pivrRepo [
 
-	^ SquotWorkingCopy registered
-		detect: [:each | | gitRepository |
-			(each repository respondsTo: #git) and: [
-				gitRepository := each repository git.
-				each repository remoteNames anySatisfy: [:remote | (gitRepository remoteUrl: remote) includesSubstring: 'pivr']]]
-		ifNone: [self error: 'PiVR repo missing?']
+	^ self repoOfName: 'pivr'
+]
+
+{ #category : #setup }
+GRReact class >> pivrToolsRepo [
+
+	^ self repoOfName: 'pivr-tools'
 ]
 
 { #category : #deploy }
@@ -91,6 +92,17 @@ GRReact class >> questRestartApp [
 		shell waitForCommand: 'adb reverse tcp:8292 tcp:8292'.
 		shell waitForCommand: 'adb shell am force-stop org.godotengine.vrandsqueaktest'.
 		shell waitForCommand: 'adb shell am start -n org.godotengine.vrandsqueaktest/com.godot.game.GodotApp']
+]
+
+{ #category : #setup }
+GRReact class >> repoOfName: aString [
+
+	^ SquotWorkingCopy registered
+		detect: [:each | | gitRepository |
+			(each repository respondsTo: #git) and: [
+				gitRepository := each repository git.
+				each repository remoteNames anySatisfy: [:remote | (gitRepository remoteUrl: remote) matchesRegex: '.*/', aString, '($|\.).*']]]
+		ifNone: [self error: 'repo missing?']
 ]
 
 { #category : #utils }
@@ -162,6 +174,7 @@ GRReact class >> update [
 		get;
 		load.
 	
+	(SquitInteractivePullFromUpstream workingCopy: self pivrToolsRepo) pull.
 	(SquitInteractivePullFromUpstream workingCopy: self pivrRepo) pull
 ]
 
