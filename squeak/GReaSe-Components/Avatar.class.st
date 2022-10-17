@@ -55,12 +55,12 @@ Avatar >> render: props [
 { #category : #'as yet unclassified' }
 Avatar >> renderHand: props [
 
-	| handMesh areaRef addHandAreaHandlers removeHandAreaHandlers controllerRef createInteractiveEvent activeEventHandlers |
+	| handMesh areaRef addHandAreaHandlers removeHandAreaHandlers controllerRef createInteractiveEvent activeEventHandlers createInteractiveButtonEvent |
 	handMesh := self
 		useMemo: [GD_ResourceLoader instance loadPath: 'res://assets/models/hand/hand.tres']
 		dependencies: #().
 	
-	controllerRef := self useGodotRef.
+	controllerRef := self useRef: nil.
 	areaRef := self useGodotRef.
 	
 	activeEventHandlers := self useState: OrderedCollection new.
@@ -68,10 +68,17 @@ Avatar >> renderHand: props [
 	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
 	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
 	
+	"TODO: dedup"
 	createInteractiveEvent := [
 		GRInteractiveAreaEvent new
 			controllerRef: controllerRef;
 			side: (props at: #side)].
+	
+	createInteractiveButtonEvent := [:button |
+		GRInteractiveAreaEventButton new
+			controllerRef: controllerRef;
+			side: (props at: #side);
+			button: button].
 	
 	self
 		useEffect: [
@@ -94,17 +101,13 @@ Avatar >> renderHand: props [
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: [:button |
-			button = self grabButton ifTrue: [
-				Transcript showln: 'hand grabbed'.
-				activeEventHandlers get do: [:handlers |
-					(handlers at: #onGrab) get ifNotNil: [:block |
-						block cull: createInteractiveEvent value]]]];
+			activeEventHandlers get do: [:handlers |
+				(handlers at: #onButtonPress) get ifNotNil: [:block |
+					block cull: (createInteractiveButtonEvent value: button)]]];
 		onButtonRelease: [:button |
-			button = self grabButton ifTrue: [
-				Transcript showln: 'hand let go'.
-				activeEventHandlers get do: [:handlers |
-					(handlers at: #onRelease) get ifNotNil: [:block |
-						block cull: createInteractiveEvent value]]]];
+			activeEventHandlers get do: [:handlers |
+				(handlers at: #onButtonRelease) get ifNotNil: [:block |
+					block cull: (createInteractiveButtonEvent value: button)]]];
 		children: {
 			GDMeshInstance new
 				mesh: handMesh;
