@@ -15,7 +15,9 @@ Class {
 GDClassSpec class >> fromApiJsonObject: aJsonObject [
 
 	^ self new
-		name: (GDApiObjectsGenerator squeakClassName: aJsonObject name) asSymbol;
+		name: (GDApiObjectsGenerator squeakClassName: ((aJsonObject name first = $_ and: [aJsonObject singleton_name notEmpty])
+			ifTrue: [aJsonObject singleton_name]
+			ifFalse: [aJsonObject name])) asSymbol;
 		parentName: (aJsonObject base_class
 			ifEmpty: [self rootClassName]
 			ifNotEmpty: [:name | GDApiObjectsGenerator squeakClassName: name]);

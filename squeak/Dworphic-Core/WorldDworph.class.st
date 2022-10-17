@@ -281,9 +281,9 @@ WorldDworph >> useVRIfSupported: aBlock otherwise: anotherBlock loading: aThirdB
 					openxr initialize ifFalse: [
 						supportsVR set: false
 					] ifTrue: [
-						viewport := (GD_Engine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport.
-					GD_OS instance vsyncEnabled: true.
-					GD_Engine instance iterationsPerSecond: 90.
+						viewport := (GDEngine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport.
+					GDOS instance vsyncEnabled: true.
+					GDEngine instance iterationsPerSecond: 90.
 					viewport hdr: true.
 					viewport arvr: true.
 					supportsVR set: true]]

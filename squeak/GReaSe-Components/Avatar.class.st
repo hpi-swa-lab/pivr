@@ -38,9 +38,9 @@ Avatar >> render: props [
 			ifNotNil: [:openxr | | viewport |
 				openxr initialize.
 				viewport := avatarRoot get getViewport.
-				GD_Engine instance iterationsPerSecond: 90.
+				GDEngine instance iterationsPerSecond: 90.
 				viewport hdr: true.
-				GD_OS instance vsyncEnabled: true.
+				GDOS instance vsyncEnabled: true.
 				viewport arvr: true].
 		nil].
 	
