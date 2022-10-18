@@ -1,6 +1,6 @@
 Extension { #name : #SBCursorPosition }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBCursorPosition >> exportInfo [
 
 	^ nil

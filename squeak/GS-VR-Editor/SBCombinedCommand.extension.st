@@ -1,6 +1,6 @@
 Extension { #name : #SBCombinedCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBCombinedCommand >> vrDo [
 
 	commands do: [:command | command vrDo]

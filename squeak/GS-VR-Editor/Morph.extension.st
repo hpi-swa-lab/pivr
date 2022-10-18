@@ -1,6 +1,6 @@
 Extension { #name : #Morph }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 Morph >> exportStructure [
 
 	^ {
@@ -13,13 +13,13 @@ Morph >> exportStructure [
 		#type -> #none} as: Dictionary
 ]
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 Morph >> shouldBeInVr [
 
 	^ false
 ]
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 Morph >> vrId [
 
 	^ self valueOfProperty: #vrId ifAbsentPut: [| id |

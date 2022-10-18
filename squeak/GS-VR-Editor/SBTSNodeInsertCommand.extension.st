@@ -1,6 +1,6 @@
 Extension { #name : #SBTSNodeInsertCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBTSNodeInsertCommand >> vrDo [
 
 	morphs reverseDo: [:morph |

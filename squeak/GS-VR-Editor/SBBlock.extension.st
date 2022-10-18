@@ -1,13 +1,13 @@
 Extension { #name : #SBBlock }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBBlock >> changed [
 
 	super changed.
 	self triggerEvent: #SBchanged
 ]
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBBlock >> exportStructure [
 
 	^ {
@@ -20,7 +20,7 @@ SBBlock >> exportStructure [
 		#type -> #none} as: Dictionary
 ]
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBBlock >> vrId [
 
 	^ self valueOfProperty: #vrId ifAbsentPut: [| id |

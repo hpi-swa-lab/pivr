@@ -1,12 +1,12 @@
 Extension { #name : #SBCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBCommand >> vrDo [
 
 	self subclassResponsibility
 ]
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBCommand >> vrUndo [
 
 	self subclassResponsibility

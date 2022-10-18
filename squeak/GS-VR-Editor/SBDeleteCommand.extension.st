@@ -1,6 +1,6 @@
 Extension { #name : #SBDeleteCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBDeleteCommand >> vrDo [
 
 	SBVREditor current godotProvider removeBlockWithId: target vrId.
@@ -8,7 +8,7 @@ SBDeleteCommand >> vrDo [
 		SBVREditor current addDirtyBlockId: oldOwner containingToplevel vrId]
 ]
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBDeleteCommand >> vrUndo [
 
 	| vrNode |

@@ -1,6 +1,6 @@
 Extension { #name : #SBEditorOpenMorphCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBEditorOpenMorphCommand >> vrDo [
 
 	morph width: 500.

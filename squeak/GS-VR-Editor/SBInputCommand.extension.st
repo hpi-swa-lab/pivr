@@ -1,6 +1,6 @@
 Extension { #name : #SBInputCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBInputCommand >> vrDo [
 
 	"Do nothing :)"

@@ -1,6 +1,6 @@
 Extension { #name : #SBCursorText }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBCursorText >> exportInfo [
 
 	^ {

@@ -1,7 +1,7 @@
-Extension { #name : #SBStClassNameInput }
+Extension { #name : #SBTSStMethod }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
-SBStClassNameInput >> exportStructure [
+{ #category : #'*GS-VR-Editor' }
+SBTSStMethod >> exportStructure [
 
 	| previous |
 	previous := nil.
@@ -16,6 +16,6 @@ SBStClassNameInput >> exportStructure [
 		#bounds -> (self bounds in: [:r | {r left. r top. r width. r height}]).
 		#id -> self vrId.
 		#color -> self drawnColor asHTMLColor.
-		#type -> 'classNameInput'.
+		#type -> 'methodRoot'.
 		#vrInteractionAllowed -> false} as: Dictionary
 ]

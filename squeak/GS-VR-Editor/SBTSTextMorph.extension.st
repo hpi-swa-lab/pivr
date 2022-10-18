@@ -1,6 +1,6 @@
 Extension { #name : #SBTSTextMorph }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBTSTextMorph >> exportStructure [
 
 	^ {

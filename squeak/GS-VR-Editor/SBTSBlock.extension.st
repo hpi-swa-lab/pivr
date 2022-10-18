@@ -1,6 +1,6 @@
 Extension { #name : #SBTSBlock }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBTSBlock >> blockDepth [
 
 	| depth |
@@ -12,7 +12,7 @@ SBTSBlock >> blockDepth [
 	self assert: false
 ]
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBTSBlock >> exportStructure [
 
 	| previous |

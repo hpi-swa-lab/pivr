@@ -1,6 +1,6 @@
 Extension { #name : #SBReplaceMultipleCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBReplaceMultipleCommand >> vrDo [
 
 	SBVREditor current godotProvider removeBlockWithId: target vrId.

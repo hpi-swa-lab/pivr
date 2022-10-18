@@ -1,6 +1,6 @@
 Extension { #name : #SBTSInputReconcile }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBTSInputReconcile >> exportStructure [
 
 	^ super exportStructure

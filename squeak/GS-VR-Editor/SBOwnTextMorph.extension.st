@@ -1,6 +1,6 @@
 Extension { #name : #SBOwnTextMorph }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBOwnTextMorph >> exportStructure [
 
 	^ {

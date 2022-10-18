@@ -1,6 +1,6 @@
 Extension { #name : #SBBlockCursor }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBBlockCursor >> exportInfo [
 
 	cursorPosition class = SBCursorText ifFalse: [^ nil].

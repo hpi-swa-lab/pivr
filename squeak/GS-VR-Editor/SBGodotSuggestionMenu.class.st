@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'currentSuggestions'
 	],
-	#category : #'Sandblocks-TreeSitter-VR'
+	#category : #'GS-VR-Editor'
 }
 
 { #category : #'as yet unclassified' }

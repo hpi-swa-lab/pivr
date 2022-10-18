@@ -1,6 +1,6 @@
 Extension { #name : #SBUnknown }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBUnknown >> exportStructure [
 
 	"mostly copied from SBTSBlock"

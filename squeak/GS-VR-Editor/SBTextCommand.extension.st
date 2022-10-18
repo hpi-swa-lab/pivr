@@ -1,6 +1,6 @@
 Extension { #name : #SBTextCommand }
 
-{ #category : #'*Sandblocks-TreeSitter-VR' }
+{ #category : #'*GS-VR-Editor' }
 SBTextCommand >> vrDo [
 
 	self assert: oldMorph = newMorph.
