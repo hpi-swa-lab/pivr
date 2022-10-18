@@ -31,8 +31,7 @@ GRGrabbableArea >> render: props [
 GRGrabbableArea >> renderArea: props [
 
 	^ GRInteractiveArea new
-		"props: props;"
-		translation: (props at: #translation);
+		props: props copy;
 		onHover: (props at: #onHover);
 		onBlur: (props at: #onBlur);
 		onButtonPress: [:event |

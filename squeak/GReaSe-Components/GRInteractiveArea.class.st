@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRInteractiveArea >> render: props [
 
-	| handleAreaEnteredInteractable handleAreaExitedInteractable eventHandlers |
+	| handleAreaEnteredInteractable handleAreaExitedInteractable eventHandlers area |
 	handleAreaEnteredInteractable := self useProvided: #handleAreaEnteredInteractable.
 	handleAreaExitedInteractable := self useProvided: #handleAreaExitedInteractable.
 	eventHandlers := #(onHover onBlur onButtonPress onButtonRelease)
@@ -17,15 +17,15 @@ GRInteractiveArea >> render: props [
 			symbol -> ref]
 		as: Dictionary.
 
-	Transcript showln: 'transsss ', (props at: #translation).
-
-	^ GDArea new
-		"extracting these godot specific props from the dict is a temp solution"
-		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
-		scale: (props at: #scale ifAbsent: [Vector3 value: 1]);
+	area := GDArea new.
+	"TODO: settings props should be directly supported on GDArea and such"
+	props keysAndValuesDo: [:key :value | key = #children ifFalse: [area set: key to: value]].
+	area
 		onAreaEntered: [:node |
 			handleAreaEnteredInteractable value: node value: eventHandlers.];
 		onAreaExited: [:node |
 			handleAreaExitedInteractable value: node value: eventHandlers];
-		children: (props at: #children)
+		children: (props at: #children).
+	
+	^ area
 ]

@@ -18,13 +18,11 @@ GrabbableCube >> render: props [
 		onButtonPress: [:event | Transcript showln: 'cube button press ', event button];
 		onButtonRelease: [:event | Transcript showln: 'cube button release ', event button];
 		"translation: 1 @ 1 @ 1.5;"
-		"scale: (Vector3 value: 0.2);"
+		scale: 0.2 asVector3;
 		children: {
 			GDCollisionShape new
-				scale: (Vector3 value: 0.2);
 				shape: GDBoxShape new.
 			GDMeshInstance new
-				scale: (Vector3 value: 0.2);
 				mesh: (GDCubeMesh new
 					material: (GDSpatialMaterial new
 						albedoColor: color get))}
