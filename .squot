@@ -7,6 +7,5 @@ OrderedDictionary {
 	'squeak/Dworphic-Core' : #SquotTonelSerializer,
 	'squeak/Dworphic-Test' : #SquotTonelSerializer,
 	'squeak/BaselineOfGReaSe' : #SquotTonelSerializer,
-	'squeak/GReaSe-Signals' : #SquotTonelSerializer,
-	'squeak/GS-VR-Editor' : #SquotTonelSerializer
+	'squeak/GReaSe-Signals' : #SquotTonelSerializer
 }
