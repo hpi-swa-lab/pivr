@@ -1,5 +1,4 @@
 OrderedDictionary {
-	'squeak/Sandblocks-TreeSitter-VR' : #SquotTonelSerializer,
 	'squeak/GReaSe-Core' : #SquotTonelSerializer,
 	'squeak/GReaSe-Components' : #SquotTonelSerializer,
 	'squeak/GReaSe-React' : #SquotTonelSerializer,
