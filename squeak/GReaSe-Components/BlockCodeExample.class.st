@@ -39,12 +39,11 @@ BlockCodeExample >> render: props [
 		children: {
 			BlockCodeEditor new
 				translation: self editorTranslation;
-				structure: (self class exampleStructure);
 				layoutParams: (CodeBlockLayoutParamters new
 					blockDepth: 0.01;
 					morphicScale: 0.003).
 			self interactionComponent.
-			GrabbableCube new}
+			"GrabbableCube new"}
 ]
 
 { #category : #'as yet unclassified' }

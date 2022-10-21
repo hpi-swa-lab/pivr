@@ -9,7 +9,7 @@ CodeBlock >> childBlocks: props [
 
 	| myStructure |
 	myStructure := (props at: #structure).
-	^ myStructure children
+	^ (myStructure at: #children)
 		ifNil: [#()]
 		ifNotNil: [:children |
 			children
@@ -50,7 +50,8 @@ CodeBlock >> scale: props [
 
 	| morphBounds layoutParams |
 	layoutParams := props at: #layoutParams.
-	morphBounds := (props at: #structure) bounds.
+	morphBounds := (props at: #structure) at: #bounds.
+	Transcript showln: morphBounds.
 	^ Vector3
 		x: (morphBounds at: 3) * layoutParams morphicScale
 		y: (morphBounds at: 4) * layoutParams morphicScale
@@ -66,8 +67,8 @@ CodeBlock >> translation: props [
 	^ (props at: #isRoot ifAbsent: false)
 		ifTrue: [Vector3 value: 0]
 		ifFalse: [ | morphBounds parentBounds adjustedPosition morphExtent morphPosition parentExtent parentPosition |
-			morphBounds := (props at: #structure) bounds.
-			parentBounds := (props at: #parentStructure) bounds.
+			morphBounds := (props at: #structure) at: #bounds.
+			parentBounds := (props at: #parentStructure) at: #bounds.
 			morphPosition := morphBounds first @ morphBounds second.
 			morphExtent := morphBounds third @ morphBounds fourth.
 			parentPosition := parentBounds first @ parentBounds second.
