@@ -1,6 +1,17 @@
 Extension { #name : #SBTSStMethod }
 
 { #category : #'*GReaSe-Components-BlockCode' }
+SBTSStMethod >> childrenAsCodeBlocks [
+
+	^ Array streamContents: [:stream |
+		self visibleSubmorphsDo: [:morph |
+			stream nextPut: (
+				CodeBlock new
+					key: GRReact nextGodotId;
+					sandblock: morph)]]
+]
+
+{ #category : #'*GReaSe-Components-BlockCode' }
 SBTSStMethod >> exportStructure [
 
 	| previous |

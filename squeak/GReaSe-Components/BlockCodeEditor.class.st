@@ -31,6 +31,7 @@ BlockCodeEditor >> render: props [
 		"for testing purposes"
 		block := (SBTSStMethod for: Dictionary>>#associationsDo:).
 		editor get openMorph: block.
+		World doOneCycle.
 		forceUpdate value.
 				
 		[editor get delete]] dependencies: #().

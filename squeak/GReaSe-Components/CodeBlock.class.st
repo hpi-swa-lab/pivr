@@ -5,41 +5,11 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-CodeBlock >> childBlocks: props [
-
-	^ Array streamContents: [:stream | | sandblock |
-		sandblock := (props at: #sandblock).
-		
-		"TODO: move CodeBlock instantiation into respective classes"
-		sandblock class = SBTSStMethod ifTrue: [
-			sandblock visibleSubmorphsDo: [:morph |
-				stream nextPut: (
-					CodeBlock new
-						key: GRReact nextGodotId;
-						sandblock: morph;
-						layoutParams: (props at: #layoutParams))]].
-				
-		(sandblock isKindOf: SBTSBlock) ifTrue: [
-			sandblock cursorPositionsDo: [:pos |
-				pos isText ifTrue: [
-					stream nextPut: (
-						CodeBlockText new
-							key: GRReact nextGodotId;
-							morph: pos textMorph;
-							layoutParams: (props at: #layoutParams))].
-				
-				(pos isSelect and: [pos block ~= sandblock]) ifTrue: [
-					stream nextPut: (
-						CodeBlock new
-							key: GRReact nextGodotId;
-							sandblock: pos block;
-							layoutParams: (props at: #layoutParams))]]
-				shallow: true]]
-]
-
-{ #category : #'as yet unclassified' }
 CodeBlock >> render: props [
 
+	| layoutParams |
+	layoutParams := props at: #layoutParams.
+	
 	^ GDSpatial new
 		name: (self class asString), GRReact nextGodotId asString;
 		translation: (self translation: props);
@@ -48,8 +18,9 @@ CodeBlock >> render: props [
 				scale: (self scale: props);
 				mesh: (GDCubeMesh new
 					size: (Vector3 value: 1);
-					material: (GDSpatialMaterial new albedoColor: Color random))
-				}, (self childBlocks: props)
+					material: (GDSpatialMaterial new albedoColor: Color random))},
+			((props at: #sandblock) childrenAsCodeBlocks do: [:b |
+				b layoutParams: layoutParams])
 ]
 
 { #category : #'as yet unclassified' }

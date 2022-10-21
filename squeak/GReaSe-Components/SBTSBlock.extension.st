@@ -1,6 +1,27 @@
 Extension { #name : #SBTSBlock }
 
 { #category : #'*GReaSe-Components-BlockCode' }
+SBTSBlock >> asCodeBlock [
+
+	^ CodeBlock new
+		key: GRReact nextGodotId;
+		sandblock: self
+]
+
+{ #category : #'*GReaSe-Components-BlockCode' }
+SBTSBlock >> childrenAsCodeBlocks [
+
+	^ Array streamContents: [:stream |
+			self cursorPositionsDo: [:pos |
+				pos isText ifTrue: [
+					stream nextPut: pos textMorph asCodeBlock].
+				
+				(pos isSelect and: [pos block ~= self]) ifTrue: [
+					stream nextPut: pos block asCodeBlock]]
+				shallow: true]
+]
+
+{ #category : #'*GReaSe-Components-BlockCode' }
 SBTSBlock >> exportStructure [
 
 	| previous |

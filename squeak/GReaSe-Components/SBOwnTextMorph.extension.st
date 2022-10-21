@@ -1,6 +1,14 @@
 Extension { #name : #SBOwnTextMorph }
 
 { #category : #'*GReaSe-Components-BlockCode' }
+SBOwnTextMorph >> asCodeBlock [
+
+	^ CodeBlockText new
+		key: GRReact nextGodotId;
+		morph: self
+]
+
+{ #category : #'*GReaSe-Components-BlockCode' }
 SBOwnTextMorph >> exportStructure [
 
 	^ {
