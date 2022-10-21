@@ -31,7 +31,6 @@ BlockCodeEditor >> render: props [
 		"for testing purposes"
 		block := (SBTSStMethod for: Dictionary>>#associationsDo:).
 		editor get openMorph: block.
-		"blocks set: [:old | old copyWith: block]."
 		forceUpdate value.
 				
 		[editor get delete]] dependencies: #().
@@ -45,14 +44,6 @@ BlockCodeEditor >> render: props [
 					sandblock: sandblock;
 					layoutParams: (props at: #layoutParams);
 					isRoot: true)]])
-		
-		
-		"(blocks get collect: [:block |
-			CodeBlock new
-				key: GRReact nextGodotId;
-				structure: block exportStructure;
-				layoutParams: (props at: #layoutParams);
-				isRoot: true])"
 ]
 
 { #category : #'as yet unclassified' }

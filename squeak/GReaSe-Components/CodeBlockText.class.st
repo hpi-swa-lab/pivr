@@ -11,9 +11,9 @@ CodeBlockText >> render: props [
 	layoutParams := (props at: #layoutParams).
 	^ GDSpatial new
 		children: {
-			GDLabel3D new
-				text: ((props at: #structure) at: #contents);
-				"Add a tiny little offset to the label translation to prevent z-fighting"
-				translation: (Vector3 x: 0 y: 0 z: layoutParams blockDepth / 2) + 0.0001;
-				pixelSize: layoutParams morphicScale}
+		GDLabel3D new
+			text: ((props at: #morph) contents);
+			"Add a tiny little offset to the label translation to prevent z-fighting"
+			translation: (Vector3 x: 0 y: 0 z: layoutParams blockDepth / 2) + 0.0001;
+			pixelSize: layoutParams morphicScale}
 ]
