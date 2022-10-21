@@ -20,10 +20,10 @@ BlockCodeEditor >> blocks: props [
 { #category : #'as yet unclassified' }
 BlockCodeEditor >> render: props [
 
-	| editor blocks |
+	| editor blocks forceUpdate |
 	editor := self useRef: SBEditor new.
-	
 	blocks := self useState: {}.
+	forceUpdate := self useForceUpdate.
 	
 	self useEffect: [ | block |
 		editor get openInWindow.
@@ -31,16 +31,34 @@ BlockCodeEditor >> render: props [
 		"for testing purposes"
 		block := (SBTSStMethod for: Dictionary>>#associationsDo:).
 		editor get openMorph: block.
-		blocks set: [:old | old copyWith: block].
-		
+		"blocks set: [:old | old copyWith: block]."
+		forceUpdate value.
+				
 		[editor get delete]] dependencies: #().
 
 	^ (self godot: #Spatial)
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
-		children: (blocks get collect: [:block |
+		children: (Array streamContents: [:stream |
+			editor get childSandblocksDo: [:sandblock |
+				stream nextPut: (CodeBlock new
+					key: GRReact nextGodotId;
+					sandblock: sandblock;
+					layoutParams: (props at: #layoutParams);
+					isRoot: true)]])
+		
+		
+		"(blocks get collect: [:block |
 			CodeBlock new
 				key: GRReact nextGodotId;
 				structure: block exportStructure;
 				layoutParams: (props at: #layoutParams);
-				isRoot: true])
+				isRoot: true])"
+]
+
+{ #category : #'as yet unclassified' }
+BlockCodeEditor >> useForceUpdate [
+
+	| n |
+	n := self useState: 0.
+	^ [n set: [:old | old + 1]]
 ]

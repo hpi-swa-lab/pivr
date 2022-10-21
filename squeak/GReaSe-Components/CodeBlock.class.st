@@ -7,8 +7,26 @@ Class {
 { #category : #'as yet unclassified' }
 CodeBlock >> childBlocks: props [
 
-	| myStructure |
-	myStructure := (props at: #structure).
+	^ Array streamContents: [:stream | | sandblock |
+		sandblock := (props at: #sandblock).
+		sandblock class = SBTSStMethod
+			ifTrue: [
+				sandblock visibleSubmorphsDo: [:morph |
+					stream nextPut: (
+						CodeBlock new
+							key: GRReact nextGodotId;
+							sandblock: morph;
+							layoutParams: (props at: #layoutParams))]]
+			ifFalse: [
+				sandblock cursorPositionsDo: [:pos |
+					(pos isSelect and: [pos block ~= sandblock]) ifTrue: [
+						stream nextPut: (
+							CodeBlock new
+								key: GRReact nextGodotId;
+								sandblock: pos block;
+								layoutParams: (props at: #layoutParams))]]
+					shallow: true]]
+	"myStructure := (props at: #structure).
 	^ (myStructure at: #children)
 		ifNil: [#()]
 		ifNotNil: [:children |
@@ -23,7 +41,7 @@ CodeBlock >> childBlocks: props [
 						key: GRReact nextGodotId;
 						structure: structure;
 						parentStructure: myStructure;
-						layoutParams: (props at: #layoutParams)]].
+						layoutParams: (props at: #layoutParams)]]."
 ]
 
 { #category : #'as yet unclassified' }
@@ -44,13 +62,18 @@ CodeBlock >> render: props [
 { #category : #'as yet unclassified' }
 CodeBlock >> scale: props [
 
-	| morphBounds layoutParams |
+	| morphBounds layoutParams sandblock |
 	layoutParams := props at: #layoutParams.
-	morphBounds := (props at: #structure) at: #bounds.
-	Transcript showln: morphBounds.
-	^ Vector3
+	"morphBounds := (props at: #structure) at: #bounds."
+	"^ Vector3
 		x: (morphBounds at: 3) * layoutParams morphicScale
 		y: (morphBounds at: 4) * layoutParams morphicScale
+		z: layoutParams blockDepth"
+	morphBounds := (props at: #sandblock) bounds.
+	sandblock := (props at: #sandblock).
+	^ Vector3
+		x: sandblock width * layoutParams morphicScale
+		y: sandblock height * layoutParams morphicScale
 		z: layoutParams blockDepth
 ]
 
@@ -62,15 +85,17 @@ CodeBlock >> translation: props [
 	
 	^ (props at: #isRoot ifAbsent: false)
 		ifTrue: [Vector3 value: 0]
-		ifFalse: [ | morphBounds parentBounds adjustedPosition morphExtent morphPosition parentExtent parentPosition |
-			morphBounds := (props at: #structure) at: #bounds.
+		ifFalse: [ | adjustedPosition morph parent |
+			"morphBounds := (props at: #structure) at: #bounds.
 			parentBounds := (props at: #parentStructure) at: #bounds.
 			morphPosition := morphBounds first @ morphBounds second.
 			morphExtent := morphBounds third @ morphBounds fourth.
 			parentPosition := parentBounds first @ parentBounds second.
-			parentExtent := parentBounds third @ parentBounds fourth.
+			parentExtent := parentBounds third @ parentBounds fourth."
+			morph := props at: #sandblock.
+			parent := morph owner.
 			
-			adjustedPosition := (morphPosition - parentPosition + ((morphExtent - parentExtent) / 2)) * layoutParams morphicScale.
+			adjustedPosition := (morph topLeft - parent topLeft + ((morph extent - parent extent) / 2)) * layoutParams morphicScale.
 			adjustedPosition := adjustedPosition x  @ (adjustedPosition y * -1).
 			
 			adjustedPosition @ layoutParams blockDepth]
