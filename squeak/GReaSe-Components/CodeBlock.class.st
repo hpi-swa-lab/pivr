@@ -13,31 +13,27 @@ CodeBlock >> childBlocks: props [
 		ifNil: [#()]
 		ifNotNil: [:children |
 			children
-				select: [:structure | | childClass |
-					childClass := (structure at: #class).
-					childClass = 'block' or: [childClass = 'text']]
-				thenCollect: [:structure | | newClass |
-					newClass := (structure at: #class) caseOf: {
+				select: [:structure | #(block text) includes: (structure at: #class)]
+				thenCollect: [:structure | | childClass |
+					childClass := (structure at: #class) caseOf: {
 						['block'] -> [CodeBlock].
 						['text'] -> [CodeBlockText]}.
 					
-					newClass asReactNodeBuilder
-						props: {
-							#key -> GRReact nextGodotId.
-							#structure -> structure.
-							#parentStructure -> myStructure.
-							#layoutParams -> (props at: #layoutParams)};
-						build]].
+					childClass new
+						key: GRReact nextGodotId;
+						structure: structure;
+						parentStructure: myStructure;
+						layoutParams: (props at: #layoutParams)]].
 ]
 
 { #category : #'as yet unclassified' }
 CodeBlock >> render: props [
 
-	^ (self godot: #Spatial)
+	^ GDSpatial new
 		name: (self class asString), GRReact nextGodotId asString;
 		translation: (self translation: props);
 		children: {
-			(self godot: #MeshInstance)
+			GDMeshInstance new
 				scale: (self scale: props);
 				mesh: ((self godot: #CubeMesh)
 					size: (Vector3 value: 1);

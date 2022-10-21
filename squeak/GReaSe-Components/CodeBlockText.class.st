@@ -9,11 +9,11 @@ CodeBlockText >> render: props [
 
 	| layoutParams |
 	layoutParams := (props at: #layoutParams).
-	^ (self godot: #Spatial)
+	^ GDSpatial new
 		children: {
-			(self godot: #Label3D)
+			GDLabel3D new
 				text: ((props at: #structure) at: #contents);
 				"Add a tiny little offset to the label translation to prevent z-fighting"
 				translation: (Vector3 x: 0 y: 0 z: layoutParams blockDepth / 2) + 0.0001;
-				pixel_size: layoutParams morphicScale}
+				pixelSize: layoutParams morphicScale}
 ]
