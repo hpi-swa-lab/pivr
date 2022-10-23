@@ -87,12 +87,12 @@ Avatar >> renderHand: props [
 		useEffect: [
 			addHandAreaHandlers value: areaRef get value: (Dictionary withAll: {
 				#onAreaEntered -> [:eventHandlers |
-					Transcript showln: 'interactable entered hand'.
+					"Transcript showln: 'interactable entered hand'."
 					(eventHandlers at: #onHover) get ifNotNil: [:block |
 						block cull: createInteractiveEvent value].
 					activeEventHandlers set: [:old | old copyWith: eventHandlers]].
 				#onAreaExited -> [:eventHandlers |
-					Transcript showln: 'interactable exited hand'.
+					"Transcript showln: 'interactable exited hand'."
 					(eventHandlers at: #onBlur) get ifNotNil: [:block |
 						block cull: createInteractiveEvent value].
 					activeEventHandlers set: [:old | old copyWithout: eventHandlers]]}).

@@ -13,7 +13,7 @@ GRInteractiveArea >> render: props [
 	eventHandlers := #(onHover onBlur onButtonPress onButtonRelease)
 		collect: [:symbol | | ref |
 			ref := self useRef: nil.
-			ref set: (props at: symbol).
+			props at: symbol ifPresent: [:handler | ref set: handler].
 			symbol -> ref]
 		as: Dictionary.
 

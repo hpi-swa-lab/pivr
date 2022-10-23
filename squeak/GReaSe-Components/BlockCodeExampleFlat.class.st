@@ -7,5 +7,8 @@ Class {
 { #category : #'as yet unclassified' }
 BlockCodeExampleFlat >> interactionComponent [
 
-	^ FlyingCam asReactNodeBuilder build.
+	^ GDSpatial new
+		children: {
+			FlyingCam new.
+			"GRRerenderEnforcer new"}
 ]

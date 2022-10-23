@@ -33,6 +33,7 @@ BlockCodeEditor >> render: props [
 		editor get openMorph: block.
 		World doOneCycle.
 		forceUpdate value.
+		Transcript showln: 'here'.
 				
 		[editor get delete]] dependencies: #().
 
@@ -44,7 +45,7 @@ BlockCodeEditor >> render: props [
 					key: GRReact nextGodotId;
 					sandblock: sandblock;
 					layoutParams: (props at: #layoutParams);
-					isRoot: true)]])
+					isRoot: true)]]), {"GRRerenderEnforcer new"}
 ]
 
 { #category : #'as yet unclassified' }

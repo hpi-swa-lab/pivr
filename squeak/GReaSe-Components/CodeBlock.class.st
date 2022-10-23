@@ -7,18 +7,27 @@ Class {
 { #category : #'as yet unclassified' }
 CodeBlock >> render: props [
 
-	| layoutParams |
+	| layoutParams scale isHovered |
 	layoutParams := props at: #layoutParams.
+	scale := self scale: props.
 	
-	^ GDSpatial new
+	isHovered := self useState: false.
+	
+	^ GRInteractiveArea new
 		name: (self class asString), GRReact nextGodotId asString;
 		translation: (self translation: props);
+		onHover: [isHovered set: true];
+		onBlur: [isHovered set: false];
 		children: {
+			GDCollisionShape new
+				scale: scale;
+				shape: (GDBoxShape new
+					extents: 0.5 asVector3).
 			GDMeshInstance new
-				scale: (self scale: props);
+				scale: scale;
 				mesh: (GDCubeMesh new
 					size: (Vector3 value: 1);
-					material: (GDSpatialMaterial new albedoColor: Color random))},
+					material: (GDSpatialMaterial new albedoColor: (isHovered get ifTrue: [Color green] ifFalse: [Color white])))},
 			((props at: #sandblock) childrenAsCodeBlocks do: [:b |
 				b layoutParams: layoutParams])
 ]
