@@ -14,10 +14,13 @@ CodeBlock >> render: props [
 	isHovered := self useState: false.
 	
 	^ GRInteractiveArea new
-		name: (self class asString), GRReact nextGodotId asString;
+		"name: (self class asString), GRReact nextGodotId asString;"
 		translation: (self translation: props);
 		onHover: [isHovered set: true];
 		onBlur: [isHovered set: false];
+		"onButtonPress: [
+			Project current addDeferredUIMessage: [
+				(props at: #sandblock) sandblockEditor do: nil]];"
 		children: {
 			GDCollisionShape new
 				scale: scale;

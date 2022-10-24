@@ -64,7 +64,6 @@ Avatar >> renderHand: props [
 	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
 	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
 	
-	"TODO: dedup"
 	createInteractiveEvent := [
 		GRInteractiveAreaEvent new
 			controllerRef: controllerRef;
@@ -72,10 +71,7 @@ Avatar >> renderHand: props [
 			transform: transform get].
 	
 	createInteractiveButtonEvent := [:button |
-		GRInteractiveAreaEventButton new
-			controllerRef: controllerRef;
-			side: (props at: #side);
-			transform: transform get;
+		(createInteractiveEvent value as: GRInteractiveAreaEventButton)
 			button: button].
 	
 	self

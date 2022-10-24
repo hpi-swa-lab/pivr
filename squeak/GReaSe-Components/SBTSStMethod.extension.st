@@ -5,10 +5,7 @@ SBTSStMethod >> childrenAsCodeBlocks [
 
 	^ Array streamContents: [:stream |
 		self visibleSubmorphsDo: [:morph |
-			stream nextPut: (
-				CodeBlock new
-					key: GRReact nextGodotId;
-					sandblock: morph)]]
+			stream nextPut: morph asCodeBlock]]
 ]
 
 { #category : #'*GReaSe-Components-BlockCode' }

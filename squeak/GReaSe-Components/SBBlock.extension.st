@@ -1,6 +1,14 @@
 Extension { #name : #SBBlock }
 
 { #category : #'*GReaSe-Components-BlockCode' }
+SBBlock >> asCodeBlock [
+
+	^ CodeBlock new
+		key: self;
+		sandblock: self
+]
+
+{ #category : #'*GReaSe-Components-BlockCode' }
 SBBlock >> exportStructure [
 
 	^ {

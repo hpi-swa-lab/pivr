@@ -41,9 +41,7 @@ BlockCodeEditor >> render: props [
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
 		children: (Array streamContents: [:stream |
 			editor get childSandblocksDo: [:sandblock |
-				stream nextPut: (CodeBlock new
-					key: GRReact nextGodotId;
-					sandblock: sandblock;
+				stream nextPut: (sandblock asCodeBlock
 					layoutParams: (props at: #layoutParams);
 					isRoot: true)]]), {"GRRerenderEnforcer new"}
 ]

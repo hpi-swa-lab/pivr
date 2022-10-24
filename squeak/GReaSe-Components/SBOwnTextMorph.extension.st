@@ -4,7 +4,7 @@ Extension { #name : #SBOwnTextMorph }
 SBOwnTextMorph >> asCodeBlock [
 
 	^ CodeBlockText new
-		key: GRReact nextGodotId;
+		key: self;
 		morph: self
 ]
 

@@ -1,14 +1,6 @@
 Extension { #name : #SBTSBlock }
 
 { #category : #'*GReaSe-Components-BlockCode' }
-SBTSBlock >> asCodeBlock [
-
-	^ CodeBlock new
-		key: GRReact nextGodotId;
-		sandblock: self
-]
-
-{ #category : #'*GReaSe-Components-BlockCode' }
 SBTSBlock >> childrenAsCodeBlocks [
 
 	^ Array streamContents: [:stream |

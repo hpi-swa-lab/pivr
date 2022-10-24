@@ -37,6 +37,7 @@ BlockCodeExample >> render: props [
 
 	^ GRAlternativeWorld new
 		children: {
+			"GRPointer new."
 			BlockCodeEditor new
 				translation: self editorTranslation;
 				layoutParams: (CodeBlockLayoutParamters new

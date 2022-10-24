@@ -141,7 +141,8 @@ GDBaseObject >> set: aSymbol to: anObject [
 { #category : #'as yet unclassified' }
 GDBaseObject >> setAll: aDictionary [
 
-	aDictionary ifNotNil: [aDictionary keysAndValuesDo: [:key :value | self set: key to: value]]
+	aDictionary ifNotNil: [aDictionary keysAndValuesDo: [:key :value |
+			key = #children ifFalse: [self set: key to: value]]]
 ]
 
 { #category : #'as yet unclassified' }

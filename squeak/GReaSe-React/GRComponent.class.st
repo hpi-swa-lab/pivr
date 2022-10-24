@@ -7,7 +7,7 @@ Class {
 { #category : #deploy }
 GRComponent class >> start [
 
-	self startWithArguments: {GRReact port asString}
+	self startWithArguments: #()
 ]
 
 { #category : #deploy }
@@ -28,7 +28,7 @@ GRComponent class >> startQuest [
 GRComponent class >> startWithArguments: aStringCollection [
 
 	self startListener.
-	GRReact startGodotWithArguments: aStringCollection
+	GRReact startGodotWithArguments: {GRReact port asString}, aStringCollection
 ]
 
 { #category : #helpers }

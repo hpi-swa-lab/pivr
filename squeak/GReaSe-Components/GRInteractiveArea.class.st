@@ -17,7 +17,7 @@ GRInteractiveArea >> render: props [
 			symbol -> ref]
 		as: Dictionary.
 	
-	^ GDArea
+	^ GDArea new
 		setAll: props;
 		onAreaEntered: [:node |
 			handleAreaEnteredInteractable value: node value: eventHandlers];
