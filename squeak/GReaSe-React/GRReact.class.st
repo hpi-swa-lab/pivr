@@ -243,6 +243,12 @@ GRReact >> moveChild: aNode to: anotherNumber in: aParentNode [
 	super moveChild: aNode to: anotherNumber in: aParentNode
 ]
 
+{ #category : #'as yet unclassified' }
+GRReact >> onShutdown [
+
+	
+]
+
 { #category : #rendering }
 GRReact >> performRenderChanges [
 
