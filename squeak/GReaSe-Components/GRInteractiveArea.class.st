@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRInteractiveArea >> render: props [
 
-	| handleAreaEnteredInteractable handleAreaExitedInteractable eventHandlers area |
+	| handleAreaEnteredInteractable handleAreaExitedInteractable eventHandlers |
 	handleAreaEnteredInteractable := self useProvided: #handleAreaEnteredInteractable.
 	handleAreaExitedInteractable := self useProvided: #handleAreaExitedInteractable.
 	eventHandlers := #(onHover onBlur onButtonPress onButtonRelease)
@@ -16,16 +16,12 @@ GRInteractiveArea >> render: props [
 			props at: symbol ifPresent: [:handler | ref set: handler].
 			symbol -> ref]
 		as: Dictionary.
-
-	area := GDArea new.
-	"TODO: settings props should be directly supported on GDArea and such"
-	props keysAndValuesDo: [:key :value | key = #children ifFalse: [area set: key to: value]].
-	area
+	
+	^ GDArea
+		setAll: props;
 		onAreaEntered: [:node |
-			handleAreaEnteredInteractable value: node value: eventHandlers.];
+			handleAreaEnteredInteractable value: node value: eventHandlers];
 		onAreaExited: [:node |
 			handleAreaExitedInteractable value: node value: eventHandlers];
-		children: (props at: #children).
-	
-	^ area
+		children: (props at: #children)
 ]

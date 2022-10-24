@@ -35,14 +35,11 @@ Avatar >> render: props [
 	self useEffect: [
 		(GDARVRServer instance findInterfaceName: 'OpenXR')
 			ifNil: [self error: 'Did not find OpenXR interface']
-			ifNotNil: [:openxr | | viewport |
+			ifNotNil: [:openxr |
 				openxr initialize.
-				viewport := avatarRoot get getViewport.
+				avatarRoot get getViewport hdr: true; arvr: true.
 				GDEngine instance iterationsPerSecond: 90.
-				viewport hdr: true.
-				GDOS instance vsyncEnabled: true.
-				viewport arvr: true].
-		nil].
+				GDOS instance vsyncEnabled: true]].
 	
 	^ GDARVROrigin new
 		ref: avatarRoot;
@@ -56,15 +53,13 @@ Avatar >> render: props [
 Avatar >> renderHand: props [
 
 	| handMesh areaRef addHandAreaHandlers removeHandAreaHandlers controllerRef createInteractiveEvent activeEventHandlers createInteractiveButtonEvent transform |
-	handMesh := self
-		useMemo: [GD_ResourceLoader instance loadPath: 'res://assets/models/hand/hand.tres']
-		dependencies: #().
+	handMesh := self useHandMesh.
 	
 	controllerRef := self useRef: nil.
 	areaRef := self useGodotRef.
 	
 	activeEventHandlers := self useState: OrderedCollection new.
-	transform := self useRef: Matrix4x4.
+	transform := self useRef: Matrix4x4 identity.
 	
 	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
 	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
@@ -124,4 +119,12 @@ Avatar >> renderHand: props [
 					GDCollisionShape new
 						shape: (GDSphereShape new radius: 0.05);
 						translation: 0 @ -0.07 @ 0.05}}
+]
+
+{ #category : #'as yet unclassified' }
+Avatar >> useHandMesh [
+
+	^ self
+		useMemo: [GDResourceLoader instance loadPath: 'res://assets/models/hand/hand.tres']
+		dependencies: #()
 ]

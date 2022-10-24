@@ -36,14 +36,14 @@ GRGrabbableArea >> renderArea: props [
 		onBlur: (props at: #onBlur);
 		onButtonPress: [:event |
 			Transcript showln: 'press button'.
-			event button = 2 ifTrue: [
+			event isGrip ifTrue: [
 				Transcript showln: 'grab thing'.
 				(props at: #setHandRef) value: event controllerRef.
 				props at: #onGrab ifPresent: [:block | block cull: event]].
 			props at: #onButtonPress ifPresent: [:block | block cull: event]];
 		onButtonRelease: [:event |
 			Transcript showln: 'release button'.
-			event button = 2 ifTrue: [ 
+			event isGrip ifTrue: [ 
 				Transcript showln: 'release thing'.
 				(props at: #setTranslation) value: event transform translation.
 				Transcript showln: 'setting translation ', event transform translation.
