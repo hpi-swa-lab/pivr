@@ -36,7 +36,7 @@ BlockCodeEditor >> render: props [
 				
 		[editor get containingWindow delete]] dependencies: #().
 
-	^ GDSpatial new
+	^ ApplicationDworph new
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
 		children: (Array streamContents: [:stream |
 			editor get childSandblocksDo: [:sandblock |

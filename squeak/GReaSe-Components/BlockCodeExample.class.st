@@ -35,16 +35,35 @@ BlockCodeExample >> render: props [
 
 	self useCenterOnScreen: 1.
 
-	^ GRAlternativeWorld new
+	^ AlternativeWorldDworph new
 		children: {
+			(self methodAsComponent: #renderApps:).
 			"GRPointer new."
-			BlockCodeEditor new
+			"BlockCodeEditor new
 				translation: self editorTranslation;
 				layoutParams: (CodeBlockLayoutParamters new
 					blockDepth: 0.01;
-					morphicScale: 0.003).
+					morphicScale: 0.003)."
 			self interactionComponent.
 			"GrabbableCube new"}
+]
+
+{ #category : #'as yet unclassified' }
+BlockCodeExample >> renderApps: props [
+
+	| openApp |
+	openApp := self useProvided: #openApplication.
+
+	self useEffect: [
+		openApp value: BlockCodeEditor
+			value: ({
+				#layoutParams -> (CodeBlockLayoutParamters new
+					blockDepth: 0.01;
+					morphicScale: 0.003)} as: Dictionary).
+		
+		nil] dependencies: #().
+
+	^ GDNode new.
 ]
 
 { #category : #'as yet unclassified' }
