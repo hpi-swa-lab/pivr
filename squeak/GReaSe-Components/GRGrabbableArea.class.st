@@ -32,8 +32,8 @@ GRGrabbableArea >> renderArea: props [
 
 	^ GRInteractiveArea new
 		props: props copy;
-		onHover: (props at: #onHover);
-		onBlur: (props at: #onBlur);
+		onHover: (props at: #onHover ifAbsent: [nil]);
+		onBlur: (props at: #onBlur ifAbsent: [nil]);
 		onButtonPress: [:event |
 			Transcript showln: 'press button'.
 			event isGrip ifTrue: [
@@ -43,7 +43,7 @@ GRGrabbableArea >> renderArea: props [
 			props at: #onButtonPress ifPresent: [:block | block cull: event]];
 		onButtonRelease: [:event |
 			Transcript showln: 'release button'.
-			event isGrip ifTrue: [ 
+			event isGrip ifTrue: [
 				Transcript showln: 'release thing'.
 				(props at: #setTranslation) value: event transform translation.
 				Transcript showln: 'setting translation ', event transform translation.

@@ -150,6 +150,13 @@ GRMockNode >> godotClass: aClass [
 	godotClass := aClass
 ]
 
+{ #category : #accessing }
+GRMockNode >> hasParent: aNode [
+
+	self parentsDo: [:p | p = aNode ifTrue: [^ true]].
+	^ false
+]
+
 { #category : #internal }
 GRMockNode >> initialize [
 
@@ -197,7 +204,15 @@ GRMockNode >> parent: aNode [
 	parent := aNode
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #accessing }
+GRMockNode >> parentsDo: aBlock [
+
+	self parent ifNotNil: [:p |
+		aBlock value: p.
+		p parentsDo: aBlock]
+]
+
+{ #category : #accessing }
 GRMockNode >> path [
 
 	| current out |
