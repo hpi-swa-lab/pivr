@@ -39,11 +39,6 @@ BlockCodeExample >> render: props [
 		children: {
 			(self methodAsComponent: #renderApps:).
 			"GRPointer new."
-			"BlockCodeEditor new
-				translation: self editorTranslation;
-				layoutParams: (CodeBlockLayoutParamters new
-					blockDepth: 0.01;
-					morphicScale: 0.003)."
 			self interactionComponent.
 			"GrabbableCube new"}
 ]
@@ -55,11 +50,11 @@ BlockCodeExample >> renderApps: props [
 	openApp := self useProvided: #openApplication.
 
 	self useEffect: [
-		openApp value: BlockCodeEditor
-			value: ({
-				#layoutParams -> (CodeBlockLayoutParamters new
-					blockDepth: 0.01;
-					morphicScale: 0.003)} as: Dictionary).
+		openApp value: (DworphicApplicationDescription new
+			appClass: BlockCodeEditor;
+			layoutParams: (CodeBlockLayoutParamters new
+				blockDepth: 0.01;
+				morphicScale: 0.003)).
 		
 		nil] dependencies: #().
 
