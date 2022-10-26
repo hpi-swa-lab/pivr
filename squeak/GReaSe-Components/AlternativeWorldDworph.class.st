@@ -24,7 +24,10 @@ AlternativeWorldDworph >> render: props [
 				handAreaHandlers get at: area ifPresent: [:handHandlers |
 					(handHandlers at: #onAreaExited) value: eventHandlers]].
 			#openApplication -> [:appDescription |
-				apps set: [:old | old copyWith: appDescription]]}
+				apps set: [:old | old copyWith: appDescription].
+				appDescription id].
+			#closeApplication -> [:id |
+				apps set: [:old | old reject: [:appDescription | appDescription id = id]]]}
 		children: {
 			GDSpatial new
 				children: (props at: #children), (apps get collect: [:info | info buildComponent])}

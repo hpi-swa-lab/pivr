@@ -50,6 +50,12 @@ DworphicApplicationDescription >> doesNotUnderstand: aMessage [
 ]
 
 { #category : #'as yet unclassified' }
+DworphicApplicationDescription >> id [
+
+	^ id
+]
+
+{ #category : #'as yet unclassified' }
 DworphicApplicationDescription >> initialize [
 
 	id := (NextId ifNil: [0] ifNotNil: [NextId := NextId + 1]).
