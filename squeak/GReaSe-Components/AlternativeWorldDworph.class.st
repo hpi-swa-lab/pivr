@@ -1,14 +1,15 @@
 Class {
-	#name : #GRAlternativeWorld,
+	#name : #AlternativeWorldDworph,
 	#superclass : #GRComponent,
 	#category : #'GReaSe-Components-BlockCode'
 }
 
 { #category : #'as yet unclassified' }
-GRAlternativeWorld >> render: props [
+AlternativeWorldDworph >> render: props [
 
-	| handAreaHandlers |
+	| handAreaHandlers apps |
 	handAreaHandlers := self useState: Dictionary new.
+	apps := self useState: OrderedCollection new.
 
 	^ GRProvider
 		values: {
@@ -21,8 +22,13 @@ GRAlternativeWorld >> render: props [
 					(handHandlers at: #onAreaEntered) value: eventHandlers]].
 			#handleAreaExitedInteractable -> [:area :eventHandlers |
 				handAreaHandlers get at: area ifPresent: [:handHandlers |
-					(handHandlers at: #onAreaExited) value: eventHandlers]].}
+					(handHandlers at: #onAreaExited) value: eventHandlers]].
+			#openApplication -> [:appClass :config |
+				apps set: [:old |
+					old copyWith: (DworphicApplicationInfo new
+						appClass: appClass;
+						config: config)]]}
 		children: {
 			GDSpatial new
-				children: (props at: #children)}
+				children: (props at: #children), (apps get collect: [:info | info buildComponent])}
 ]

@@ -33,11 +33,10 @@ BlockCodeEditor >> render: props [
 		editor get openMorph: block.
 		World doOneCycle.
 		forceUpdate value.
-		Transcript showln: 'here'.
 				
-		[editor get delete]] dependencies: #().
+		[editor get containingWindow delete]] dependencies: #().
 
-	^ (self godot: #Spatial)
+	^ ApplicationDworph new
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
 		children: (Array streamContents: [:stream |
 			editor get childSandblocksDo: [:sandblock |
