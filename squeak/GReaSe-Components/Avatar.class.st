@@ -29,24 +29,31 @@ Avatar >> mirrorFactorForSide: side [
 { #category : #'as yet unclassified' }
 Avatar >> render: props [
 
-	| avatarRoot |
-	avatarRoot := self useGodotRef.
+	| vrSupported |
+	vrSupported := self useState: nil.
 	
-	self useEffect: [
-		(GDARVRServer instance findInterfaceName: 'OpenXR')
-			ifNil: [self error: 'Did not find OpenXR interface']
-			ifNotNil: [:openxr |
-				openxr initialize.
-				avatarRoot get getViewport hdr: true; arvr: true.
-				GDEngine instance iterationsPerSecond: 90.
-				GDOS instance vsyncEnabled: true]] dependencies: {}.
+	self
+		useEffect: [
+			(GDARVRServer instance findInterfaceName: 'OpenXR')
+				ifNil: [vrSupported set: false]
+				ifNotNil: [:openxr |
+					openxr initialize.
+					((GDEngine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport)
+						hdr: true;
+						arvr: true.
+					GDEngine instance iterationsPerSecond: 90.
+					GDOS instance vsyncEnabled: true.
+					vrSupported set: true]]
+		dependencies: {}.
 	
-	^ GDARVROrigin new
-		ref: avatarRoot;
-		children: {
-			GDARVRCamera new.
-			(self methodAsComponent: #renderHand:) side: #left.
-			(self methodAsComponent: #renderHand:) side: #right}
+	vrSupported get ifNil: [^ nil].
+	^ vrSupported get
+		ifTrue: [
+			GDARVROrigin new children: {
+				GDARVRCamera new.
+				(self methodAsComponent: #renderHand:) side: #left.
+				(self methodAsComponent: #renderHand:) side: #right}]
+		ifFalse: [OrbitCameraDworph new]
 ]
 
 { #category : #'as yet unclassified' }

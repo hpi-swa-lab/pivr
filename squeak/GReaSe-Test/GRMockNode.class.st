@@ -87,7 +87,8 @@ GRMockNode >> children [
 { #category : #internal }
 GRMockNode >> delete [
 
-	self parent children remove: self
+	self parent children remove: self.
+	parent := nil
 ]
 
 { #category : #accessing }
@@ -170,7 +171,8 @@ GRMockNode >> initialize [
 GRMockNode >> insertChild: aChild before: aSibling [
 
 	(children includes: aChild) ifTrue: [children remove: aChild].
-	children add: aChild before: aSibling
+	children add: aChild before: aSibling.
+	aChild parent: self
 ]
 
 { #category : #accessing }
