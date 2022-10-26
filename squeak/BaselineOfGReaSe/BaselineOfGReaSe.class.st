@@ -12,6 +12,9 @@ BaselineOfGReaSe >> baseline: spec [
 		spec baseline: 'SBTreeSitter' with: [spec repository: 'github://hpi-swa-lab/sb-tree-sitter'].
 		spec baseline: 'CmfcmfReact' with: [spec repository: 'github://cmfcmf/ReactS:main/packages'].
 		spec
+			baseline: 'SBTreeSitter'
+			with: [spec repository: 'github://hpi-swa-lab/sb-tree-sitter:master/packages'].
+		spec
 			baseline: '3DTransform'
 			with: [spec repository: 'github://hpi-swa-lab/squeak-graphics-opengl:main/3DTransform/src/'].
 		spec package: 'OSProcess' with: [spec repository: 'http://www.squeaksource.com/OSProcess'].
@@ -22,7 +25,8 @@ BaselineOfGReaSe >> baseline: spec [
 				spec
 					requires: #('GReaSe-Core');
 					postLoadDoIt: #postLoadGenerator];
-			package: 'GReaSe-Components' with: [spec requires: #('GReaSe-Core' 'Godot-Internal-Generation')];
+			package: 'GReaSe-Components'
+				with: [spec requires: #('GReaSe-Core' 'Godot-Internal-Generation' 'SBTreeSitter')];
 			package: 'GReaSe-Test' with: [spec requires: #('GReaSe-Core')];
 			package: 'Dworphic-Core' with: [spec requires: #('GReaSe-Core' 'Godot-Internal-Generation')];
 			package: 'Dworphic-Test'
