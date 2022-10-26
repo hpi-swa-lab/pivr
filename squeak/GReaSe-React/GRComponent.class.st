@@ -55,6 +55,19 @@ GRComponent >> nextGodotId [
 	^ GRReact nextGodotId
 ]
 
+{ #category : #'as yet unclassified' }
+GRComponent >> useApplication: anAppDesc [
+
+	| openApplication closeApplication |
+	openApplication := self useProvided: #openApplication.
+	closeApplication := self useProvided: #closeApplication.
+	self
+		useEffect: [ | id |
+			id := openApplication value: anAppDesc.
+			[closeApplication value: id]]
+		dependencies: {}
+]
+
 { #category : #hooks }
 GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 

@@ -300,5 +300,14 @@ GRMockNode >> toggleGrip: aBoolean [
 	self assert: godotClass = #ARVRController.
 	^ self
 		signal: (aBoolean ifTrue: [#'button_pressed'] ifFalse: [#'button_release'])
-		with: {ControllerInfoDworph grip}
+		with: {GDGlobalConstants joyVrGrip}
+]
+
+{ #category : #utilities }
+GRMockNode >> toggleTrigger: aBoolean [
+
+	self assert: godotClass = #ARVRController.
+	^ self
+		signal: (aBoolean ifTrue: [#'button_pressed'] ifFalse: [#'button_release'])
+		with: {GDGlobalConstants joyVrTrigger}
 ]

@@ -28,5 +28,6 @@ AlternativeWorldDworph >> render: props [
 				appDescription id].
 			#closeApplication -> [:id | apps set: [:old | old reject: [:appDescription | appDescription id = id]]].
 			#applications -> apps get}
-		children: {GDSpatial new children: (props at: #children), (apps get collect: [:info | info buildComponent])}
+		children: {
+			GDSpatial new children: (props at: #children), (apps get collect: [:info | info buildComponent key: info id])}
 ]

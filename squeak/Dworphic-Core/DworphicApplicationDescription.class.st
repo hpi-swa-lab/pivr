@@ -5,7 +5,8 @@ Class {
 		'name',
 		'appClass',
 		'id',
-		'properties'
+		'properties',
+		'render'
 	],
 	#classVars : [
 		'NextId'
@@ -28,7 +29,8 @@ DworphicApplicationDescription >> appClass: aClass [
 { #category : #'as yet unclassified' }
 DworphicApplicationDescription >> buildComponent [
 
-	 ^ appClass new
+	render ifNotNil: [^ render value].
+	^ appClass new
 		props: properties;
 		key: id
 ]
@@ -58,8 +60,8 @@ DworphicApplicationDescription >> id [
 { #category : #'as yet unclassified' }
 DworphicApplicationDescription >> initialize [
 
-	id := (NextId ifNil: [0] ifNotNil: [NextId := NextId + 1]).
-	properties := Dictionary new.
+	id := NextId ifNil: [NextId := 0] ifNotNil: [NextId := NextId + 1].
+	properties := Dictionary new
 ]
 
 { #category : #'as yet unclassified' }
@@ -72,4 +74,16 @@ DworphicApplicationDescription >> name [
 DworphicApplicationDescription >> name: aString [
 
 	name := aString
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> render [
+
+	^ render
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> render: aBlock [
+
+	render := aBlock
 ]

@@ -24,3 +24,9 @@ GRInteractiveAreaEventButton >> isGrip [
 
 	^ self button = GDGlobalConstants joyVrGrip
 ]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEventButton >> isTrigger [
+
+	^ self button = GDGlobalConstants joyVrTrigger
+]
