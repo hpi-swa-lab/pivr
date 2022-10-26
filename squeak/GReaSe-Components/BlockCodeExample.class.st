@@ -39,11 +39,6 @@ BlockCodeExample >> render: props [
 		children: {
 			(self methodAsComponent: #renderApps:).
 			"GRPointer new."
-			"BlockCodeEditor new
-				translation: self editorTranslation;
-				layoutParams: (CodeBlockLayoutParamters new
-					blockDepth: 0.01;
-					morphicScale: 0.003)."
 			self interactionComponent.
 			"GrabbableCube new"}
 ]
@@ -51,19 +46,30 @@ BlockCodeExample >> render: props [
 { #category : #'as yet unclassified' }
 BlockCodeExample >> renderApps: props [
 
-	| openApp |
+	| openApp appId closeApp |
 	openApp := self useProvided: #openApplication.
+	closeApp := self useProvided: #closeApplication.
+	appId := self useState: nil.
 
-	self useEffect: [
-		openApp value: BlockCodeEditor
-			value: ({
-				#layoutParams -> (CodeBlockLayoutParamters new
-					blockDepth: 0.01;
-					morphicScale: 0.003)} as: Dictionary).
+	self useEffect: [ | id |
+		id := openApp value: (DworphicApplicationDescription new
+			appClass: BlockCodeEditor;
+			layoutParams: (CodeBlockLayoutParamters new
+				blockDepth: 0.01;
+				morphicScale: 0.003)).
+		appId set: id.
 		
 		nil] dependencies: #().
 
-	^ GDNode new.
+	^ GDNode new
+		children: {
+			GDTimer new
+				autostart: true;
+				oneShot: true;
+				waitTime: 1;
+				onTimeout: [appId get ifNotNil: [:id |
+						Transcript showln: 'closing app ', id.
+						closeApp value: id]]}
 ]
 
 { #category : #'as yet unclassified' }
