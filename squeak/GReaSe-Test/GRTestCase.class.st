@@ -51,7 +51,8 @@ GRTestCase >> openComponent: aBlockOrClass [
 		for: 'find_interface' reply: (GDARVRInterface basicNew objectId: 1);
 		for: 'initialize' reply: true;
 		for: 'get_main_loop' reply: (GDSceneTree basicNew objectId: 2);
-		for: 'root' reply: (GDViewport basicNew objectId: 2).
+		for: 'root' reply: (GDViewport basicNew objectId: 2);
+		for: 'get_viewport' reply: (GDViewport basicNew objectId: 2).
 	
 	self tick
 ]

@@ -101,6 +101,13 @@ GRMockNode >> doesNotUnderstand: aMessage [
 ]
 
 { #category : #accessing }
+GRMockNode >> firstNodeNamed: aString [
+
+	self allNodesDo: [:node | node name = aString ifTrue: [^ node]].
+	self error: 'no node found'
+]
+
+{ #category : #accessing }
 GRMockNode >> firstNodeOfType: aSymbol [
 
 	^ self firstNodeThat: [:node | node godotClass = aSymbol]

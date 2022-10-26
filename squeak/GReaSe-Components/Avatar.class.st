@@ -39,7 +39,7 @@ Avatar >> render: props [
 				openxr initialize.
 				avatarRoot get getViewport hdr: true; arvr: true.
 				GDEngine instance iterationsPerSecond: 90.
-				GDOS instance vsyncEnabled: true]].
+				GDOS instance vsyncEnabled: true]] dependencies: {}.
 	
 	^ GDARVROrigin new
 		ref: avatarRoot;
