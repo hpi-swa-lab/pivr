@@ -4,7 +4,7 @@ Class {
 	#category : #'GReaSe-Components-BlockCode'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #'rendering - vr' }
 Avatar >> controllerIdForSide: side [
 
 	^ side caseOf: {
@@ -12,13 +12,7 @@ Avatar >> controllerIdForSide: side [
 		[#right] -> [2]}
 ]
 
-{ #category : #'as yet unclassified' }
-Avatar >> grabButton [
-
-	^ 2
-]
-
-{ #category : #'as yet unclassified' }
+{ #category : #'rendering - vr' }
 Avatar >> mirrorFactorForSide: side [
 
 	^ side caseOf: {
@@ -26,7 +20,24 @@ Avatar >> mirrorFactorForSide: side [
 		[#right] -> [1]}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'rendering - simulated' }
+Avatar >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
+
+	| camera origin normal spatial |
+	spatial := aRef get grAsClass: #GDSpatial.
+	camera := (spatial getTree root grAsClass: #GDViewport) getCamera.
+	origin := camera projectRayOriginScreenPoint: aPoint.
+	normal := (camera projectRayNormalScreenPoint: aPoint) * 100.
+	^ (spatial getWorld directSpaceState
+		intersectRayFrom: origin
+		to: normal
+		exclude: {}
+		collisionMask: 2147483647
+		collideWithBodies: true
+		collideWithAreas: true) ifNotEmpty: [:res | aBlock value: (res at: #position)]
+]
+
+{ #category : #rendering }
 Avatar >> render: props [
 
 	| vrSupported |
@@ -53,63 +64,32 @@ Avatar >> render: props [
 				GDARVRCamera new.
 				(self methodAsComponent: #renderHand:) side: #left.
 				(self methodAsComponent: #renderHand:) side: #right}]
-		ifFalse: [OrbitCameraDworph new]
+		ifFalse: [self methodAsComponent: #renderSimulated:]
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	| handMesh areaRef addHandAreaHandlers removeHandAreaHandlers controllerRef createInteractiveEvent activeEventHandlers createInteractiveButtonEvent transform |
+	| handMesh areaRef controllerRef transform handlers |
 	handMesh := self useHandMesh.
 	
 	controllerRef := self useRef: nil.
 	areaRef := self useGodotRef.
-	
-	activeEventHandlers := self useState: OrderedCollection new.
 	transform := self useRef: Matrix4x4 identity.
 	
-	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
-	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
-	
-	createInteractiveEvent := [
-		GRInteractiveAreaEvent new
-			controllerRef: controllerRef;
-			side: (props at: #side);
-			transform: transform get].
-	
-	createInteractiveButtonEvent := [:button |
-		(createInteractiveEvent value as: GRInteractiveAreaEventButton)
-			button: button].
-	
-	self
-		useEffect: [
-			addHandAreaHandlers value: areaRef get value: (Dictionary withAll: {
-				#onAreaEntered -> [:eventHandlers |
-					"Transcript showln: 'interactable entered hand'."
-					(eventHandlers at: #onHover) get ifNotNil: [:block |
-						block cull: createInteractiveEvent value].
-					activeEventHandlers set: [:old | old copyWith: eventHandlers]].
-				#onAreaExited -> [:eventHandlers |
-					"Transcript showln: 'interactable exited hand'."
-					(eventHandlers at: #onBlur) get ifNotNil: [:block |
-						block cull: createInteractiveEvent value].
-					activeEventHandlers set: [:old | old copyWithout: eventHandlers]]}).
-			[removeHandAreaHandlers value: areaRef get]]
-		dependencies: #().
+	handlers := self
+		useActiveEventHandlersFor: areaRef
+		side: (props at: #side)
+		transform: transform
+		controller: controllerRef.
 	
 	^ GDARVRController new
 		ref: controllerRef;
 		subscribeTo: #transform do: [:t | transform set: t];
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
-		onButtonPressed: [:button |
-			activeEventHandlers get do: [:handlers |
-				(handlers at: #onButtonPress) get ifNotNil: [:block |
-					block cull: (createInteractiveButtonEvent value: button)]]];
-		onButtonRelease: [:button |
-			activeEventHandlers get do: [:handlers |
-				(handlers at: #onButtonRelease) get ifNotNil: [:block |
-					block cull: (createInteractiveButtonEvent value: button)]]];
+		onButtonPressed: (handlers at: #onButtonPress);
+		onButtonRelease: (handlers at: #onButtonRelease);
 		children: {
 			GDMeshInstance new
 				mesh: handMesh;
@@ -124,7 +104,105 @@ Avatar >> renderHand: props [
 						translation: 0 @ -0.07 @ 0.05}}
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'rendering - simulated' }
+Avatar >> renderSimulated: props [
+
+	| controlling |
+	controlling := self useState: #headset.
+	
+	^ {
+		OrbitCameraDworph new active: controlling get = #headset.
+		GRExternalEvents new onKeyboard: [:pressed :scanCode :key |
+			scanCode = GDGlobalConstants keyControl ifTrue: [controlling set: (pressed ifTrue: [#left] ifFalse: [#headset])].
+			scanCode = GDGlobalConstants keyAlt ifTrue: [controlling set: (pressed ifTrue: [#right] ifFalse: [#headset])]].
+		(self methodAsComponent: #renderSimulatedController:)
+			side: #left;
+			active: controlling get = #left.
+		(self methodAsComponent: #renderSimulatedController:)
+			side: #right;
+			active: controlling get = #right.
+		(self methodAsComponent: #renderSimulatedHUD:) controlling: controlling get}
+]
+
+{ #category : #'rendering - simulated' }
+Avatar >> renderSimulatedController: props [
+
+	| transform handPortal handArea handIsFree pressedButtons axes handlers |
+	transform := self useState: Matrix4x4 new.
+	handIsFree := self useState: true.
+	pressedButtons := self useState: {}.
+	handPortal := self useRef: nil.
+	handArea := self useGodotRef.
+	axes := {{ControllerInfoDworph triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state |
+		state := self useState: 0.0.
+		axis, {state}].
+	
+	handlers := self
+		useActiveEventHandlersFor: handArea
+		side: (props at: #side)
+		transform: transform
+		controller: nil.
+	
+	^ GDSpatial new
+		transform: transform get;
+		children: {
+			GDArea new
+				children: {
+					GDCollisionShape new shape: (GDSphereShape new
+						margin: 0.001;
+						radius: 0.01)};
+				ref: handArea.
+			GDSpatial new ref: handPortal.
+			GDMeshInstance new mesh: (GDSphereMesh new
+				radius: 0.01;
+				height: 0.02;
+				material: (GDSpatialMaterial new albedoColor: (Color r: 1 g: 0.0 b: 0.0))).
+			(props at: #active)
+				ifTrue: [
+					(self methodAsComponent: #renderSimulatedControllerControls:)
+						setControllerTransform: transform setter;
+						handlers: handlers]
+				ifFalse: [nil]}
+]
+
+{ #category : #'rendering - simulated' }
+Avatar >> renderSimulatedControllerControls: props [
+
+	| ref controllerTransform press release |
+	controllerTransform := props at: #setControllerTransform.
+	ref := self useGodotRef.
+	press := (props at: #handlers) at: #onButtonPress.
+	release := (props at: #handlers) at: #onButtonRelease.
+	
+	^ GDSpatial new
+		ref: ref;
+		children: {
+			GRExternalEvents new
+				onButton: [:pressed :button :position |
+					self
+						positionInSceneFor: position
+						spatialRef: ref
+						do: [:point | controllerTransform value: (Matrix4x4 withOffset: point)]];
+				onKeyboard: [:pressed :scanCode :key | | cb |
+					cb := pressed ifTrue: [press] ifFalse: [release].
+					scanCode = GDGlobalConstants keySpace ifTrue: [cb value: GDGlobalConstants joyVrGrip].
+					scanCode = GDGlobalConstants keyTab ifTrue: [cb value: GDGlobalConstants joyVrTrigger]]}
+]
+
+{ #category : #'rendering - simulated' }
+Avatar >> renderSimulatedHUD: props [
+
+	^ GDVBoxContainer new children: {GDLabel new text: 'Controlling:'}, (#(#('Headset' #headset) #('Left Controller (Ctrl)' 'left') #('Right Controller (Alt)' 'right')) collect: [:pair |
+		(GDLabel new text: pair first)
+			call: #'add_color_override' arguments: {
+				'font_color'.
+				(props at: #controlling) = pair second
+					ifTrue: [Color r: 1 g: 1 b: 1]
+					ifFalse: [(Color r: 1 g: 1 b: 1) alpha: 0.7]};
+			key: pair second])
+]
+
+{ #category : #'rendering - vr' }
 Avatar >> useHandMesh [
 
 	^ self

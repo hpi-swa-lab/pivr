@@ -78,7 +78,6 @@ DworphicToolTest >> testOpenWorld [
 	self openComponent: WorldDworph.
 	
 	camera := godotTree firstNodeOfType: #ARVRCamera.
-	Transcript showln: 'tick'.
 	self tick: {
 		camera
 			subscribe: #'global_transform'

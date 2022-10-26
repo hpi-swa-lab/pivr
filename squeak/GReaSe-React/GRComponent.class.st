@@ -55,7 +55,42 @@ GRComponent >> nextGodotId [
 	^ GRReact nextGodotId
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #hooks }
+GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aState controller: controllerRef [
+
+	| addHandAreaHandlers removeHandAreaHandlers createInteractiveEvent activeEventHandlers createInteractiveButtonEvent |
+	activeEventHandlers := self useState: OrderedCollection new.
+	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
+	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
+	
+	createInteractiveEvent := [
+		GRInteractiveAreaEvent new
+			controllerRef: controllerRef;
+			side: aSymbol;
+			transform: aState get].
+	createInteractiveButtonEvent := [:button | (createInteractiveEvent value as: GRInteractiveAreaEventButton) button: button].
+	
+	self
+		useEffect: [
+			addHandAreaHandlers value: areaRef get value: (Dictionary withAll: {
+				#onAreaEntered -> [:eventHandlers |
+					(eventHandlers at: #onHover) get ifNotNil: [:block | block cull: createInteractiveEvent value].
+					activeEventHandlers set: [:old | old copyWith: eventHandlers]].
+				#onAreaExited -> [:eventHandlers |
+					(eventHandlers at: #onBlur) get ifNotNil: [:block | block cull: createInteractiveEvent value].
+					activeEventHandlers set: [:old | old copyWithout: eventHandlers]]}).
+			[removeHandAreaHandlers value: areaRef get]]
+		dependencies: #().
+	
+	^ Dictionary new
+		at: #onButtonPress
+			put: [:button | activeEventHandlers get do: [:handlers | (handlers at: #onButtonPress) get ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button)]]];
+		at: #onButtonRelease
+			put: [:button | activeEventHandlers get do: [:handlers | (handlers at: #onButtonRelease) get ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button)]]];
+		yourself
+]
+
+{ #category : #hooks }
 GRComponent >> useApplication: anAppDesc [
 
 	| openApplication closeApplication |
