@@ -9,7 +9,7 @@ AppLaunchDworph >> render: props [
 
 	| apps openApplication |
 	apps := self
-		useMemo: [{#CubeApp. #VirtualKeyboardDworph} collect: [:app | (Smalltalk classNamed: app) appDescription]]
+		useMemo: [{#CubeApp. #VirtualKeyboardDworph. #AirwriteDworph} collect: [:app | (Smalltalk classNamed: app) appDescription]]
 		dependencies: {}.
 	
 	openApplication := self useProvided: #openApplication.

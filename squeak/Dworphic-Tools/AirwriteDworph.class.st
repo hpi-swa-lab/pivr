@@ -128,13 +128,13 @@ AirwriteDworph >> radius [
 { #category : #rendering }
 AirwriteDworph >> render: props [
 
-	^ ControllerToolDworph new
-		transform: (props at: #transform ifAbsent: [Matrix4x4 identity]);
-		shape: self collisionShape;
-		shapeTransform: (Matrix4x4 withOffset: 0 @ (self length / 2) @ 0);
-		onRelease: #return;
-		active: [(self methodAsComponent: #renderActive:) props: props];
-		passive: [(self methodAsComponent: #renderPassive:) props: props]
+	| grabbed |
+	grabbed := self useState: false.
+	
+	^ GRGrabbableArea new children: {
+		GDCollisionShape new shape: self collisionShape.
+		self stick.
+		grabbed get ifTrue: [self methodAsComponent: #renderActive:] ifFalse: [nil]}
 ]
 
 { #category : #rendering }
@@ -167,7 +167,6 @@ AirwriteDworph >> renderActive: props [
 		dependencies: {controllerTranslation. buttonPressed}.
 	
 	^ GDSpatial new children: {
-		self renderPassive: props.
 		CMFReactNodePortal
 			child: {
 				GDPath new
@@ -197,7 +196,7 @@ AirwriteDworph >> renderActive: props [
 ]
 
 { #category : #rendering }
-AirwriteDworph >> renderPassive: props [
+AirwriteDworph >> stick [
 
 	^ (self godot: #MeshInstance)
 		mesh: ((self godot: #CylinderMesh)
