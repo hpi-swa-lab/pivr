@@ -8,7 +8,6 @@ Class {
 CubeExample >> render: props [
 
 	^ AlternativeWorldDworph new children: {
-		Avatar new.
 		[
 			self useApplication: [CubeApp appDescription] dependencies: {}.
 			nil] asComponent}

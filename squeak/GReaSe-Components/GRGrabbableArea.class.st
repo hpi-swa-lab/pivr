@@ -44,7 +44,7 @@ GRGrabbableArea >> renderArea: props [
 				(props at: #setHandRef) value: nil.
 				transform := props at: #onRelease ifPresent: [:block | block cull: event].
 				(props at: #setTransform) value: (transform class = Matrix4x4 ifTrue: [transform] ifFalse: [event transform])].
-			props at: #onButtonPress ifPresent: [:block | block cull: event]];
+			props at: #onButtonRelease ifPresent: [:block | block cull: event]];
 		children: (props at: #children)
 ]
 

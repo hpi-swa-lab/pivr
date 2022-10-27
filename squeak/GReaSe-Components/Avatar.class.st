@@ -40,11 +40,8 @@ Avatar >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
 { #category : #rendering }
 Avatar >> render: props [
 
-	| vrSupported head left right |
+	| vrSupported |
 	vrSupported := self useState: nil.
-	head := self useState: Matrix4x4 identity.
-	left := self useState: Matrix4x4 identity.
-	right := self useState: Matrix4x4 identity.
 	
 	self
 		useEffect: [
@@ -64,24 +61,26 @@ Avatar >> render: props [
 	
 	^ vrSupported get
 		ifTrue: [
-			(GDARVROrigin new subscribeTo: #'global_transform' do: [:t | head set: t]) children: {
+			(GDARVROrigin new
+				subscribeTo: #'global_transform'
+				do: [:t | (props at: #setHead) value: t]) children: {
 				GDARVRCamera new.
 				(self methodAsComponent: #renderController:)
 					side: #left;
-					transform: left get;
-					setTransform: left setter.
+					transform: (props at: #left);
+					setTransform: (props at: #setLeft).
 				(self methodAsComponent: #renderController:)
 					side: #right;
-					transform: right get;
-					setTransform: right setter}]
+					transform: (props at: #right);
+					setTransform: (props at: #setRight)}]
 		ifFalse: [
 			(self methodAsComponent: #renderSimulated:)
-				head: head get;
-				setHead: head setter;
-				left: left get;
-				setLeft: left setter;
-				right: right get;
-				setRight: right setter]
+				head: (props at: #head);
+				setHead: (props at: #setHead);
+				left: (props at: #left);
+				setLeft: (props at: #setLeft);
+				right: (props at: #right);
+				setRight: (props at: #setRight)]
 ]
 
 { #category : #'rendering - vr' }

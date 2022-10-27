@@ -9,7 +9,6 @@ AppBarDworphTest >> testAppBarClose [
 
 	self openComponent: [
 		AlternativeWorldDworph new children: {
-			Avatar new.
 			AppBarDworph new.
 			[ | openApplication |
 				openApplication := GRComponent basicNew useProvided: #openApplication.
@@ -43,7 +42,6 @@ AppBarDworphTest >> testAppBarList [
 
 	self openComponent: [
 		AlternativeWorldDworph new children: {
-			Avatar new.
 			AppBarDworph new.
 			[ | openApplication |
 				openApplication := GRComponent basicNew useProvided: #openApplication.

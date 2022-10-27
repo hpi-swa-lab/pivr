@@ -11,7 +11,6 @@ DworphicInteractableTest >> testBlur [
 	blur := false.
 	self openComponent: [
 		AlternativeWorldDworph new children: {
-			Avatar new.
 			GRInteractiveArea new
 				onHover: [blur := true];
 				children: {
@@ -37,7 +36,6 @@ DworphicInteractableTest >> testButtonPress [
 	press := false.
 	self openComponent: [
 		AlternativeWorldDworph new children: {
-			Avatar new.
 			GRInteractiveArea new
 				onButtonPress: [:event |
 					self assert: event button = GDGlobalConstants joyVrGrip.
@@ -47,7 +45,6 @@ DworphicInteractableTest >> testButtonPress [
 						shape: GDBoxShape new;
 						name: 'shape'.
 					GDSpatial new}}].
-	
 	
 	self tick: {
 		(self controllerNode: #left)
@@ -73,7 +70,6 @@ DworphicInteractableTest >> testButtonRelease [
 	release := false.
 	self openComponent: [
 		AlternativeWorldDworph new children: {
-			Avatar new.
 			GRInteractiveArea new
 				onButtonRelease: [:event |
 					self assert: event button = GDGlobalConstants joyVrGrip.
@@ -83,7 +79,6 @@ DworphicInteractableTest >> testButtonRelease [
 						shape: GDBoxShape new;
 						name: 'shape'.
 					GDSpatial new}}].
-	
 	
 	self tick: {
 		(self controllerNode: #left)
@@ -109,7 +104,6 @@ DworphicInteractableTest >> testHover [
 	hovered := false.
 	self openComponent: [
 		AlternativeWorldDworph new children: {
-			Avatar new.
 			GRInteractiveArea new
 				onHover: [hovered := true];
 				children: {

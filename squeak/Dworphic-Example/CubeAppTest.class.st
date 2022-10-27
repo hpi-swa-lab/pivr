@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 CubeAppTest >> testGrabCube [
 
-	self openComponent: [AlternativeWorldDworph new children: {Avatar new. CubeDworph new color: Color red}].
+	self openComponent: [AlternativeWorldDworph new children: {CubeDworph new color: (Color r: 1 g: 0.0 b: 0.0)}].
 	
 	self tick: {
 		(godotTree firstNodeOfType: #RigidBody) children first
