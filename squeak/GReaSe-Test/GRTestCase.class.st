@@ -64,6 +64,12 @@ GRTestCase >> openComponentBlock: aBlockOrClass [
 ]
 
 { #category : #'as yet unclassified' }
+GRTestCase >> remoteCalls [
+
+	^ react hostConfig session calls
+]
+
+{ #category : #'as yet unclassified' }
 GRTestCase >> tick [
 
 	^ self tick: {}

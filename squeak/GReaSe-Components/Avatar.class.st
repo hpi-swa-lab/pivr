@@ -162,7 +162,7 @@ Avatar >> renderSimulatedController: props [
 		useActiveEventHandlersFor: handArea
 		side: (props at: #side)
 		transform: (props at: #transform)
-		controller: nil.
+		controller: handPortal.
 	
 	^ GDSpatial new
 		transform: (props at: #transform);

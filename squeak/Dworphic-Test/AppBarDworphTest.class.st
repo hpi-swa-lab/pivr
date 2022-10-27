@@ -13,12 +13,18 @@ AppBarDworphTest >> testAppBarClose [
 			AppBarDworph new.
 			[ | openApplication |
 				openApplication := GRComponent basicNew useProvided: #openApplication.
-				GRComponent basicNew useApplication: (DworphicApplicationDescription new
-					render: [[nil] asComponent];
-					name: 'Test 1').
-				GRComponent basicNew useApplication: (DworphicApplicationDescription new
-					render: [[nil] asComponent];
-					name: 'Test 2').
+				GRComponent basicNew
+					useApplication: [
+						DworphicApplicationDescription new
+							render: [[nil] asComponent];
+							name: 'Test 1']
+					dependencies: {}.
+				GRComponent basicNew
+					useApplication: [
+						DworphicApplicationDescription new
+							render: [[nil] asComponent];
+							name: 'Test 2']
+					dependencies: {}.
 				nil] asComponent}].
 	
 	self assert: #('Test 1' 'Test 2') equals: ((godotTree allNodesOfType: #Label3D) collect: #text).
@@ -39,12 +45,18 @@ AppBarDworphTest >> testAppBarList [
 			AppBarDworph new.
 			[ | openApplication |
 				openApplication := GRComponent basicNew useProvided: #openApplication.
-				GRComponent basicNew useApplication: (DworphicApplicationDescription new
-					render: [[nil] asComponent];
-					name: 'Test 1').
-				GRComponent basicNew useApplication: (DworphicApplicationDescription new
-					render: [[nil] asComponent];
-					name: 'Test 2').
+				GRComponent basicNew
+					useApplication: [
+						DworphicApplicationDescription new
+							render: [[nil] asComponent];
+							name: 'Test 1']
+					dependencies: {}.
+				GRComponent basicNew
+					useApplication: [
+						DworphicApplicationDescription new
+							render: [[nil] asComponent];
+							name: 'Test 2']
+					dependencies: {}.
 				nil] asComponent}].
 	
 	self assert: #('Test 1' 'Test 2') equals: ((godotTree allNodesOfType: #Label3D) collect: #text)

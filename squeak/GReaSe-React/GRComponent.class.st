@@ -4,6 +4,14 @@ Class {
 	#category : #'GReaSe-React'
 }
 
+{ #category : #accessing }
+GRComponent class >> appDescription [
+
+	^ DworphicApplicationDescription new
+		name: self name;
+		render: [self new]
+]
+
 { #category : #deploy }
 GRComponent class >> start [
 
@@ -94,16 +102,17 @@ GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatr
 ]
 
 { #category : #hooks }
-GRComponent >> useApplication: anAppDesc [
+GRComponent >> useApplication: aBlock dependencies: aCollection [
 
-	| openApplication closeApplication |
+	| openApplication closeApplication appDesc |
+	appDesc := self useMemo: aBlock dependencies: aCollection.
 	openApplication := self useProvided: #openApplication.
 	closeApplication := self useProvided: #closeApplication.
 	self
 		useEffect: [ | id |
-			id := openApplication value: anAppDesc.
+			id := openApplication value: appDesc.
 			[closeApplication value: id]]
-		dependencies: {}
+		dependencies: {appDesc}
 ]
 
 { #category : #hooks }
