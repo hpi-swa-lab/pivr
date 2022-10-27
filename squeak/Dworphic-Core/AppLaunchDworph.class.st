@@ -8,9 +8,7 @@ Class {
 AppLaunchDworph >> render: props [
 
 	| apps openApplication |
-	apps := self
-		useMemo: [{#CubeApp. #VirtualKeyboardDworph. #AirwriteDworph} collect: [:app | (Smalltalk classNamed: app) appDescription]]
-		dependencies: {}.
+	apps := Array streamContents: [:stream | GRComponent allSubclassesDo: [:cls | (Pragma allNamed: #home in: cls class) ifNotEmpty: [stream nextPut: cls appDescription]]].
 	
 	openApplication := self useProvided: #openApplication.
 	

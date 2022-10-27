@@ -5,6 +5,13 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+VirtualKeyboardDworph class >> appDescription [
+	<home>
+
+	^ super appDescription
+]
+
+{ #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> collisionShape [
 
 	^ (self godot: #BoxShape) extents: 0.02 @ 0.005 @ 0.03

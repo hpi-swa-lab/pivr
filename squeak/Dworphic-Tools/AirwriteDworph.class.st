@@ -4,6 +4,13 @@ Class {
 	#category : #'Dworphic-Tools'
 }
 
+{ #category : #'as yet unclassified' }
+AirwriteDworph class >> appDescription [
+	<home>
+
+	^ super appDescription
+]
+
 { #category : #detection }
 AirwriteDworph >> checkMatch: aCollection [
 
