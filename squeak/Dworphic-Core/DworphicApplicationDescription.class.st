@@ -6,7 +6,9 @@ Class {
 		'appClass',
 		'id',
 		'properties',
-		'render'
+		'render',
+		'handComponent',
+		'priority'
 	],
 	#classVars : [
 		'NextId'
@@ -52,6 +54,24 @@ DworphicApplicationDescription >> doesNotUnderstand: aMessage [
 ]
 
 { #category : #'as yet unclassified' }
+DworphicApplicationDescription >> handComponent [
+	
+	^ handComponent
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> handComponent: aBlock [
+
+	handComponent := aBlock
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> hasHandComponent [
+
+	^ handComponent notNil
+]
+
+{ #category : #'as yet unclassified' }
 DworphicApplicationDescription >> id [
 
 	^ id
@@ -74,6 +94,18 @@ DworphicApplicationDescription >> name [
 DworphicApplicationDescription >> name: aString [
 
 	name := aString
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> priority [
+
+	^ priority ifNil: [0]
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> priority: aNumber [
+
+	priority := aNumber
 ]
 
 { #category : #'as yet unclassified' }

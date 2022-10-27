@@ -29,7 +29,10 @@ AlternativeWorldDworph >> render: props [
 				appDescription id].
 			#closeApplication -> [:id | apps set: [:old | old reject: [:appDescription | appDescription id = id]]].
 			#applications -> apps get.
-			#worldPortal -> worldPortalRef}
+			#worldPortal -> worldPortalRef.
+			#activeHand -> ((apps get select: #hasHandComponent)
+				ifEmpty: [nil]
+				ifNotEmpty: [:handApps | (handApps detectMax: #priority) handComponent])}
 		children: {
 			GDSpatial new children: (props at: #children), (apps get collect: [:info | info buildComponent key: info id]), {GDSpatial new ref: worldPortalRef}}
 ]

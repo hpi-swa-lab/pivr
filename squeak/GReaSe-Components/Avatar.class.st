@@ -61,15 +61,16 @@ Avatar >> render: props [
 		dependencies: {}.
 	
 	vrSupported get ifNil: [^ nil].
+	
 	^ vrSupported get
 		ifTrue: [
 			(GDARVROrigin new subscribeTo: #'global_transform' do: [:t | head set: t]) children: {
 				GDARVRCamera new.
-				(self methodAsComponent: #renderHand:)
+				(self methodAsComponent: #renderController:)
 					side: #left;
 					transform: left get;
 					setTransform: left setter.
-				(self methodAsComponent: #renderHand:)
+				(self methodAsComponent: #renderController:)
 					side: #right;
 					transform: right get;
 					setTransform: right setter}]
@@ -84,27 +85,44 @@ Avatar >> render: props [
 ]
 
 { #category : #'rendering - vr' }
-Avatar >> renderHand: props [
+Avatar >> renderController: props [
 
-	| handMesh areaRef controllerRef handlers |
-	handMesh := self useHandMesh.
+	| controllerRef renderActiveHand handlers |
 	
 	controllerRef := self useRef: nil.
-	areaRef := self useGodotRef.
-	
-	handlers := self
-		useActiveEventHandlersFor: areaRef
-		side: (props at: #side)
-		transform: (props at: #transform)
-		controller: controllerRef.
+	handlers := self useRef: ({#onButtonPress -> [:x|]. #onButtonRelease -> [:x|]} as: Dictionary).
+	renderActiveHand := self useRenderActiveHand.
 	
 	^ GDARVRController new
 		ref: controllerRef;
 		subscribeTo: #transform do: [:t | (props at: #setTransform) value: t];
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
-		onButtonPressed: (handlers at: #onButtonPress);
-		onButtonRelease: (handlers at: #onButtonRelease);
+		onButtonPressed: (handlers get at: #onButtonPress);
+		onButtonRelease: (handlers get at: #onButtonRelease);
+		children: {
+			renderActiveHand value
+				controllerRef: controllerRef;
+				setHandlers: [:h | handlers set: h];
+				side: (props at: #side);
+				transform: (props at: #transform)}
+]
+
+{ #category : #'rendering - vr' }
+Avatar >> renderHand: props [
+
+	| handMesh areaRef |
+	handMesh := self useHandMesh.
+	
+	areaRef := self useGodotRef.
+	
+	(props at: #setHandlers) value: (self
+		useActiveEventHandlersFor: areaRef
+		side: (props at: #side)
+		transform: (props at: #transform)
+		controller: (props at: #controllerRef)).
+	
+	^ GDSpatial new
 		children: {
 			GDMeshInstance new
 				mesh: handMesh;
@@ -229,4 +247,11 @@ Avatar >> useHandMesh [
 	^ self
 		useMemo: [GDResourceLoader instance loadPath: 'res://assets/models/hand/hand.tres']
 		dependencies: #()
+]
+
+{ #category : #'rendering - vr' }
+Avatar >> useRenderActiveHand [
+
+	^ (self useProvided: #activeHand)
+		ifNil: [self methodAsComponent: #renderHand:]
 ]

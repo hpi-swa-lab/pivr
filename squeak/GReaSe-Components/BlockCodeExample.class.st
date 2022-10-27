@@ -40,7 +40,7 @@ BlockCodeExample >> render: props [
 			(self methodAsComponent: #renderApps:).
 			"GRPointer new."
 			self interactionComponent.
-			"GrabbableCube new"}
+			GrabbableCube new}
 ]
 
 { #category : #'as yet unclassified' }
@@ -51,25 +51,36 @@ BlockCodeExample >> renderApps: props [
 	closeApp := self useProvided: #closeApplication.
 	appId := self useState: nil.
 
-	self useEffect: [ | id |
+	"self useEffect: [ | id |
 		id := openApp value: (DworphicApplicationDescription new
-			appClass: BlockCodeEditor;
-			layoutParams: (CodeBlockLayoutParamters new
+			render: [BlockCodeEditor new
+				layoutParams: (CodeBlockLayoutParamters new
 				blockDepth: 0.01;
-				morphicScale: 0.003)).
+				morphicScale: 0.003)];
+			handComponent: [SphereHand new]).
 		appId set: id.
 		
-		nil] dependencies: #().
+		nil] dependencies: #()."
 
 	^ GDNode new
 		children: {
 			GDTimer new
 				autostart: true;
-				oneShot: true;
-				waitTime: 1;
-				onTimeout: [appId get ifNotNil: [:id |
+				"oneShot: true;"
+				waitTime: 5;
+				onTimeout: [appId get
+					ifNil: [ | idd |
+						idd := openApp value: (DworphicApplicationDescription new
+							render: [BlockCodeEditor new
+								layoutParams: (CodeBlockLayoutParamters new
+								blockDepth: 0.01;
+								morphicScale: 0.003)];
+							handComponent: [SphereHand new]).
+						appId set: idd.]
+					ifNotNil: [:id |
 						Transcript showln: 'closing app ', id.
-						closeApp value: id]]}
+						closeApp value: id.
+						appId set: nil]]}
 ]
 
 { #category : #'as yet unclassified' }
