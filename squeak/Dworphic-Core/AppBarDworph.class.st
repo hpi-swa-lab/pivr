@@ -23,6 +23,6 @@ AppBarDworph >> render: props [
 					text: app name.
 				GRInteractiveArea new
 					translation: 0.1 @ 0 @ 0;
-					onButtonPress: [:event | event isTrigger ifTrue: [closeApplication value: app id]];
+					onButtonPress: [:event | event isTrigger ifTrue: [closeApplication value: app]];
 					children: {self cubeOfSize: 0.1 color: (Color r: 1 g: 0.0 b: 0.0)}}])
 ]

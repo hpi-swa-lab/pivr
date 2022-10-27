@@ -46,41 +46,38 @@ BlockCodeExample >> render: props [
 { #category : #'as yet unclassified' }
 BlockCodeExample >> renderApps: props [
 
-	| openApp appId closeApp |
+	| openApp closeApp app |
 	openApp := self useProvided: #openApplication.
 	closeApp := self useProvided: #closeApplication.
-	appId := self useState: nil.
+	app := self useState: nil.
 
-	"self useEffect: [ | id |
-		id := openApp value: (DworphicApplicationDescription new
+	self useEffect: [ 
+		app set: (openApp value: (DworphicApplicationDescription new
 			render: [BlockCodeEditor new
 				layoutParams: (CodeBlockLayoutParamters new
 				blockDepth: 0.01;
 				morphicScale: 0.003)];
-			handComponent: [SphereHand new]).
-		appId set: id.
+			handComponent: [SphereHand new])).
 		
-		nil] dependencies: #()."
+		nil] dependencies: #().
 
 	^ GDNode new
 		children: {
 			GDTimer new
 				autostart: true;
-				"oneShot: true;"
 				waitTime: 5;
-				onTimeout: [appId get
-					ifNil: [ | idd |
-						idd := openApp value: (DworphicApplicationDescription new
+				onTimeout: [app get
+					ifNil: [ | |
+						app set: (openApp value: (DworphicApplicationDescription new
 							render: [BlockCodeEditor new
 								layoutParams: (CodeBlockLayoutParamters new
 								blockDepth: 0.01;
 								morphicScale: 0.003)];
-							handComponent: [SphereHand new]).
-						appId set: idd.]
-					ifNotNil: [:id |
-						Transcript showln: 'closing app ', id.
-						closeApp value: id.
-						appId set: nil]]}
+							handComponent: [SphereHand new]))]
+					ifNotNil: [:desc |
+						Transcript showln: 'closing app ', desc name.
+						closeApp value: desc.
+						app set: nil]]}
 ]
 
 { #category : #'as yet unclassified' }
