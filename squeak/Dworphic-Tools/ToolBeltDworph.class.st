@@ -1,7 +1,7 @@
 Class {
 	#name : #ToolBeltDworph,
 	#superclass : #GRComponent,
-	#category : #'Dworphic-Core'
+	#category : #'Dworphic-Tools'
 }
 
 { #category : #'as yet unclassified' }

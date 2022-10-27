@@ -10,7 +10,11 @@ AppBarDworph >> render: props [
 	| apps closeApplication |
 	apps := self useProvided: #applications.
 	closeApplication := self useProvided: #closeApplication.
-	^ apps withIndexCollect: [:app :index |
+	^ {
+		GDLabel3D new
+			translation: 0.2 @ 0 @ 0;
+			horizontalAlignment: GDGlobalConstants halignRight;
+			text: 'Running Apps'}, (apps withIndexCollect: [:app :index |
 		GDSpatial new
 			translation: 0 @ (index * -0.15) @ 0;
 			children: {
@@ -20,5 +24,5 @@ AppBarDworph >> render: props [
 				GRInteractiveArea new
 					translation: 0.1 @ 0 @ 0;
 					onButtonPress: [:event | event isTrigger ifTrue: [closeApplication value: app id]];
-					children: {self cubeOfSize: 0.1 color: Color red}}]
+					children: {self cubeOfSize: 0.1 color: (Color r: 1 g: 0.0 b: 0.0)}}])
 ]

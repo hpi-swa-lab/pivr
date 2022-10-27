@@ -8,5 +8,6 @@ OrderedDictionary {
 	'squeak/Dworphic-Test' : #SquotTonelSerializer,
 	'squeak/BaselineOfGReaSe' : #SquotTonelSerializer,
 	'squeak/GReaSe-Signals' : #SquotTonelSerializer,
-	'squeak/Dworphic-Example' : #SquotTonelSerializer
+	'squeak/Dworphic-Example' : #SquotTonelSerializer,
+	'squeak/Dworphic-Tools' : #SquotTonelSerializer
 }
