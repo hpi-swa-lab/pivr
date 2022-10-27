@@ -8,9 +8,7 @@ Class {
 AppLaunchDworph >> render: props [
 
 	| apps openApplication |
-	apps := self
-		useMemo: [{#CubeApp. #VirtualKeyboardDworph. #AirwriteDworph} collect: [:app | (Smalltalk classNamed: app) appDescription]]
-		dependencies: {}.
+	apps := Array streamContents: [:stream | GRComponent allSubclassesDo: [:cls | (Pragma allNamed: #home in: cls class) ifNotEmpty: [stream nextPut: cls appDescription]]].
 	
 	openApplication := self useProvided: #openApplication.
 	
@@ -27,6 +25,6 @@ AppLaunchDworph >> render: props [
 					text: app name.
 				GRInteractiveArea new
 					translation: 0.1 @ 0 @ 0;
-					onButtonPress: [:event | event isTrigger ifTrue: [openApplication value: app]];
+					onButtonPress: [:event | event isTrigger ifTrue: [openApplication value: app copy]];
 					children: {self cubeOfSize: 0.1 color: (Color r: 0.0 g: 1 b: 0.0)}}])
 ]

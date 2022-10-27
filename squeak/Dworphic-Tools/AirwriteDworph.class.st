@@ -4,6 +4,13 @@ Class {
 	#category : #'Dworphic-Tools'
 }
 
+{ #category : #'as yet unclassified' }
+AirwriteDworph class >> appDescription [
+	<home>
+
+	^ super appDescription
+]
+
 { #category : #detection }
 AirwriteDworph >> checkMatch: aCollection [
 
@@ -128,45 +135,54 @@ AirwriteDworph >> radius [
 { #category : #rendering }
 AirwriteDworph >> render: props [
 
-	| grabbed |
+	| grabbed pressed |
 	grabbed := self useState: false.
+	pressed := self useState: false.
 	
-	^ GRGrabbableArea new children: {
-		GDCollisionShape new shape: self collisionShape.
-		self stick.
-		grabbed get ifTrue: [self methodAsComponent: #renderActive:] ifFalse: [nil]}
+	^ GRGrabbableArea new
+		children: {
+			GDCollisionShape new shape: self collisionShape.
+			self stick.
+			grabbed get
+				ifTrue: [(self methodAsComponent: #renderActive:) pressed: pressed get]
+				ifFalse: [nil]};
+		onButtonPress: [:e | e isTrigger ifTrue: [pressed set: true]];
+		onButtonRelease: [:e | e isTrigger ifTrue: [pressed set: false]];
+		onGrab: [grabbed set: true];
+		onRelease: [grabbed set: false]
 ]
 
 { #category : #rendering }
 AirwriteDworph >> renderActive: props [
 
-	| controllerTranslation lastControllerTranslation curveRef buttonPressed headPosition points worldPortal controllerTransform |
+	| curveRef buttonPressed headPosition points worldPortal lastTipTranslation tipTransform |
 	worldPortal := self useWorldPortal.
-	points := self useState: {}.
-	lastControllerTranslation := self useState: Vector3 zero.
-	
 	headPosition := self useHeadTransform translation.
-	controllerTransform := self useControllerTransform.
-	controllerTranslation := controllerTransform translation.
-	buttonPressed := self useTriggerStrength > 0.6.
+	buttonPressed := props at: #pressed.
+	
+	points := self useState: {}.
+	lastTipTranslation := self useState: Vector3 zero.
+	tipTransform := self useState: Matrix4x4 identity.
 	
 	curveRef := self useGodotRef.
 	
 	self
 		useEffect: [
-			(lastControllerTranslation get distanceTo: controllerTranslation) > 0.01 ifTrue: [
-				lastControllerTranslation set: controllerTranslation.
-				buttonPressed ifTrue: [ | position |
-					position := self tipPosition: controllerTransform.
-					points set: [:p | p copyWith: position].
-					curveRef get addPointPosition: position]].
+			(lastTipTranslation get distanceTo: tipTransform get translation) > 0.01 ifTrue: [
+				lastTipTranslation set: tipTransform get translation.
+				buttonPressed ifTrue: [
+					points set: [:p | p copyWith: tipTransform get translation].
+					curveRef get addPointPosition: tipTransform get translation]].
 			(points get notEmpty and: [buttonPressed not]) ifTrue: [
 				Transcript showln: (self detectChar: points get head: headPosition).
 				curveRef get clearPoints.
 				points set: {}]]
-		dependencies: {controllerTranslation. buttonPressed}.
+		dependencies: {tipTransform get translation. buttonPressed}.
 	
 	^ GDSpatial new children: {
+		GDPosition3D new
+			translation: 0 @ self length @ 0;
+			subscribeTo: #'global_transform' do: tipTransform setter.
 		CMFReactNodePortal
 			child: {
 				GDPath new
@@ -213,10 +229,4 @@ AirwriteDworph >> thinPoints: aCollection [
 	^ Array streamContents: [:stream |
 		stream nextPut: aCollection first.
 		aCollection allButFirstDo: [:point | (point distanceTo: stream last) > 0.03 ifTrue: [stream nextPut: point]]]
-]
-
-{ #category : #'as yet unclassified' }
-AirwriteDworph >> tipPosition: controllerTransform [
-
-	^ controllerTransform transform: 0 @ self length @ 0
 ]

@@ -5,6 +5,13 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+CubeApp class >> appDescription [
+	<home>
+
+	^ super appDescription
+]
+
+{ #category : #'as yet unclassified' }
 CubeApp >> render: props [
 
 	| cubes |
