@@ -13,16 +13,17 @@ OrbitCameraDworph >> mouseSensitivity [
 { #category : #'as yet unclassified' }
 OrbitCameraDworph >> render: props [
 
-	| transform totalPitch isMouseLocked moving mouseMoving nonControlledTransform setTransform |
+	| transform totalPitch isMouseLocked moving mouseMoving nonControlledTransform setTransform active |
 	nonControlledTransform := self useState: Matrix4x4 identity.
 	transform := props at: #transform ifAbsent: [nonControlledTransform get].
 	setTransform := props at: #setTransform ifAbsent: [nonControlledTransform setter].
 	
 	isMouseLocked := self useState: false.
-	moving := self useState: 0.
+	moving := self useState: 0 @ 0 @ 0.
 	totalPitch := self useRef: 0.
 	
-	mouseMoving := isMouseLocked get and: [props at: #active ifAbsent: [true]].
+	active := props at: #active ifAbsent: [true].
+	mouseMoving := isMouseLocked get and: [active].
 	
 	self
 		useEffect: [GDInput instance mouseMode: (mouseMoving ifTrue: [GDInput mouseModeCaptured] ifFalse: [GDInput mouseModeVisible])]
@@ -30,10 +31,10 @@ OrbitCameraDworph >> render: props [
 	
 	^ GRExternalEvents new
 		children: {
-			moving get ~= 0 ifTrue: [
+			moving get isZero ifFalse: [
 				[ | timer |
 					timer := self
-						useCallback: [setTransform value: [:t | t localTranslatedBy: 0 @ 0 @ (-0.04 * moving get)]]
+						useCallback: [setTransform value: [:t | t localTranslatedBy: moving get * 0.07]]
 						dependencies: {}.
 					GDTimer new
 						autostart: true;
@@ -50,7 +51,7 @@ OrbitCameraDworph >> render: props [
 						rotatedLocalBy: pitch
 						around: 1 @ 0 @ 0]]];
 		onButton: [:pressed :button :position | isMouseLocked set: pressed];
-		onKeyboard: [:pressed :scanCode :key |
-			scanCode = GDGlobalConstants keyW ifTrue: [moving set: (pressed ifTrue: [1] ifFalse: [0])].
-			scanCode = GDGlobalConstants keyS ifTrue: [moving set: (pressed ifTrue: [-1] ifFalse: [0])]]
+		onKeyboard: [:pressed :scanCode :key | | dir |
+			dir := self directionFromScancode: scanCode.
+			(dir notNil and: [active]) ifTrue: [moving set: (pressed ifTrue: [dir] ifFalse: [0 @ 0 @ 0])]]
 ]

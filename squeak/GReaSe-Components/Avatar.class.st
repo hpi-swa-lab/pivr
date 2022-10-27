@@ -225,7 +225,9 @@ Avatar >> renderSimulatedControllerControls: props [
 				onKeyboard: [:pressed :scanCode :key | | cb |
 					cb := pressed ifTrue: [press] ifFalse: [release].
 					scanCode = GDGlobalConstants keySpace ifTrue: [cb value: GDGlobalConstants joyVrGrip].
-					scanCode = GDGlobalConstants keyTab ifTrue: [cb value: GDGlobalConstants joyVrTrigger]]}
+					scanCode = GDGlobalConstants keyTab ifTrue: [cb value: GDGlobalConstants joyVrTrigger].
+					
+					(self directionFromScancode: scanCode) ifNotNil: [:dir | controllerTransform value: [:o | o translatedBy: dir * 0.03]]]}
 ]
 
 { #category : #'rendering - simulated' }

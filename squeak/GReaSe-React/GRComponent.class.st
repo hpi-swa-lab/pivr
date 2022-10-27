@@ -49,6 +49,20 @@ GRComponent >> cubeOfSize: aVector3OrNumber color: aColor [
 			material: (GDSpatialMaterial new albedoColor: aColor)))
 ]
 
+{ #category : #helpers }
+GRComponent >> directionFromScancode: aNumber [
+
+	| dir |
+	dir := nil.
+	aNumber = GDGlobalConstants keyW ifTrue: [dir := 0 @ 0 @ -1].
+	aNumber = GDGlobalConstants keyS ifTrue: [dir := 0 @ 0 @ 1].
+	aNumber = GDGlobalConstants keyA ifTrue: [dir := -1 @ 0 @ 0].
+	aNumber = GDGlobalConstants keyD ifTrue: [dir := 1 @ 0 @ 0].
+	aNumber = GDGlobalConstants keyE ifTrue: [dir := 0 @ 1 @ 0].
+	aNumber = GDGlobalConstants keyQ ifTrue: [dir := 0 @ -1 @ 0].
+	^ dir
+]
+
 { #category : #constructors }
 GRComponent >> godot: aClassName [
 

@@ -188,7 +188,7 @@ WorldDworph >> renderSimulatedController: props [
 		namespace: ((props at: #left) == true ifTrue: [#left] ifFalse: [#right])
 		values: {
 			#controllerTransform -> transform get.
-			#setControllerTransform -> transform.
+			#setControllerTransform -> transform setter.
 			#handPortal -> handPortal.
 			#handId -> handArea.
 			#handIsFree -> handIsFree.
