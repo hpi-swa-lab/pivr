@@ -40,8 +40,11 @@ Avatar >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
 { #category : #rendering }
 Avatar >> render: props [
 
-	| vrSupported |
+	| vrSupported head left right |
 	vrSupported := self useState: nil.
+	head := self useState: Matrix4x4 identity.
+	left := self useState: Matrix4x4 identity.
+	right := self useState: Matrix4x4 identity.
 	
 	self
 		useEffect: [
@@ -60,32 +63,44 @@ Avatar >> render: props [
 	vrSupported get ifNil: [^ nil].
 	^ vrSupported get
 		ifTrue: [
-			GDARVROrigin new children: {
+			(GDARVROrigin new subscribeTo: #'global_transform' do: [:t | head set: t]) children: {
 				GDARVRCamera new.
-				(self methodAsComponent: #renderHand:) side: #left.
-				(self methodAsComponent: #renderHand:) side: #right}]
-		ifFalse: [self methodAsComponent: #renderSimulated:]
+				(self methodAsComponent: #renderHand:)
+					side: #left;
+					transform: left get;
+					setTransform: left setter.
+				(self methodAsComponent: #renderHand:)
+					side: #right;
+					transform: right get;
+					setTransform: right setter}]
+		ifFalse: [
+			(self methodAsComponent: #renderSimulated:)
+				head: head get;
+				setHead: head setter;
+				left: left get;
+				setLeft: left setter;
+				right: right get;
+				setRight: right setter]
 ]
 
 { #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	| handMesh areaRef controllerRef transform handlers |
+	| handMesh areaRef controllerRef handlers |
 	handMesh := self useHandMesh.
 	
 	controllerRef := self useRef: nil.
 	areaRef := self useGodotRef.
-	transform := self useRef: Matrix4x4 identity.
 	
 	handlers := self
 		useActiveEventHandlersFor: areaRef
 		side: (props at: #side)
-		transform: transform
+		transform: (props at: #transform)
 		controller: controllerRef.
 	
 	^ GDARVRController new
 		ref: controllerRef;
-		subscribeTo: #transform do: [:t | transform set: t];
+		subscribeTo: #transform do: [:t | (props at: #setTransform) value: t];
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: (handlers at: #onButtonPress);
@@ -111,24 +126,30 @@ Avatar >> renderSimulated: props [
 	controlling := self useState: #headset.
 	
 	^ {
-		OrbitCameraDworph new active: controlling get = #headset.
+		OrbitCameraDworph new
+			active: controlling get = #headset;
+			transform: (props at: #head);
+			setTransform: (props at: #setHead).
 		GRExternalEvents new onKeyboard: [:pressed :scanCode :key |
 			scanCode = GDGlobalConstants keyControl ifTrue: [controlling set: (pressed ifTrue: [#left] ifFalse: [#headset])].
 			scanCode = GDGlobalConstants keyAlt ifTrue: [controlling set: (pressed ifTrue: [#right] ifFalse: [#headset])]].
 		(self methodAsComponent: #renderSimulatedController:)
 			side: #left;
-			active: controlling get = #left.
+			active: controlling get = #left;
+			transform: (props at: #left);
+			setTransform: (props at: #setLeft).
 		(self methodAsComponent: #renderSimulatedController:)
 			side: #right;
-			active: controlling get = #right.
+			active: controlling get = #right;
+			transform: (props at: #right);
+			setTransform: (props at: #setRight).
 		(self methodAsComponent: #renderSimulatedHUD:) controlling: controlling get}
 ]
 
 { #category : #'rendering - simulated' }
 Avatar >> renderSimulatedController: props [
 
-	| transform handPortal handArea handIsFree pressedButtons axes handlers |
-	transform := self useState: Matrix4x4 new.
+	| handPortal handArea handIsFree pressedButtons axes handlers |
 	handIsFree := self useState: true.
 	pressedButtons := self useState: {}.
 	handPortal := self useRef: nil.
@@ -140,11 +161,11 @@ Avatar >> renderSimulatedController: props [
 	handlers := self
 		useActiveEventHandlersFor: handArea
 		side: (props at: #side)
-		transform: transform
+		transform: (props at: #transform)
 		controller: nil.
 	
 	^ GDSpatial new
-		transform: transform get;
+		transform: (props at: #transform);
 		children: {
 			GDArea new
 				children: {
@@ -160,7 +181,7 @@ Avatar >> renderSimulatedController: props [
 			(props at: #active)
 				ifTrue: [
 					(self methodAsComponent: #renderSimulatedControllerControls:)
-						setControllerTransform: transform setter;
+						setControllerTransform: (props at: #setTransform);
 						handlers: handlers]
 				ifFalse: [nil]}
 ]

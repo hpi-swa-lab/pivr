@@ -13,8 +13,10 @@ OrbitCameraDworph >> mouseSensitivity [
 { #category : #'as yet unclassified' }
 OrbitCameraDworph >> render: props [
 
-	| transform totalPitch isMouseLocked moving mouseMoving |
-	transform := self useState: (props at: #transform ifAbsent: [Matrix4x4 identity]).
+	| transform totalPitch isMouseLocked moving mouseMoving nonControlledTransform setTransform |
+	nonControlledTransform := self useState: Matrix4x4 identity.
+	transform := props at: #transform ifAbsent: [nonControlledTransform get].
+	setTransform := props at: #setTransform ifAbsent: [nonControlledTransform setter].
 	
 	isMouseLocked := self useState: false.
 	moving := self useState: 0.
@@ -31,19 +33,19 @@ OrbitCameraDworph >> render: props [
 			moving get ~= 0 ifTrue: [
 				[ | timer |
 					timer := self
-						useCallback: [transform set: [:t | t localTranslatedBy: 0 @ 0 @ (-0.04 * moving get)]]
+						useCallback: [setTransform value: [:t | t localTranslatedBy: 0 @ 0 @ (-0.04 * moving get)]]
 						dependencies: {}.
 					GDTimer new
 						autostart: true;
 						waitTime: 0.01;
 						onTimeout: timer] asComponent].
-			GDCamera new transform: transform get};
+			GDCamera new transform: transform};
 		subscribeToRelativeMouseMotion: [:delta |
 			mouseMoving ifTrue: [ | pitch yaw |
 				pitch := (delta y clampLow: -90 - totalPitch get high: 90 - totalPitch get) * self mouseSensitivity.
 				yaw := delta x * self mouseSensitivity.
 				totalPitch set: totalPitch get + pitch.
-				transform set: [:t |
+				setTransform value: [:t |
 					(t rotatedGlobalBy: yaw around: 0 @ 1 @ 0)
 						rotatedLocalBy: pitch
 						around: 1 @ 0 @ 0]]];

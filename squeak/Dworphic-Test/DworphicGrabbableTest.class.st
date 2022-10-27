@@ -67,17 +67,20 @@ DworphicGrabbableTest >> testGrab [
 			signal: #'button_pressed'
 			with: {GDGlobalConstants joyVrGrip}}.
 	
-	self assert: Vector3 zero equals: (godotTree firstNodeNamed: 'shape') parent translation.
+	self assert: Matrix4x4 identity equals: (godotTree firstNodeNamed: 'shape') parent transform.
 	self assert: ((godotTree firstNodeNamed: 'shape') hasParent: (self controllerNode: #left)).
 	
 	self tick: {
 		(self controllerNode: #left)
 			subscribe: #transform
-			set: (Matrix4x4 withOffset: 1 @ 2 @ 3).
+			set: (Matrix4x4 withOffset: 1 @ 2 @ 3)}.
+	self tick: {
 		(self controllerNode: #left)
 			signal: #'button_release'
 			with: {GDGlobalConstants joyVrGrip}}.
 	
-	self assert: 1 @ 2 @ 3 equals: (godotTree firstNodeNamed: 'shape') parent translation.
+	self
+		assert: (Matrix4x4 withOffset: 1 @ 2 @ 3)
+		equals: (godotTree firstNodeNamed: 'shape') parent transform.
 	self deny: ((godotTree firstNodeNamed: 'shape') hasParent: (self controllerNode: #left))
 ]

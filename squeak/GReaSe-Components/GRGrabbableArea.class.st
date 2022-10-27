@@ -7,24 +7,24 @@ Class {
 { #category : #'as yet unclassified' }
 GRGrabbableArea >> render: props [
 
-	| handRef component translation isGrabbed |
+	| handRef component transform isGrabbed |
 	handRef := self useState: nil.
 	isGrabbed := handRef get notNil.
 	
 	component := isGrabbed
 		ifTrue: [self methodAsComponent: #renderGrabbed:]
 		ifFalse: [self methodAsComponent: #renderUngrabbed:].
-		
-	translation := self useState: Vector3 zero.
-
+	
+	transform := self useState: Matrix4x4 identity.
+	
 	^ component
 		props: props;
-		translation: (isGrabbed
-			ifTrue: [Vector3 zero]
-			ifFalse: [props at: #translation ifAbsent: [translation get]]);
+		transform: (isGrabbed
+			ifTrue: [Matrix4x4 identity]
+			ifFalse: [props at: #transform ifAbsent: [transform get]]);
 		getHandRef: [handRef get];
 		setHandRef: [:ref | handRef set: ref];
-		setTranslation: [:t | translation set: t]
+		setTransform: [:t | transform set: t]
 ]
 
 { #category : #'as yet unclassified' }
@@ -40,10 +40,10 @@ GRGrabbableArea >> renderArea: props [
 				props at: #onGrab ifPresent: [:block | block cull: event]].
 			props at: #onButtonPress ifPresent: [:block | block cull: event]];
 		onButtonRelease: [:event |
-			event isGrip ifTrue: [
-				(props at: #setTranslation) value: event transform translation.
+			event isGrip ifTrue: [ | transform |
 				(props at: #setHandRef) value: nil.
-				props at: #onRelease ifPresent: [:block | block cull: event]].
+				transform := props at: #onRelease ifPresent: [:block | block cull: event].
+				(props at: #setTransform) value: (transform class = Matrix4x4 ifTrue: [transform] ifFalse: [event transform])].
 			props at: #onButtonPress ifPresent: [:block | block cull: event]];
 		children: (props at: #children)
 ]

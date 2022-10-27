@@ -56,18 +56,21 @@ GRComponent >> nextGodotId [
 ]
 
 { #category : #hooks }
-GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aState controller: controllerRef [
+GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatrix controller: controllerRef [
 
-	| addHandAreaHandlers removeHandAreaHandlers createInteractiveEvent activeEventHandlers createInteractiveButtonEvent |
+	| addHandAreaHandlers removeHandAreaHandlers createInteractiveEvent activeEventHandlers createInteractiveButtonEvent transformRef |
 	activeEventHandlers := self useState: OrderedCollection new.
 	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
 	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
+	
+	transformRef := self useRef: aMatrix.
+	transformRef set: aMatrix.
 	
 	createInteractiveEvent := [
 		GRInteractiveAreaEvent new
 			controllerRef: controllerRef;
 			side: aSymbol;
-			transform: aState get].
+			transform: transformRef get].
 	createInteractiveButtonEvent := [:button | (createInteractiveEvent value as: GRInteractiveAreaEventButton) button: button].
 	
 	self
