@@ -19,55 +19,44 @@ TeleportToolDworph >> material [
 { #category : #'as yet unclassified' }
 TeleportToolDworph >> render: props [
 
-	^ ControllerToolDworph new
-		transform: (props at: #transform ifAbsent: [Matrix4x4 identity]);
-		shape: self collisionShape;
-		onRelease: #return;
-		active: [(self methodAsComponent: #renderActive:) props: props];
-		passive: [(self methodAsComponent: #renderPassive:) props: props]
-]
-
-{ #category : #'as yet unclassified' }
-TeleportToolDworph >> renderActive: props [
-
-	| controller teleport world direction intersectionPoint |
-	controller := self useControllerTransform.
+	| grabbed transform world intersectionPoint |
+	grabbed := self useState: false.
+	transform := self useState: Matrix4x4 identity.
 	
-	teleport := self useTeleport.
 	world := self useWorldPortal.
 	
-	direction := controller transform: 0 @ 0 @ 1.
-	intersectionPoint := (GRRay origin: controller translation direction: direction)
+	intersectionPoint := transform get forwardRay
 		intersectPlane: 0 @ 0 @ 0
 		normal: 0 @ 1 @ 0.
 	
-	self useTriggerPressedDo: [intersectionPoint ifNotNil: [teleport set: (Matrix4x4 withOffset: intersectionPoint)]].
-	
-	^ {
-		self renderPassive: props.
-		GDMeshInstance new
-			mesh: (GDCubeMesh new
-				size: 0.002 @ 0.002 @ 10.0;
-				material: self material);
-			translation: 0 @ 0 @ -5.
-		intersectionPoint ifNotNil: [
-			CMFReactNodePortal
-				child: (GDMeshInstance new
-					key: #pointer;
-					mesh: (GDSphereMesh new
-						material: self material;
-						radius: 0.02;
-						height: 0.04);
-					translation: intersectionPoint)
-				in: world]}
-]
-
-{ #category : #'as yet unclassified' }
-TeleportToolDworph >> renderPassive: props [
-
-	^ GDMeshInstance new
-		mesh: (GDPrismMesh new
-			size: 0.05 @ 0.07 @ 0.01;
-			material: self material);
-		rotationDegrees: 90 @ 180 @ 0
+	^ GRGrabbableArea new
+		onGrab: [grabbed set: true];
+		onRelease: [grabbed set: false];
+		onButtonPress: [:e |
+			e isTrigger ifTrue: [
+				intersectionPoint ifNotNil: ["TODO teleport to this transform"
+				Matrix4x4 withOffset: intersectionPoint]]];
+		children: {
+			GDCollisionShape new
+				shape: self collisionShape;
+				children: (GDMeshInstance new
+					mesh: (GDPrismMesh new
+						size: 0.05 @ 0.07 @ 0.01;
+						material: self material);
+					rotationDegrees: 90 @ 180 @ 0).
+			GDMeshInstance new
+				mesh: (GDCubeMesh new
+					size: 0.002 @ 0.002 @ 10.0;
+					material: self material);
+				translation: 0 @ 0 @ -5.
+			intersectionPoint ifNotNil: [
+				CMFReactNodePortal
+					child: (GDMeshInstance new
+						key: #pointer;
+						mesh: (GDSphereMesh new
+							material: self material;
+							radius: 0.02;
+							height: 0.04);
+						translation: intersectionPoint)
+					in: world]}
 ]

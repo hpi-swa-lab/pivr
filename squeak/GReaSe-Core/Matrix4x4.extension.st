@@ -1,6 +1,14 @@
 Extension { #name : #Matrix4x4 }
 
 { #category : #'*GReaSe-Core' }
+Matrix4x4 >> forwardRay [
+
+	| direction |
+	direction := self transform: 0 @ 0 @ 1.
+	^ GRRay origin: self translation direction: direction
+]
+
+{ #category : #'*GReaSe-Core' }
 Matrix4x4 >> grEqual: anObject [
 
 	^ self = anObject
