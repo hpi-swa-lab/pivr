@@ -1,7 +1,7 @@
 Class {
 	#name : #GrabbableCube,
 	#superclass : #GRComponent,
-	#category : #'GReaSe-Components-BlockCode'
+	#category : #'Dworphic-Example'
 }
 
 { #category : #'as yet unclassified' }

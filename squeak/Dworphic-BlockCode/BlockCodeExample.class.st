@@ -1,7 +1,7 @@
 Class {
 	#name : #BlockCodeExample,
 	#superclass : #GRComponent,
-	#category : #'GReaSe-Components-BlockCode'
+	#category : #'Dworphic-BlockCode'
 }
 
 { #category : #'as yet unclassified' }
@@ -35,7 +35,7 @@ BlockCodeExample >> render: props [
 
 	self useCenterOnScreen: 1.
 
-	^ AlternativeWorldDworph new
+	^ WorldDworph new
 		children: {
 			(self methodAsComponent: #renderApps:).
 			"GRPointer new."

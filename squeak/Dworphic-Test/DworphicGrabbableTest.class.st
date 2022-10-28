@@ -14,7 +14,7 @@ DworphicGrabbableTest >> expectedFailures [
 DworphicGrabbableTest >> testCantGrabMultiple [
 
 	self openComponent: [
-		AlternativeWorldDworph new children: {
+		WorldDworph new children: {
 			GRGrabbableArea new children: {
 				GDCollisionShape new
 					shape: GDBoxShape new;
@@ -49,7 +49,7 @@ DworphicGrabbableTest >> testCantGrabMultiple [
 DworphicGrabbableTest >> testGrab [
 
 	self openComponent: [
-		AlternativeWorldDworph new children: {
+		WorldDworph new children: {
 			GRGrabbableArea new children: {
 				GDCollisionShape new
 					shape: GDBoxShape new;

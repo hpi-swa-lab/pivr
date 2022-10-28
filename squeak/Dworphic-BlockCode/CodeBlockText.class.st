@@ -1,7 +1,7 @@
 Class {
 	#name : #CodeBlockText,
 	#superclass : #GRComponent,
-	#category : #'GReaSe-Components-BlockCode'
+	#category : #'Dworphic-BlockCode'
 }
 
 { #category : #'as yet unclassified' }

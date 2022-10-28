@@ -6,7 +6,7 @@ Class {
 		'side',
 		'transform'
 	],
-	#category : #'GReaSe-Components-BlockCode'
+	#category : #'Dworphic-Core'
 }
 
 { #category : #'as yet unclassified' }

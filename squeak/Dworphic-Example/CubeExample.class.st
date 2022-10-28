@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 CubeExample >> render: props [
 
-	^ AlternativeWorldDworph new children: {
+	^ WorldDworph new children: {
 		[
 			self useApplication: [CubeApp appDescription] dependencies: {}.
 			nil] asComponent}

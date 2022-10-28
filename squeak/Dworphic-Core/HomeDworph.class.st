@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 HomeDworph >> render: props [
 
-	^ AlternativeWorldDworph new children: {
+	^ WorldDworph new children: {
 		GDSpatial new
 			children: AppBarDworph new;
 			translation: 2 @ 1.5 @ 1.

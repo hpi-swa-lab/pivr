@@ -1,7 +1,7 @@
 Class {
 	#name : #GRExamplePerf2D,
 	#superclass : #GRComponent,
-	#category : #'GReaSe-Components-Examples'
+	#category : #'Dworphic-Example'
 }
 
 { #category : #'as yet unclassified' }

@@ -10,7 +10,7 @@ DworphicPointerTest >> testHover [
 	| hovered |
 	hovered := false.
 	self openComponent: [
-		AlternativeWorldDworph new children: {
+		WorldDworph new children: {
 			GRPointer new side: #left.
 			GRInteractiveArea new
 				onHover: [hovered := true];

@@ -4,292 +4,47 @@ Class {
 	#category : #'Dworphic-Core'
 }
 
-{ #category : #'rendering - simulated' }
-WorldDworph >> mouseSensitivity [
-
-	^ 0.25
-]
-
-{ #category : #'rendering - simulated' }
-WorldDworph >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
-
-	| camera origin normal spatial |
-	spatial := aRef get grAsClass: #GDSpatial.
-	camera := (spatial getTree root grAsClass: #GDViewport) getCamera.
-	
-	origin := camera projectRayOriginScreenPoint: aPoint.
-	normal := (camera projectRayNormalScreenPoint: aPoint) * 100.
-	^ (spatial getWorld directSpaceState
-		intersectRayFrom: origin
-		to: normal
-		exclude: {}
-		collisionMask: 2147483647
-		collideWithBodies: true
-		collideWithAreas: true) ifNotEmpty: [:res | aBlock value: (res at: #position)]
-]
-
-{ #category : #rendering }
+{ #category : #'as yet unclassified' }
 WorldDworph >> render: props [
 
-	^ self
-		useVRIfSupported: [(self methodAsComponent: #renderVR:) props: props]
-		otherwise: [(self methodAsComponent: #renderSimulated:) props: props]
-		loading: [nil]
-]
-
-{ #category : #'rendering - simulated' }
-WorldDworph >> renderControllerControls: props [
-
-	| buttonCallback ref controllerTransform keyboardCallback pressedButtons trigger |
-	ref := self useGodotRef.
+	| handAreaHandlers apps worldPortalRef head left right |
+	handAreaHandlers := self useState: Dictionary new.
+	apps := self useState: OrderedCollection new.
+	head := self useState: Matrix4x4 identity.
+	left := self useState: Matrix4x4 identity.
+	right := self useState: Matrix4x4 identity.
 	
-	controllerTransform := self useProvided: #setControllerTransform.
-	pressedButtons := self useProvided: #setPressedButtons.
-	trigger := self useProvided: #triggerSet.
-	
-	buttonCallback := self
-		useCallback: [:pressed :button :position |
-			self
-				positionInSceneFor: position
-				spatialRef: ref
-				do: [:point | controllerTransform set: (Matrix4x4 withOffset: point)]]
-		dependencies: {}.
-	
-	keyboardCallback := self
-		useCallback: [:pressed :scanCode :key |
-			scanCode = GDGlobalConstants keySpace ifTrue: [
-				pressed
-					ifTrue: [pressedButtons set: [:b | b copyWith: ControllerInfoDworph grip]]
-					ifFalse: [pressedButtons set: [:b | b copyWithout: ControllerInfoDworph grip]]].
-			scanCode = GDGlobalConstants keyTab ifTrue: [pressed ifTrue: [trigger set: 1.0] ifFalse: [trigger set: 0.0]]]
-		dependencies: {}.
-	
-	^ (self godot: #Spatial)
-		ref: ref;
-		children: {
-			(self godot: #GREvents)
-				button: buttonCallback;
-				keyboard: keyboardCallback}
-]
-
-{ #category : #'rendering - simulated' }
-WorldDworph >> renderFirstPersonControls: props [
-
-	| transform mouseSub totalPitch isMouseLocked buttonCallback keyboardCallback moving |
-	transform := props at: #transform.
-	
-	isMouseLocked := self useState: false.
-	moving := self useState: 0.
-	totalPitch := self useRef: 0.
-	
-	self
-		useEffect: [
-			GDInput instance mouseMode: (isMouseLocked get
-				ifTrue: [GDInput mouseModeCaptured]
-				ifFalse: [GDInput mouseModeVisible])]
-		dependencies: {isMouseLocked get}.
-	buttonCallback := self
-		useCallback: [:pressed :button :position | isMouseLocked set: pressed]
-		dependencies: {}.
-	keyboardCallback := self
-		useCallback: [:pressed :scanCode :key |
-			key asCharacter = $w ifTrue: [moving set: (pressed ifTrue: [1] ifFalse: [0])].
-			key asCharacter = $s ifTrue: [moving set: (pressed ifTrue: [-1] ifFalse: [0])]]
-		dependencies: {}.
-	mouseSub := self
-		useCallback: [:delta |
-			isMouseLocked get ifTrue: [ | pitch yaw |
-				pitch := (delta y clampLow: -90 - totalPitch get high: 90 - totalPitch get) * self mouseSensitivity.
-				yaw := delta x * self mouseSensitivity.
-				
-				totalPitch set: totalPitch get + pitch.
-				transform set: [:t |
-					(t rotatedGlobalBy: yaw around: 0 @ 1 @ 0)
-						rotatedLocalBy: pitch
-						around: 1 @ 0 @ 0]]]
-		dependencies: {}.
-	
-	^ (self godot: #GREvents)
-		children: {
-			moving get ~= 0 ifTrue: [
-				[ | timer |
-					timer := self
-						useCallback: [transform set: [:t | t localTranslatedBy: 0 @ 0 @ (-0.04 * moving get)]]
-						dependencies: {}.
-					GDTimer new
-						autostart: true;
-						waitTime: 0.01;
-						onTimeout: timer] asComponent]};
-		subscribeTo: #'relative_mouse_motion' do: mouseSub;
-		button: buttonCallback;
-		keyboard: keyboardCallback
-]
-
-{ #category : #'rendering - simulated' }
-WorldDworph >> renderSimulated: props [
-
-	| headTransform teleport worldRef |
-	headTransform := self useState: (Matrix4x4 withOffset: 0 @ 1.7 @ 0).
-	teleport := self useState: Matrix4x4 identity.
-	worldRef := self useRef: nil.
+	worldPortalRef := self useRef: nil.
 	
 	^ GRProvider
-		values: {#headTransform -> headTransform get. #worldPortal -> worldRef. #teleport -> teleport}
-		children: {
-			(self godot: #Spatial) children: {
-				(self methodAsComponent: #renderSimulatedController:)
-					left: true;
-					do: [:leftControllerNode |
-						{
-							(self methodAsComponent: #renderSimulatedController:)
-								left: false;
-								do: [:rightControllerNode |
-									{
-										(self godot: #Spatial)
-											transform: teleport get;
-											children: {
-												(self methodAsComponent: #renderSimulatedControls:) headTransform: headTransform.
-												(self godot: #Camera) transform: headTransform get.
-												leftControllerNode.
-												rightControllerNode.
-												(self godot: #Spatial) ref: worldRef}, (props at: #children ifAbsent: [{}])}]}]}}
-]
-
-{ #category : #'rendering - simulated' }
-WorldDworph >> renderSimulatedController: props [
-
-	| transform handPortal handArea handIsFree pressedButtons controllerNode axes |
-	transform := self useState: Matrix4x4 new.
-	handIsFree := self useState: true.
-	pressedButtons := self useState: {}.
-	handPortal := self useRef: nil.
-	handArea := self useGodotRef.
-	
-	axes := {{ControllerInfoDworph triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state |
-		state := self useState: 0.0.
-		axis, {state}].
-	
-	controllerNode := (self godot: #Spatial)
-		transform: transform get;
-		children: {
-			(self godot: #Area)
-				children: {
-					(self godot: #CollisionShape) shape: ((self godot: #SphereShape)
-						margin: 0.001;
-						radius: 0.01)};
-				ref: handArea.
-			(self godot: #Spatial) ref: handPortal.
-			(self godot: #MeshInstance) mesh: ((self godot: #SphereMesh)
-				radius: 0.01;
-				height: 0.02;
-				material: ((self godot: #SpatialMaterial) albedo_color: (Color r: 1 g: 0.0 b: 0.0)))}.
-	
-	^ GRProvider
-		namespace: ((props at: #left) == true ifTrue: [#left] ifFalse: [#right])
 		values: {
-			#controllerTransform -> transform get.
-			#setControllerTransform -> transform setter.
-			#handPortal -> handPortal.
-			#handId -> handArea.
-			#handIsFree -> handIsFree.
-			#pressedButtons -> pressedButtons get.
-			#setPressedButtons -> pressedButtons}, (axes gather: [:axis | {axis second -> axis third get. axis second, 'Set' -> axis third}])
-		children: {(props at: #do) value: controllerNode}
-]
-
-{ #category : #'rendering - simulated' }
-WorldDworph >> renderSimulatedControls: props [
-
-	| controlling keySub |
-	controlling := self useState: #headset.
-	
-	keySub := self
-		useCallback: [:pressed :scanCode :key |
-			scanCode = GDGlobalConstants keyControl ifTrue: [controlling set: (pressed ifTrue: [#left] ifFalse: [#headset])].
-			scanCode = GDGlobalConstants keyAlt ifTrue: [controlling set: (pressed ifTrue: [#right] ifFalse: [#headset])]]
-		dependencies: {}.
-	
-	^ {
-		controlling get caseOf: {
-			[#headset] -> [(self methodAsComponent: #renderFirstPersonControls:) transform: (props at: #headTransform)].
-			[#left] -> [
-				GRUseProviderNamespace
-					namespace: #left
-					children: {self methodAsComponent: #renderControllerControls:}].
-			[#right] -> [
-				GRUseProviderNamespace
-					namespace: #right
-					children: {self methodAsComponent: #renderControllerControls:}]}.
-		(self godot: #GREvents) keyboard: keySub.
-		(self methodAsComponent: #renderSimulatedHUD:) controlling: controlling get}
-]
-
-{ #category : #'rendering - simulated' }
-WorldDworph >> renderSimulatedHUD: props [
-
-	^ (self godot: #VBoxContainer) children: {(self godot: #Label) text: 'Controlling:'}, (#(#('Headset' #headset) #('Left Controller (Ctrl)' 'left') #('Right Controller (Alt)' 'right')) collect: [:pair |
-		((self godot: #Label) text: pair first)
-			call: #'add_color_override' arguments: {
-				'font_color'.
-				(props at: #controlling) = pair second
-					ifTrue: [Color r: 1 g: 1 b: 1]
-					ifFalse: [(Color r: 1 g: 1 b: 1) alpha: 0.7]};
-			key: pair second])
-]
-
-{ #category : #'rendering - vr' }
-WorldDworph >> renderVR: props [
-
-	| headTransform worldRef teleport |
-	headTransform := self useState: Matrix4x4 identity.
-	teleport := self useState: Matrix4x4 identity.
-	worldRef := self useRef: nil.
-	
-	^ GRProvider
-		values: {#headTransform -> headTransform get. #worldPortal -> worldRef. #teleport -> teleport}
+			#addHandAreaHandlers -> [:area :handlers | handAreaHandlers set: [:old | old copyWith: area -> handlers]].
+			#removeHandAreaHandlers -> [:area | handAreaHandlers set: [:old | old copyWithoutKey: area]].
+			#handleAreaEnteredInteractable -> [:area :eventHandlers |
+				handAreaHandlers get
+					at: area
+					ifPresent: [:handHandlers | (handHandlers at: #onAreaEntered) value: eventHandlers]].
+			#handleAreaExitedInteractable -> [:area :eventHandlers |
+				handAreaHandlers get
+					at: area
+					ifPresent: [:handHandlers | (handHandlers at: #onAreaExited) value: eventHandlers]].
+			#openApplication -> [:appDescription |
+				apps set: [:old | old copyWith: appDescription].
+				appDescription].
+			#closeApplication -> [:appDescription | apps set: [:old | old copyWithout: appDescription]].
+			#applications -> apps get.
+			#worldPortal -> worldPortalRef.
+			#headTransform -> head get.
+			#activeHand -> ((apps get select: #hasHandComponent)
+				ifEmpty: [nil]
+				ifNotEmpty: [:handApps | (handApps detectMax: #priority) handComponent])}
 		children: {
-			ControllerInfoDworph new
-				left: true;
-				do: [:leftControllerNode |
-					{
-						ControllerInfoDworph new
-							left: false;
-							do: [:rightControllerNode |
-								{
-									(self godot: #Spatial) children: {
-										(self godot: #ARVROrigin)
-											transform: teleport get;
-											children: {
-												(self godot: #ARVRCamera)
-													subscribeTo: #'global_transform'
-													do: [:t | headTransform set: t].
-												rightControllerNode.
-												leftControllerNode}.
-										(self godot: #Spatial) ref: worldRef}, (props at: #children ifAbsent: [{}])}]}]}
-]
-
-{ #category : #rendering }
-WorldDworph >> useVRIfSupported: aBlock otherwise: anotherBlock loading: aThirdBlock [
-
-	| supportsVR |
-	supportsVR := self useState: nil.
-	self
-		useEffect: [
-			(GDARVRServer instance findInterfaceName: 'OpenXR')
-				ifNotNil: [:openxr | | viewport |
-					"OpenXR could report invalid interfaces, so as a fallback, we use simulated mode"
-					openxr initialize ifFalse: [
-						supportsVR set: false
-					] ifTrue: [
-						viewport := (GDEngine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport.
-					GDOS instance vsyncEnabled: true.
-					GDEngine instance iterationsPerSecond: 90.
-					viewport hdr: true.
-					viewport arvr: true.
-					supportsVR set: true]]
-				ifNil: [supportsVR set: false]]
-		dependencies: {}.
-	
-	supportsVR get == nil ifTrue: [^ aThirdBlock value].
-	^ supportsVR get ifTrue: [aBlock value] ifFalse: [anotherBlock value]
+			Avatar new
+				left: left get;
+				right: right get;
+				head: head get;
+				setLeft: left setter;
+				setRight: right setter;
+				setHead: head setter.
+			GDSpatial new children: (props at: #children), (apps get collect: [:appDescription | appDescription buildComponent key: appDescription]), {GDSpatial new ref: worldPortalRef}}
 ]

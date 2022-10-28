@@ -1,7 +1,7 @@
 Class {
 	#name : #Avatar,
 	#superclass : #GRComponent,
-	#category : #'GReaSe-Components-BlockCode'
+	#category : #'Dworphic-Core'
 }
 
 { #category : #'rendering - vr' }

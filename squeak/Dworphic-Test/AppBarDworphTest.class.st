@@ -8,7 +8,7 @@ Class {
 AppBarDworphTest >> testAppBarClose [
 
 	self openComponent: [
-		AlternativeWorldDworph new children: {
+		WorldDworph new children: {
 			AppBarDworph new.
 			[ | openApplication |
 				openApplication := GRComponent basicNew useProvided: #openApplication.
@@ -41,7 +41,7 @@ AppBarDworphTest >> testAppBarClose [
 AppBarDworphTest >> testAppBarList [
 
 	self openComponent: [
-		AlternativeWorldDworph new children: {
+		WorldDworph new children: {
 			AppBarDworph new.
 			[ | openApplication |
 				openApplication := GRComponent basicNew useProvided: #openApplication.

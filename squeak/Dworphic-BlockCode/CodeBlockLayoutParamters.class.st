@@ -5,7 +5,7 @@ Class {
 		'blockDepth',
 		'morphicScale'
 	],
-	#category : #'GReaSe-Components-BlockCode'
+	#category : #'Dworphic-BlockCode'
 }
 
 { #category : #'as yet unclassified' }

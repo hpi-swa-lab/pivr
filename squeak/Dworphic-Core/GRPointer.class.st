@@ -1,7 +1,7 @@
 Class {
 	#name : #GRPointer,
 	#superclass : #GRComponent,
-	#category : #'GReaSe-Components-BlockCode'
+	#category : #'Dworphic-Core'
 }
 
 { #category : #'as yet unclassified' }
