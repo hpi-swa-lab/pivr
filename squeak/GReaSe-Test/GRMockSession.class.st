@@ -25,6 +25,12 @@ GRMockSession >> calls [
 ]
 
 { #category : #'as yet unclassified' }
+GRMockSession >> createInstanceOf: aGodotClass [
+
+	^ GRObjectId new objectId: GRReact nextGodotId
+]
+
+{ #category : #'as yet unclassified' }
 GRMockSession >> for: aMethodSymbol reply: anObject [
 
 	replies add: aMethodSymbol -> anObject
