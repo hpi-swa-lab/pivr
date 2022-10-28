@@ -30,8 +30,9 @@ BaselineOfGReaSe >> baseline: spec [
 			package: 'GReaSe-Test' with: [spec requires: #('GReaSe-Core')];
 			package: 'Dworphic-Core' with: [spec requires: #('GReaSe-Core' 'Godot-Internal-Generation')];
 			package: 'Dworphic-Tools' with: [spec requires: #('Dworphic-Core')];
+			package: 'Dworphic-Home' with: [spec requires: #('Dworphic-Core' 'Dworphic-Tools')];
 			package: 'Dworphic-Test'
-				with: [spec requires: #('Dworphic-Core' 'Dworphic-Tools' 'GReaSe-Test' 'GReaSe-Components')].
+				with: [spec requires: #('Dworphic-Core' 'Dworphic-Tools' 'Dworphic-Home' 'GReaSe-Test' 'GReaSe-Components')].
 		spec group: 'default' with: #('GReaSe-Components' 'Dworphic-Core').
 		spec group: 'tests' with: #('Dworphic-Test' 'GReaSe-Test').
 		spec group: 'all' with: #('GReaSe-Components' 'Dworphic-Core' 'GReaSe-Test' 'Dworphic-Test')]
