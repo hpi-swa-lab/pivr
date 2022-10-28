@@ -110,16 +110,8 @@ Avatar >> renderController: props [
 { #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	| handMesh areaRef |
+	| handMesh |
 	handMesh := self useHandMesh.
-	
-	areaRef := self useGodotRef.
-	
-	(props at: #setHandlers) value: (self
-		useActiveEventHandlersFor: areaRef
-		side: (props at: #side)
-		transform: (props at: #transform)
-		controller: (props at: #controllerRef)).
 	
 	^ GDSpatial new
 		children: {
@@ -128,8 +120,11 @@ Avatar >> renderHand: props [
 				scale: (self mirrorFactorForSide: (props at: #side)) @ 1 @ 1 * 0.25;
 				translation: 0 @ -0.07 @ 0.1;
 				rotation: -1.6 @ 0 @ 0.
-			GDArea new
-				ref: areaRef;
+			GRActingArea new
+				side: (props at: #side);
+				actingTransform: (props at: #transform);
+				controllerRef: (props at: #controllerRef);
+				setHandlers: (props at: #setHandlers);
 				children: {
 					GDCollisionShape new
 						shape: (GDSphereShape new radius: 0.05);
