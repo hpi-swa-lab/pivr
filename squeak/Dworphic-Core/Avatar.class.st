@@ -171,7 +171,11 @@ Avatar >> renderSimulatedController: props [
 	pressedButtons := self useState: {}.
 	handPortal := self useRef: nil.
 	handArea := self useGodotRef.
-	axes := {{ControllerInfoDworph triggerAxis. #trigger}. {7. #grip}. {0. #'touchpad_x'}. {1. #'touchpad_y'}} collect: [:axis | | state |
+	axes := {
+		{GDGlobalConstants joyVrTrigger. #trigger}.
+		{GDGlobalConstants joyVrGrip. #grip}.
+		{0. #'touchpad_x'}.
+		{1. #'touchpad_y'}} collect: [:axis | | state |
 		state := self useState: 0.0.
 		axis, {state}].
 	

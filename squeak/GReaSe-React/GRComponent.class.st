@@ -161,12 +161,6 @@ GRComponent >> useGodotRef [
 ]
 
 { #category : #hooks }
-GRComponent >> useGripPressed [
-
-	^ (self useProvided: #pressedButtons) includes: ControllerInfoDworph grip
-]
-
-{ #category : #hooks }
 GRComponent >> useHandId [
 
 	^ self useProvided: #handId

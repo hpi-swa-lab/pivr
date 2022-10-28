@@ -66,7 +66,7 @@ ControllerToolDworph >> renderForHand: props [
 	grabbed := props at: #grabbed.
 	side := props at: #side.
 	
-	gripPressed := (self useProvided: #pressedButtons namespace: side) includes: ControllerInfoDworph grip.
+	gripPressed := (self useProvided: #pressedButtons namespace: side) includes: GDGlobalConstants joyVrGrip.
 	controllerTransformLeft := self useProvidedRef: #controllerTransform namespace: #left.
 	controllerTransformRight := self useProvidedRef: #controllerTransform namespace: #right.
 	onRelease := props at: #onRelease ifAbsent: [nil].

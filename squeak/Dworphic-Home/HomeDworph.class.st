@@ -1,7 +1,7 @@
 Class {
 	#name : #HomeDworph,
 	#superclass : #GRComponent,
-	#category : #'Dworphic-Core'
+	#category : #'Dworphic-Home'
 }
 
 { #category : #'as yet unclassified' }
