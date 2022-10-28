@@ -103,9 +103,6 @@ func _process(_delta):
 	
 	if code_changed or not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
 		update()
-	
-	if Input.is_action_just_pressed("quit"):
-		do_quit()
 
 func update():
 	tcp.put_var([MessageType.tick_from_godot, session_id, pending_signal_handlers])
