@@ -109,18 +109,18 @@ GRReactTest >> testDisablesRenderingOnError [
 		react: react;
 		socketStream: (ReadWriteStream on: ByteArray new).
 	
-	session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}.
+	session handleRenderMessage: {0. 0. {ByteArray streamContents: [:stream | ((godotTree firstNodeOfType: #Timer) signal: #timeout) putVariantOn: stream]}}.
 	changeWithError := true.
 	self
-		should: [session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}]
+		should: [session handleRenderMessage: {0. 0. {ByteArray streamContents: [:stream | ((godotTree firstNodeOfType: #Timer) signal: #timeout) putVariantOn: stream]}}]
 		raise: Error.
 	self
-		shouldnt: [session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}]
+		shouldnt: [session handleRenderMessage: {0. 0. {ByteArray streamContents: [:stream | ((godotTree firstNodeOfType: #Timer) signal: #timeout) putVariantOn: stream]}}]
 		raise: Error.
 	
 	session codeChanged: (AddedEvent class: self class category: 'GReaSe-Test').
 	self
-		should: [session handleRenderMessage: {0. 0. {(godotTree firstNodeOfType: #Timer) signal: #timeout}}]
+		should: [session handleRenderMessage: {0. 0. {ByteArray streamContents: [:stream | ((godotTree firstNodeOfType: #Timer) signal: #timeout) putVariantOn: stream]}}]
 		raise: Error
 ]
 
@@ -285,6 +285,56 @@ GRReactTest >> testPortalChange [
 	(godotTree firstNodeOfType: #Portal2) firstNodeOfType: #Teleported.
 	changed := false.
 	self tick
+]
+
+{ #category : #tests }
+GRReactTest >> testPortalChangeAndUpdate [
+
+	| changed |
+	changed := false.
+	self openComponentBlock: [ | portal2 portal1 |
+		portal1 := CMFReact useRef: nil.
+		portal2 := CMFReact useRef: nil.
+		{
+			(self godot: #Portal1)
+				ref: portal1;
+				name: 'portal1'.
+			(self godot: #Portal2)
+				ref: portal2;
+				name: 'portal2'.
+			CMFReactNodePortal
+				child: (((self godot: #Teleported) name: 'teleported') children: {(self godot: #Child) prop: (changed ifTrue: [2] ifFalse: [1])})
+				in: (changed ifTrue: [portal2] ifFalse: [portal1])}].
+	(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported.
+	changed := true.
+	self tick.
+	self should: [(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported] raise: Error.
+	(godotTree firstNodeOfType: #Portal2) firstNodeOfType: #Teleported
+]
+
+{ #category : #tests }
+GRReactTest >> testPortalChangeAndUpdateResources [
+
+	| changed |
+	changed := false.
+	self openComponentBlock: [ | portal2 portal1 |
+		portal1 := CMFReact useRef: nil.
+		portal2 := CMFReact useRef: nil.
+		{
+			(self godot: #Portal1)
+				ref: portal1;
+				name: 'portal1'.
+			(self godot: #Portal2)
+				ref: portal2;
+				name: 'portal2'.
+			CMFReactNodePortal
+				child: (((self godot: #Teleported) name: 'teleported') children: {(self godot: #Child) material: ((self godot: #Material) prop: (changed ifTrue: [2] ifFalse: [1]))})
+				in: (changed ifTrue: [portal2] ifFalse: [portal1])}].
+	(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported.
+	changed := true.
+	self tick.
+	self should: [(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported] raise: Error.
+	(godotTree firstNodeOfType: #Portal2) firstNodeOfType: #Teleported
 ]
 
 { #category : #tests }

@@ -130,9 +130,11 @@ GRSocketSession >> handleRenderMessage: aMessage [
 	
 	^ [
 		GRDebug reportFrameTime: [
-			self tick: aMessage third updatesDo: [:updates |
-				self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
-				self readRefs]].
+			self
+				tick: (aMessage third collect: [:update | GRSocketListener readVariantFrom: update readStream])
+				updatesDo: [:updates |
+					self putVariant: {GRSocketListener messageTypeTickUpdateFromSqueak. updates}.
+					self readRefs]].
 		self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
 		true]
 		on: ConnectionClosed, SocketPrimitiveFailed

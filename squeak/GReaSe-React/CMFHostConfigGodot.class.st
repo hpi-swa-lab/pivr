@@ -19,12 +19,13 @@ CMFHostConfigGodot >> addRef: aHostNode for: aPathString [
 ]
 
 { #category : #reconciliation }
-CMFHostConfigGodot >> appendChild: aHostNode in: aParentHostNode [
+CMFHostConfigGodot >> appendChild: aHostNode in: aParentHostNode fiber: aFiber [
 
 	aHostNode second
 		ifNotNil: [
 			pendingUpdates add: {#move. self fullPathFor: aHostNode. self fullPathFor: aParentHostNode}.
-			aHostNode at: 2 put: (self fullPathFor: aParentHostNode)]
+			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
+			aFiber allHostChildrenPreorderDo: [:child | child output at: 2 put: (self fullPathFor: child parent nextHostParent output)]]
 		ifNil: [
 			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
 			pendingUpdates add: aHostNode]
@@ -88,12 +89,13 @@ CMFHostConfigGodot >> initialize [
 ]
 
 { #category : #reconciliation }
-CMFHostConfigGodot >> insert: aHostNode before: aSiblingHostNode in: aParentHostNode [
+CMFHostConfigGodot >> insert: aHostNode before: aSiblingHostNode in: aParentHostNode fiber: aFiber [
 
 	aHostNode second
 		ifNotNil: [
 			pendingUpdates add: {#move. self fullPathFor: aHostNode. self fullPathFor: aParentHostNode. self fullPathFor: aSiblingHostNode}.
-			aHostNode at: 2 put: (self fullPathFor: aParentHostNode)]
+			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
+			aFiber allHostChildrenDo: [:child | child output at: 2 put: (self fullPathFor: child parent nextHostParent output)]]
 		ifNil: [
 			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
 			aHostNode at: 1 put: #insert.
