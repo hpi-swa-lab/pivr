@@ -7,6 +7,15 @@ Dictionary >> copyWithoutKey: aKey [
 ]
 
 { #category : #'*GReaSe-Core' }
+Dictionary >> copyWithoutKeys: aCollection [
+
+	| copy |
+	copy := self copy.
+	aCollection do: [:key | copy removeKey: key ifAbsent: []].
+	^ copy
+]
+
+{ #category : #'*GReaSe-Core' }
 Dictionary >> putVariantOn: aStream [
 
 	aStream nextLittleEndianNumber: 4 put: 18.

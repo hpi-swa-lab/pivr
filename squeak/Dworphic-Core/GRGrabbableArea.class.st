@@ -33,7 +33,7 @@ GRGrabbableArea >> render: props [
 GRGrabbableArea >> renderArea: props [
 
 	^ GRInteractiveArea new
-		props: props copy;
+		props: (props copyWithoutKeys: #(#onHover #onBlur #onButtonPress #onButtonRelease #children));
 		onHover: (props at: #onHover ifAbsent: [nil]);
 		onBlur: (props at: #onBlur ifAbsent: [nil]);
 		onButtonPress: [:event |
