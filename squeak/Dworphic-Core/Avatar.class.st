@@ -61,10 +61,10 @@ Avatar >> render: props [
 	
 	^ vrSupported get
 		ifTrue: [
-			(GDARVROrigin new
-				subscribeTo: #'global_transform'
-				do: [:t | (props at: #setHead) value: t]) children: {
-				GDARVRCamera new.
+			GDARVROrigin new children: {
+				GDARVRCamera new
+					subscribeTo: #'global_transform'
+					do: [:t | (props at: #setHead) value: t].
 				(self methodAsComponent: #renderController:)
 					side: #left;
 					transform: (props at: #left);
@@ -113,22 +113,21 @@ Avatar >> renderHand: props [
 	| handMesh |
 	handMesh := self useHandMesh.
 	
-	^ GDSpatial new
-		children: {
-			GDMeshInstance new
-				mesh: handMesh;
-				scale: (self mirrorFactorForSide: (props at: #side)) @ 1 @ 1 * 0.25;
-				translation: 0 @ -0.07 @ 0.1;
-				rotation: -1.6 @ 0 @ 0.
-			GRActingArea new
-				side: (props at: #side);
-				actingTransform: (props at: #transform);
-				controllerRef: (props at: #controllerRef);
-				setHandlers: (props at: #setHandlers);
-				children: {
-					GDCollisionShape new
-						shape: (GDSphereShape new radius: 0.05);
-						translation: 0 @ -0.07 @ 0.05}}
+	^ GDSpatial new children: {
+		GDMeshInstance new
+			mesh: handMesh;
+			scale: (self mirrorFactorForSide: (props at: #side)) @ 1 @ 1 * 0.25;
+			translation: 0 @ -0.07 @ 0.1;
+			rotation: -1.6 @ 0 @ 0.
+		GRActingArea new
+			side: (props at: #side);
+			actingTransform: (props at: #transform);
+			controllerRef: (props at: #controllerRef);
+			setHandlers: (props at: #setHandlers);
+			children: {
+				GDCollisionShape new
+					shape: (GDSphereShape new radius: 0.05);
+					translation: 0 @ -0.07 @ 0.05}}
 ]
 
 { #category : #'rendering - simulated' }

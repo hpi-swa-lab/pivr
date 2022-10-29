@@ -25,7 +25,7 @@ CMFHostConfigGodot >> appendChild: aHostNode in: aParentHostNode fiber: aFiber [
 		ifNotNil: [
 			pendingUpdates add: {#move. self fullPathFor: aHostNode. self fullPathFor: aParentHostNode}.
 			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
-			aFiber allHostChildrenPreorderDo: [:child | child output at: 2 put: (self fullPathFor: child parent nextHostParent output)]]
+			aFiber allHostChildrenPreorderDo: [:child | child output second ifNotNil: [child output at: 2 put: (self fullPathFor: child parent nextHostParent output)]]]
 		ifNil: [
 			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
 			pendingUpdates add: aHostNode]
@@ -93,9 +93,10 @@ CMFHostConfigGodot >> insert: aHostNode before: aSiblingHostNode in: aParentHost
 
 	aHostNode second
 		ifNotNil: [
-			pendingUpdates add: {#move. self fullPathFor: aHostNode. self fullPathFor: aParentHostNode. self fullPathFor: aSiblingHostNode}.
+			pendingUpdates add: {#move. self fullPathFor: aHostNode. self fullPathFor: aParentHostNode}.
+			"FIXME: insert before self fullPathFor: (aSiblingHostNode copy in: [:path | path at: 2 put: (self fullPathFor: aParentHostNode); yourself])."
 			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
-			aFiber allHostChildrenDo: [:child | child output at: 2 put: (self fullPathFor: child parent nextHostParent output)]]
+			aFiber allHostChildrenPreorderDo: [:child | child output second ifNotNil: [child output at: 2 put: (self fullPathFor: child parent nextHostParent output)]]]
 		ifNil: [
 			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
 			aHostNode at: 1 put: #insert.
@@ -118,6 +119,9 @@ CMFHostConfigGodot >> registerCallback: aClosure [
 { #category : #reconciliation }
 CMFHostConfigGodot >> removeChild: aHostNode in: aParentHostNode [
 
+	" make sure our parent path is up-to-date "
+	aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
+	
 	pendingUpdates add: {#delete. self fullPathFor: aHostNode. aHostNode fifth}
 ]
 

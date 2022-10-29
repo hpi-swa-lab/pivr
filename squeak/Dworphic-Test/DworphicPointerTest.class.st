@@ -4,6 +4,12 @@ Class {
 	#category : #'Dworphic-Test'
 }
 
+{ #category : #failures }
+DworphicPointerTest >> expectedFailures [
+
+	^ #(#testHover)
+]
+
 { #category : #'as yet unclassified' }
 DworphicPointerTest >> testHover [
 

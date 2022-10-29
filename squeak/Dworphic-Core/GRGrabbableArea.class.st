@@ -20,6 +20,7 @@ GRGrabbableArea >> render: props [
 				child: {
 					(self methodAsComponent: #renderArea:)
 						props: rest;
+						isGrabbed: handRef get notNil;
 						transform: (isGrabbed ifTrue: [Matrix4x4 identity] ifFalse: [transform ifNil: [currentTransform get]]);
 						getHandRef: [handRef get];
 						setHandRef: [:ref | handRef set: ref];
@@ -30,7 +31,7 @@ GRGrabbableArea >> render: props [
 { #category : #'as yet unclassified' }
 GRGrabbableArea >> renderArea: props [
 
-	^ props extract: [:setHandRef :setTransform :onGrab :onRelease :onHover :onBlur :onButtonPress :onButtonRelease :children :rest |
+	^ props extract: [:setHandRef :setTransform :onGrab :onRelease :onHover :onBlur :onButtonPress :onButtonRelease :children :isGrabbed :rest |
 		GRInteractiveArea new
 			props: rest;
 			onHover: onHover;
@@ -44,11 +45,11 @@ GRGrabbableArea >> renderArea: props [
 						ifBlocked: []].
 				onButtonPress ifNotNil: [:block | block cull: event]];
 			onButtonRelease: [:event |
-				event isGrip ifTrue: [ | transform |
+				event isGrip ifTrue: [
 					event releaseGrab.
 					setHandRef value: nil.
-					transform := onRelease ifNotNil: [:block | block cull: event].
-					setTransform value: (transform class = Matrix4x4 ifTrue: [transform] ifFalse: [event transform])].
+					onRelease ifNotNil: [:block | block cull: event].
+					setTransform value: event transform].
 				onButtonRelease ifNotNil: [:block | block cull: event]];
 			children: children]
 ]

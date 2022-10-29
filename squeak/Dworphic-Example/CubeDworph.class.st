@@ -7,8 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 CubeDworph >> render: props [
 
-	| grabbed rigidBodyRef |
-	grabbed := self useState: false.
+	| rigidBodyRef |
 	rigidBodyRef := self useGodotRef.
 	
 	^ GDRigidBody new
@@ -17,11 +16,9 @@ CubeDworph >> render: props [
 		children: {
 			GDCollisionShape new shape: (GDBoxShape new extents: 0.05 asVector3).
 			GRGrabbableArea new
-				onGrab: [grabbed set: true];
-				onRelease: [:event |
-					grabbed set: false.
-					rigidBodyRef get transform: event transform.
-					Matrix4x4 identity];
+				sqmeta_id: (props at: #id);
+				transform: Matrix4x4 identity;
+				onRelease: [:event | rigidBodyRef get transform: event transform];
 				children: {
 					GDCollisionShape new shape: (GDBoxShape new extents: 0.05 asVector3).
 					self cubeOfSize: 0.1 color: (props at: #color)}}

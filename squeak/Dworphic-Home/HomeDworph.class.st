@@ -10,7 +10,7 @@ HomeDworph >> render: props [
 	^ WorldDworph new children: {
 		GDSpatial new
 			children: AppBarDworph new;
-			translation: 2 @ 1.5 @ 1.
+			translation: 1 @ 1.2 @ -1.2.
 		[
 			self
 				useApplication: [
@@ -19,7 +19,7 @@ HomeDworph >> render: props [
 						render: [
 							GDSpatial new
 								children: AppLaunchDworph new;
-								translation: 1 @ 1.5 @ 1]]
+								translation: 0 @ 1.2 @ -1.2]]
 				dependencies: {}.
 			nil] asComponent}
 ]

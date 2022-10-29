@@ -21,9 +21,7 @@ CubeRemoveDworph >> render: props [
 	^ GRGrabbableArea new
 		transform: (props at: #transform ifAbsent: [Matrix4x4 identity]);
 		onGrab: [grabbed set: true];
-		onRelease: [:event |
-			grabbed set: false.
-			props at: #transform ifAbsent: [nil]];
+		onRelease: [:event | grabbed set: false];
 		onButtonPress: [:event | event isTrigger ifTrue: [triggerPressed set: true]];
 		onButtonRelease: [:event | event isTrigger ifTrue: [triggerPressed set: false]];
 		children: {
@@ -36,42 +34,12 @@ CubeRemoveDworph >> render: props [
 					GDArea new
 						children: {GDCollisionShape new shape: self collisionShape};
 						onAreaEntered: [:area | | id |
-							id := GRReactCurrentSession value
-								callOn: area
-								method: 'get_meta'
-								arguments: {'id'. 0}.
+							id := (area grAsClass: #GDArea) getMetaName: 'id' default: 0.
 							(triggerPressed get and: [id ~~ 0]) ifTrue: [
 								cubes set: [:c |
 									self assert: (c anySatisfy: [:cube | cube third = id]).
 									c select: [:cube | cube third ~= id]]]]]
 				ifFalse: [nil]}
-]
-
-{ #category : #'as yet unclassified' }
-CubeRemoveDworph >> renderActive: props [
-
-	| triggerStrength cubes |
-	triggerStrength := self useTriggerStrength.
-	cubes := self useProvided: #cubes.
-	^ GDArea new
-		children: {self renderPassive: props. GDCollisionShape new shape: self collisionShape};
-		onAreaEntered: [:area | | id |
-			id := GRReactCurrentSession value
-				callOn: area
-				method: 'get_meta'
-				arguments: {'id'. 0}.
-			(triggerStrength > 0.6 and: [id ~~ 0]) ifTrue: [
-				cubes set: [:c |
-					self assert: (c anySatisfy: [:cube | cube third = id]).
-					c select: [:cube | cube third ~= id]]]]
-]
-
-{ #category : #'as yet unclassified' }
-CubeRemoveDworph >> renderPassive: props [
-
-	^ GDMeshInstance new mesh: (GDCubeMesh new
-		size: self size asVector3;
-		material: (GDSpatialMaterial new albedoColor: (Color r: 1 g: 0.0 b: 0.0)))
 ]
 
 { #category : #'as yet unclassified' }

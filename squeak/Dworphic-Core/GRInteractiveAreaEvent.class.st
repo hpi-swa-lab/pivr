@@ -5,7 +5,9 @@ Class {
 		'controllerRef',
 		'side',
 		'transform',
-		'grabState'
+		'grabState',
+		'targetHandlers',
+		'grabRelease'
 	],
 	#category : #'Dworphic-Core'
 }
@@ -14,8 +16,13 @@ Class {
 GRInteractiveAreaEvent >> acquireGrab: aBlock ifBlocked: anotherBlock [
 
 	grabState set: [:current |
-		current ifFalse: [aBlock value] ifTrue: [anotherBlock value].
-		true]
+		current
+			ifNil: [
+				aBlock value.
+				targetHandlers]
+			ifNotNil: [
+				anotherBlock value.
+				current]]
 ]
 
 { #category : #'as yet unclassified' }
@@ -31,6 +38,12 @@ GRInteractiveAreaEvent >> controllerRef: aRemoteRef [
 ]
 
 { #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> grabRelease: aClosure [
+
+	grabRelease := aClosure
+]
+
+{ #category : #'as yet unclassified' }
 GRInteractiveAreaEvent >> grabState: aState [
 
 	grabState := aState
@@ -39,7 +52,12 @@ GRInteractiveAreaEvent >> grabState: aState [
 { #category : #'as yet unclassified' }
 GRInteractiveAreaEvent >> releaseGrab [
 
-	grabState set: false
+	grabState set: [:current |
+		current = targetHandlers
+			ifTrue: [
+				grabRelease value: targetHandlers.
+				nil]
+			ifFalse: [current]]
 ]
 
 { #category : #'as yet unclassified' }
@@ -52,6 +70,12 @@ GRInteractiveAreaEvent >> side [
 GRInteractiveAreaEvent >> side: aSymbol [
 
 	side := aSymbol
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> targetHandlers: handlers [
+
+	targetHandlers := handlers
 ]
 
 { #category : #'as yet unclassified' }
