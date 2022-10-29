@@ -99,7 +99,7 @@ func _process(_delta):
 	for subscription in subscriptions:
 		var update = subscription.update()
 		if update:
-			pending_signal_handlers.append(update)
+			pending_signal_handlers.append(var2bytes(update))
 	
 	if code_changed or not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
 		update()
@@ -112,7 +112,12 @@ func update():
 		if response:
 			match response[0]:
 				MessageType.tick_completed_from_squeak:
-					return
+					# if in response to the tick we got new pending callbacks, run those immediately
+					if not pending_signal_handlers.empty():
+						tcp.put_var([MessageType.tick_from_godot, session_id, pending_signal_handlers])
+						pending_signal_handlers.clear()
+					else:
+						return
 				MessageType.tick_update_from_squeak:
 					apply_updates(response[1][0])
 					bind_refs(response[1][1])
@@ -433,18 +438,20 @@ func default_for_type(type):
 
 # no variadic arguments, so have one signature per needed count of arguments...
 func note_signal0(callback_id):
-	pending_signal_handlers.append([callback_id])
+	# serialize objects immediately; otherwise, objects may get deleted while
+	# waiting to be sent (leading to objectIds being set to null)
+	pending_signal_handlers.append(var2bytes([callback_id]))
 func note_signal1(arg1, callback_id):
-	pending_signal_handlers.append([callback_id, arg1])
+	pending_signal_handlers.append(var2bytes([callback_id, arg1]))
 func note_signal2(arg1, arg2, callback_id):
-	pending_signal_handlers.append([callback_id, arg1, arg2])
+	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2]))
 func note_signal3(arg1, arg2, arg3, callback_id):
-	pending_signal_handlers.append([callback_id, arg1, arg2, arg3])
+	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3]))
 func note_signal4(arg1, arg2, arg3, arg4, callback_id):
-	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4])
+	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4]))
 func note_signal5(arg1, arg2, arg3, arg4, arg5, callback_id):
-	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4, arg5])
+	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4, arg5]))
 func note_signal6(arg1, arg2, arg3, arg4, arg5, arg6, callback_id):
-	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4, arg5, arg6])
+	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4, arg5, arg6]))
 func note_signal7(arg1, arg2, arg3, arg4, arg5, arg6, arg7, callback_id):
-	pending_signal_handlers.append([callback_id, arg1, arg2, arg3, arg4, arg5, arg6, arg7])
+	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4, arg5, arg6, arg7]))
