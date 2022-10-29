@@ -7,25 +7,41 @@ Class {
 { #category : #'as yet unclassified' }
 GRPointer >> render: props [
 
-	| length areaRef transform |
-	length := props at: #length ifAbsent: [10].
-	
-	transform := self useState: Matrix4x4 identity.
-	areaRef := self useGodotRef.
-	self useActiveEventHandlersFor: areaRef side: (props at: #side) transform: transform controller: nil.
-	
-	^ GDArea new
-		ref: areaRef;
+	| overlappingAreas |
+	overlappingAreas := self useState: OrderedCollection new.
+
+	^ GRActingArea new
+		side: (props at: #side ifAbsent: [#none]);
+		actingTransform: (props at: #transform ifAbsent: [Matrix4x4 identity]);
+		controllerRef: (props at: #controllerRef ifAbsent: [nil]);
+		setHandlers: (props at: #setHandlers);
 		children: {
-			GDCollisionShape new shape: (GDRayShape new length: length).
-			GDMeshInstance new
+			GDCollisionShape new
+				rotation: 0 @ Float pi @ 0;
+				shape: (GDRayShape new
+					length: 3).
+			GDArea new
+				onAreaEntered: [:area | 
+					((GDArea new objectId: area objectId) getMetaName: #isInteractive default: false)
+						ifTrue: [overlappingAreas set: [:old | old copyWith: area]]];
+				onAreaExited: [:area |
+					((GDArea new objectId: area objectId) getMetaName: #isInteractive default: false)
+						ifTrue: [overlappingAreas set: [:old | old copyRemove: area]]];
 				rotation: Float pi / 2 @ 0 @ 0;
-				translation: 0 @ 0 @ length / 2;
+				translation: 0 @ 0 @ -1.5;
+				children: {
+					GDCollisionShape new
+						shape: (GDCylinderShape new
+							height: 3;
+							radius: 0.1)}.
+			GDMeshInstance new
+				visible: overlappingAreas get notEmpty;
+				rotation: Float pi / 2 @ 0 @ 0;
+				translation: 0 @ 0 @ -1.5;
 				mesh: (GDCylinderMesh new
-					bottomRadius: 0.01;
-					topRadius: 0.01;
-					height: length;
+					height: 3;
+					topRadius: 0.005;
+					bottomRadius: 0.005;
 					material: (GDSpatialMaterial new
-						albedoColor: ((Color r: 1 g: 0.0 b: 0.0) alpha: 0.5);
-						flagsTransparent: true))}
+						albedoColor: Color red))}
 ]

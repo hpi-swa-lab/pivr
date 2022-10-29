@@ -20,6 +20,7 @@ GRInteractiveArea >> render: props [
 	
 	^ GDArea new
 		setAll: props;
+		meta: #isInteractive set: true;
 		onAreaEntered: [:node |
 			handleAreaEnteredInteractable value: node value: eventHandlers get.
 			activeAreas set: (activeAreas get copyWith: node)];
