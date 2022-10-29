@@ -218,12 +218,14 @@ func apply_updates(list):
 				else:
 					instance.queue_free()
 			'move':
-				var nodePaths = update[1]
-				var startIndex = update[2]
-				for path in nodePaths:
-					var child = get_node(root_path + path)
-					child.get_parent().move_child(child, startIndex - 1)
-					startIndex += 1
+				var current = get_node(root_path + update[1])
+				var parent = get_node(root_path + update[2])
+				current.get_parent().remove_child(current)
+				if update.size() == 4:
+					var reference = get_node(root_path + update[3])
+					parent.add_child_below_node(reference, current)
+				else:
+					parent.add_child(current)
 			_:
 				push_error("Unknown update type: " + update[0])
 
