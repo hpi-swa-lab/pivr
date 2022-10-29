@@ -21,10 +21,13 @@ CMFHostConfigGodot >> addRef: aHostNode for: aPathString [
 { #category : #reconciliation }
 CMFHostConfigGodot >> appendChild: aHostNode in: aParentHostNode [
 
-	aHostNode at: 2 put: (aParentHostNode fourth asString
-		ifNotEmpty: [aParentHostNode second, (aParentHostNode third ifTrue: [':'] ifFalse: ['/']), aParentHostNode fourth]
-		ifEmpty: ['']).
-	pendingUpdates add: aHostNode
+	aHostNode second
+		ifNotNil: [
+			pendingUpdates add: {#move. self fullPathFor: aHostNode. self fullPathFor: aParentHostNode}.
+			aHostNode at: 2 put: (self fullPathFor: aParentHostNode)]
+		ifNil: [
+			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
+			pendingUpdates add: aHostNode]
 ]
 
 { #category : #'as yet unclassified' }
@@ -87,13 +90,15 @@ CMFHostConfigGodot >> initialize [
 { #category : #reconciliation }
 CMFHostConfigGodot >> insert: aHostNode before: aSiblingHostNode in: aParentHostNode [
 
-	| node |
-	node := aHostNode.
-	node at: 2 put: (self fullPathFor: aParentHostNode).
-	aHostNode at: 1 put: #insert.
-	aHostNode at: 7 put: (self fullPathFor: aSiblingHostNode).
-	
-	pendingUpdates add: node
+	aHostNode second
+		ifNotNil: [
+			pendingUpdates add: {#move. self fullPathFor: aHostNode. self fullPathFor: aParentHostNode. self fullPathFor: aSiblingHostNode}.
+			aHostNode at: 2 put: (self fullPathFor: aParentHostNode)]
+		ifNil: [
+			aHostNode at: 2 put: (self fullPathFor: aParentHostNode).
+			aHostNode at: 1 put: #insert.
+			aHostNode at: 7 put: (self fullPathFor: aSiblingHostNode).
+			pendingUpdates add: aHostNode]
 ]
 
 { #category : #reconciliation }

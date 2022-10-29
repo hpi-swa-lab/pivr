@@ -7,21 +7,24 @@ Class {
 { #category : #'as yet unclassified' }
 GRInteractiveArea >> render: props [
 
-	| handleAreaEnteredInteractable handleAreaExitedInteractable eventHandlers |
+	| handleAreaEnteredInteractable handleAreaExitedInteractable eventHandlers activeAreas |
 	handleAreaEnteredInteractable := self useProvided: #handleAreaEnteredInteractable.
 	handleAreaExitedInteractable := self useProvided: #handleAreaExitedInteractable.
-	eventHandlers := #(onHover onBlur onButtonPress onButtonRelease)
-		collect: [:symbol | | ref |
-			ref := self useRef: nil.
-			props at: symbol ifPresent: [:handler | ref set: handler].
-			symbol -> ref]
-		as: Dictionary.
+	eventHandlers := self useRef: Dictionary new.
+	#(#onHover #onBlur #onButtonPress #onButtonRelease) do: [:event | eventHandlers get at: event put: (props at: event ifAbsent: [nil])].
+	activeAreas := self useRef: {}.
+	
+	self
+		useEffect: [[activeAreas get do: [:node | handleAreaExitedInteractable value: node value: eventHandlers get]]]
+		dependencies: {}.
 	
 	^ GDArea new
 		setAll: props;
 		onAreaEntered: [:node |
-			handleAreaEnteredInteractable value: node value: eventHandlers];
+			handleAreaEnteredInteractable value: node value: eventHandlers get.
+			activeAreas set: (activeAreas get copyWith: node)];
 		onAreaExited: [:node |
-			handleAreaExitedInteractable value: node value: eventHandlers];
+			handleAreaExitedInteractable value: node value: eventHandlers get.
+			activeAreas set: (activeAreas get copyRemove: node)];
 		children: (props at: #children)
 ]

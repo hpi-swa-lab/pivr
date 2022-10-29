@@ -10,7 +10,7 @@ CubeAppTest >> testGrabCube [
 	self openComponent: [WorldDworph new children: {CubeDworph new color: (Color r: 1 g: 0.0 b: 0.0)}].
 	
 	self tick: {
-		(godotTree firstNodeOfType: #RigidBody) children second
+		(godotTree firstNodeOfType: #RigidBody) children second children first
 			signal: #'area_entered'
 			with: {self controllerCollider: #left}}.
 	self tick: {(self controllerNode: #left) toggleGrip: true}.

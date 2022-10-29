@@ -261,6 +261,88 @@ GRReactTest >> testPortal [
 ]
 
 { #category : #tests }
+GRReactTest >> testPortalChange [
+
+	| changed |
+	changed := false.
+	self openComponentBlock: [ | portal2 portal1 |
+		portal1 := CMFReact useRef: nil.
+		portal2 := CMFReact useRef: nil.
+		{
+			(self godot: #Portal1)
+				ref: portal1;
+				name: 'portal1'.
+			(self godot: #Portal2)
+				ref: portal2;
+				name: 'portal2'.
+			CMFReactNodePortal
+				child: ((self godot: #Teleported) name: 'teleported')
+				in: (changed ifTrue: [portal2] ifFalse: [portal1])}].
+	(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported.
+	changed := true.
+	self tick.
+	self should: [(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported] raise: Error.
+	(godotTree firstNodeOfType: #Portal2) firstNodeOfType: #Teleported.
+	changed := false.
+	self tick
+]
+
+{ #category : #tests }
+GRReactTest >> testPortalChangeInComponent [
+
+	| changed |
+	changed := false.
+	self openComponentBlock: [ | portal2 portal1 |
+		portal1 := CMFReact useRef: nil.
+		portal2 := CMFReact useRef: nil.
+		{
+			(self godot: #Portal1)
+				ref: portal1;
+				name: 'portal1'.
+			(self godot: #Portal2)
+				ref: portal2;
+				name: 'portal2'.
+			CMFReactNodePortal
+				child: [((self godot: #Teleported) name: 'teleported') children: {(self godot: #Child) name: 'child'}] asComponent
+				in: (changed ifTrue: [portal2] ifFalse: [portal1])}].
+	(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Child.
+	changed := true.
+	self tick.
+	self should: [(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported] raise: Error.
+	(godotTree firstNodeOfType: #Portal2) firstNodeOfType: #Child.
+	
+	changed := false.
+	self tick.
+	self should: [(godotTree firstNodeOfType: #Portal2) firstNodeOfType: #Teleported] raise: Error.
+	(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Child
+]
+
+{ #category : #tests }
+GRReactTest >> testPortalChangeWithChildren [
+
+	| changed |
+	changed := false.
+	self openComponentBlock: [ | portal2 portal1 |
+		portal1 := CMFReact useRef: nil.
+		portal2 := CMFReact useRef: nil.
+		{
+			(self godot: #Portal1)
+				ref: portal1;
+				name: 'portal1'.
+			(self godot: #Portal2)
+				ref: portal2;
+				name: 'portal2'.
+			CMFReactNodePortal
+				child: (((self godot: #Teleported) name: 'teleported') children: {(self godot: #Child) name: 'child'})
+				in: (changed ifTrue: [portal2] ifFalse: [portal1])}].
+	(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Child.
+	changed := true.
+	self tick.
+	self should: [(godotTree firstNodeOfType: #Portal1) firstNodeOfType: #Teleported] raise: Error.
+	(godotTree firstNodeOfType: #Portal2) firstNodeOfType: #Child
+]
+
+{ #category : #tests }
 GRReactTest >> testReloadWithHooks [
 
 	| change |

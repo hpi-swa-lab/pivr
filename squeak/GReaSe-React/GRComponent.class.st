@@ -80,10 +80,11 @@ GRComponent >> nextGodotId [
 { #category : #hooks }
 GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatrix controller: controllerRef [
 
-	| addHandAreaHandlers removeHandAreaHandlers createInteractiveEvent activeEventHandlers createInteractiveButtonEvent transformRef |
+	| addHandAreaHandlers removeHandAreaHandlers createInteractiveEvent activeEventHandlers createInteractiveButtonEvent transformRef hasGrabbed |
 	activeEventHandlers := self useState: OrderedCollection new.
 	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
 	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
+	hasGrabbed := self useState: false.
 	
 	transformRef := self useRef: aMatrix.
 	transformRef set: aMatrix.
@@ -92,26 +93,27 @@ GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatr
 		GRInteractiveAreaEvent new
 			controllerRef: controllerRef;
 			side: aSymbol;
-			transform: transformRef get].
+			transform: transformRef get;
+			grabState: hasGrabbed].
 	createInteractiveButtonEvent := [:button | (createInteractiveEvent value as: GRInteractiveAreaEventButton) button: button].
 	
 	self
 		useEffect: [
 			addHandAreaHandlers value: areaRef get value: (Dictionary withAll: {
 				#onAreaEntered -> [:eventHandlers |
-					(eventHandlers at: #onHover) get ifNotNil: [:block | block cull: createInteractiveEvent value].
+					(eventHandlers at: #onHover) ifNotNil: [:block | block cull: createInteractiveEvent value].
 					activeEventHandlers set: [:old | old copyWith: eventHandlers]].
 				#onAreaExited -> [:eventHandlers |
-					(eventHandlers at: #onBlur) get ifNotNil: [:block | block cull: createInteractiveEvent value].
-					activeEventHandlers set: [:old | old copyWithout: eventHandlers]]}).
+					(eventHandlers at: #onBlur) ifNotNil: [:block | block cull: createInteractiveEvent value].
+					activeEventHandlers set: [:old | old copyRemove: eventHandlers]]}).
 			[removeHandAreaHandlers value: areaRef get]]
 		dependencies: #().
 	
 	^ Dictionary new
 		at: #onButtonPress
-			put: [:button | activeEventHandlers get do: [:handlers | (handlers at: #onButtonPress) get ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button)]]];
+			put: [:button | activeEventHandlers get do: [:handlers | (handlers at: #onButtonPress) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button)]]];
 		at: #onButtonRelease
-			put: [:button | activeEventHandlers get do: [:handlers | (handlers at: #onButtonRelease) get ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button)]]];
+			put: [:button | activeEventHandlers get do: [:handlers | (handlers at: #onButtonRelease) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button)]]];
 		yourself
 ]
 

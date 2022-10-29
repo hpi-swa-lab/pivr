@@ -59,16 +59,18 @@ GRMockNode >> applyUpdate: anUpdate [
 			anUpdate third ifTrue: [parent properties at: anUpdate fourth put: node] ifFalse: [
 				parent insertChild: node before: (self getNodeForPath: anUpdate seventh).
 				node name: anUpdate fourth]].
+		[#move] -> [ | parent current |
+			current := self getNodeForPath: anUpdate second.
+			parent := self getNodeForPath: anUpdate third.
+			current delete.
+			
+			anUpdate size = 4
+				ifTrue: [parent insertChild: current before: (self getNodeForPath: anUpdate fourth)]
+				ifFalse: [parent addChild: current]].
 		[#update] -> [
 			(self getNodeForPath: anUpdate second) properties
 				at: anUpdate third
 				put: anUpdate fourth].
-		[#move] -> [
-			anUpdate second do: [:path | | child parent |
-				child := self getNodeForPath: path.
-				parent := child parent.
-				parent children remove: child.
-				parent children add: child beforeIndex: anUpdate third]].
 		[#delete] -> [(self getNodeForPath: anUpdate second) delete]}
 ]
 
