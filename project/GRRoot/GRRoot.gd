@@ -19,6 +19,8 @@ enum MessageType {
 	create_instance_from_squeak = 11
 	created_instance_from_godot = 12
 	free_instance_from_squeak = 13
+	load_resource_from_squeak = 14
+	loaded_resource_from_godot = 15
 }
 
 class Subscription:
@@ -122,10 +124,10 @@ func update():
 					apply_updates(response[1][0])
 					bind_refs(response[1][1])
 				MessageType.call_from_squeak:
-					var ret = object_for(response[1]).callv(response[2], response[3])
+					var ret = object_for(response[1]).callv(response[2], deserialize_args(response[3]))
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
 				MessageType.property_set_from_squeak:
-					object_for(response[1]).set(response[2], response[3])
+					object_for(response[1]).set(response[2], deserialize_arg(response[3]))
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, null])
 				MessageType.property_get_from_squeak:
 					var ret = object_for(response[1]).get(response[2])
@@ -134,6 +136,10 @@ func update():
 					var ret = ClassDB.instance(response[1])
 					ret.reference()
 					tcp.put_var([MessageType.created_instance_from_godot, session_id, ret])
+				MessageType.load_resource_from_squeak:
+					var ret = load(response[1])
+					ret.reference()
+					tcp.put_var([MessageType.loaded_resource_from_godot, session_id, ret])
 				MessageType.free_instance_from_squeak:
 					response[1].unreference()
 				_:
