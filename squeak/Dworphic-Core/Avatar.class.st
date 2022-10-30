@@ -45,16 +45,17 @@ Avatar >> render: props [
 	
 	self
 		useEffect: [
-			(GDARVRServer instance findInterfaceName: 'OpenXR')
-				ifNil: [vrSupported set: false]
-				ifNotNil: [:openxr |
-					openxr initialize.
-					((GDEngine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport)
-						hdr: true;
-						arvr: true.
-					GDEngine instance iterationsPerSecond: 90.
-					GDOS instance vsyncEnabled: true.
-					vrSupported set: true]]
+			GRReact useSimulator ifTrue: [vrSupported set: false] ifFalse: [
+				(GDARVRServer instance findInterfaceName: 'OpenXR')
+					ifNil: [vrSupported set: false]
+					ifNotNil: [:openxr |
+						openxr initialize.
+						((GDEngine instance getMainLoop grAsClass: #GDSceneTree) root grAsClass: #GDViewport)
+							hdr: true;
+							arvr: true.
+						GDEngine instance iterationsPerSecond: 90.
+						GDOS instance vsyncEnabled: true.
+						vrSupported set: true]]]
 		dependencies: {}.
 	
 	vrSupported get ifNil: [^ nil].

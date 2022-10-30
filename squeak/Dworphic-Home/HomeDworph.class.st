@@ -8,18 +8,10 @@ Class {
 HomeDworph >> render: props [
 
 	^ WorldDworph new children: {
-		GDSpatial new
-			children: AppBarDworph new;
-			translation: 1 @ 1.2 @ -1.2.
-		[
+		[ | openApplication |
+			openApplication := self useProvided: #openApplication.
 			self
-				useApplication: [
-					DworphicApplicationDescription new
-						name: 'Launcher';
-						render: [
-							GDSpatial new
-								children: AppLaunchDworph new;
-								translation: 0 @ 1.2 @ -1.2]]
+				useEffect: [(GRReact autoStartApplications splitBy: ',') do: [:className | openApplication value: (Smalltalk classNamed: className asSymbol) appDescription]]
 				dependencies: {}.
 			nil] asComponent}
 ]

@@ -11,10 +11,13 @@ Class {
 		'changesBlock'
 	],
 	#classVars : [
+		'AutoStartApplications',
 		'CurrentGodotId',
+		'DebugCollisionShapes',
 		'GodotPath',
 		'Port',
-		'RunningGodotProcess'
+		'RunningGodotProcess',
+		'UseSimulator'
 	],
 	#category : #'GReaSe-React'
 }
@@ -23,6 +26,19 @@ Class {
 GRReact class >> current [
 
 	^ GRSocketListener current
+]
+
+{ #category : #preferences }
+GRReact class >> debugCollisionShapes [
+	<preference: 'Debug Collision Shapes' category: 'GReaSe' description: 'Show outlines of collision shapes.' type: #Boolean>
+
+	^ DebugCollisionShapes ifNil: [false]
+]
+
+{ #category : #preferences }
+GRReact class >> debugCollisionShapes: aBoolean [
+
+	DebugCollisionShapes := aBoolean
 ]
 
 { #category : #setup }

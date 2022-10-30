@@ -15,7 +15,9 @@ GRComponent class >> appDescription [
 { #category : #deploy }
 GRComponent class >> start [
 
-	self startWithArguments: #()
+	self startWithArguments: (GRReact debugCollisionShapes
+		ifTrue: [#('--debug-collisions')]
+		ifFalse: [#()])
 ]
 
 { #category : #deploy }
