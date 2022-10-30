@@ -7,8 +7,9 @@ Class {
 		'id',
 		'properties',
 		'render',
-		'handComponent',
-		'priority'
+		'priority',
+		'renderHand',
+		'renderController'
 	],
 	#classVars : [
 		'NextId'
@@ -23,21 +24,15 @@ DworphicApplicationDescription >> buildComponent [
 ]
 
 { #category : #'as yet unclassified' }
-DworphicApplicationDescription >> handComponent [
-	
-	^ handComponent
+DworphicApplicationDescription >> hasRenderController [
+
+	^ renderController notNil
 ]
 
 { #category : #'as yet unclassified' }
-DworphicApplicationDescription >> handComponent: aBlock [
+DworphicApplicationDescription >> hasRenderHand [
 
-	handComponent := aBlock
-]
-
-{ #category : #'as yet unclassified' }
-DworphicApplicationDescription >> hasHandComponent [
-
-	^ handComponent notNil
+	^ renderHand notNil
 ]
 
 { #category : #'as yet unclassified' }
@@ -81,4 +76,28 @@ DworphicApplicationDescription >> render [
 DworphicApplicationDescription >> render: aBlock [
 
 	render := aBlock
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> renderController [
+
+	^ renderController
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> renderController: aBlock [
+
+	renderController := aBlock
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> renderHand [
+
+	^ renderHand
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> renderHand: aBlock [
+
+	renderHand := aBlock
 ]

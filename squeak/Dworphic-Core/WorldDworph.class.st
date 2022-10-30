@@ -4,7 +4,7 @@ Class {
 	#category : #'Dworphic-Core'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #rendering }
 WorldDworph >> render: props [
 
 	| handAreaHandlers apps worldPortalRef head left right children buttonHandlers |
@@ -39,9 +39,6 @@ WorldDworph >> render: props [
 			#applications -> apps get.
 			#worldPortal -> worldPortalRef.
 			#headTransform -> head get.
-			#activeHand -> ((apps get select: #hasHandComponent)
-				ifEmpty: [nil]
-				ifNotEmpty: [:handApps | (handApps detectMax: #priority) handComponent]).
 			#buttonHandlers -> buttonHandlers}
 		children: {
 			Avatar new

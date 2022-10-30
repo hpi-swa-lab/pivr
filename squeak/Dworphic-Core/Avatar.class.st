@@ -40,8 +40,9 @@ Avatar >> positionInSceneFor: aPoint spatialRef: aRef do: aBlock [
 { #category : #rendering }
 Avatar >> render: props [
 
-	| vrSupported |
+	| vrSupported renderController |
 	vrSupported := self useState: nil.
+	renderController := self useRenderController.
 	
 	self
 		useEffect: [
@@ -60,38 +61,36 @@ Avatar >> render: props [
 	
 	vrSupported get ifNil: [^ nil].
 	
-	^ vrSupported get
-		ifTrue: [
-			GDARVROrigin new children: {
-				GDARVRCamera new
-					subscribeTo: #'global_transform'
-					do: [:t | (props at: #setHead) value: t].
-				(self methodAsComponent: #renderController:)
-					side: #left;
-					transform: (props at: #left);
-					setTransform: (props at: #setLeft).
-				(self methodAsComponent: #renderController:)
-					side: #right;
-					transform: (props at: #right);
-					setTransform: (props at: #setRight)}]
-		ifFalse: [
-			(self methodAsComponent: #renderSimulated:)
-				head: (props at: #head);
-				setHead: (props at: #setHead);
-				left: (props at: #left);
-				setLeft: (props at: #setLeft);
-				right: (props at: #right);
-				setRight: (props at: #setRight)]
+	^ props extract: [:left :setLeft :right :setRight :head :setHead |
+		vrSupported get
+			ifTrue: [
+				GDARVROrigin new children: {
+					GDARVRCamera new subscribeTo: #'global_transform' do: [:t | setHead value: t].
+					renderController value
+						side: #left;
+						transform: left;
+						setTransform: setLeft.
+					renderController value
+						side: #right;
+						transform: right;
+						setTransform: setRight}]
+			ifFalse: [
+				(self methodAsComponent: #renderSimulated:)
+					head: head;
+					setHead: setHead;
+					left: left;
+					setLeft: setLeft;
+					right: right;
+					setRight: setRight]]
 ]
 
 { #category : #'rendering - vr' }
 Avatar >> renderController: props [
 
-	| controllerRef renderActiveHand handlers |
-	
+	| controllerRef renderHand handlers |
 	controllerRef := self useRef: nil.
-	handlers := self useRef: ({#onButtonPress -> [:x|]. #onButtonRelease -> [:x|]} as: Dictionary).
-	renderActiveHand := self useRenderActiveHand.
+	handlers := self useRef: ({#onButtonPress -> [:x | ]. #onButtonRelease -> [:x | ]} as: Dictionary).
+	renderHand := self useRenderHand.
 	
 	^ GDARVRController new
 		ref: controllerRef;
@@ -101,7 +100,7 @@ Avatar >> renderController: props [
 		onButtonPressed: (handlers get at: #onButtonPress);
 		onButtonRelease: (handlers get at: #onButtonRelease);
 		children: {
-			renderActiveHand value
+			renderHand value
 				controllerRef: controllerRef;
 				setHandlers: [:h | handlers set: h];
 				side: (props at: #side);
@@ -250,8 +249,21 @@ Avatar >> useHandMesh [
 ]
 
 { #category : #'rendering - vr' }
-Avatar >> useRenderActiveHand [
+Avatar >> useRenderController [
 
-	^ (self useProvided: #activeHand)
-		ifNil: [self methodAsComponent: #renderHand:]
+	| apps |
+	apps := self useProvided: #applications.
+	^ (apps select: #hasRenderController)
+		ifEmpty: [[self methodAsComponent: #renderController:]]
+		ifNotEmpty: [:controllerApps | (controllerApps detectMax: #priority) renderController]
+]
+
+{ #category : #'rendering - vr' }
+Avatar >> useRenderHand [
+
+	| apps |
+	apps := self useProvided: #applications.
+	^ (apps select: #hasRenderHand)
+		ifEmpty: [[self methodAsComponent: #renderHand:]]
+		ifNotEmpty: [:handApps | (handApps detectMax: #priority) renderHand]
 ]

@@ -108,10 +108,14 @@ GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatr
 	
 	^ Dictionary new
 		at: #onButtonPress put: [:button |
-			(buttonHandlers get at: aSymbol) do: [:h | (h get at: #onButtonPress) cull: (createInteractiveButtonEvent value: button value: nil)].
+			buttonHandlers get
+				at: aSymbol
+				ifPresent: [:list | list do: [:h | (h get at: #onButtonPress) cull: (createInteractiveButtonEvent value: button value: nil)]].
 			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonPress) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
 		at: #onButtonRelease put: [:button |
-			(buttonHandlers get at: aSymbol) do: [:h | (h get at: #onButtonRelease) cull: (createInteractiveButtonEvent value: button value: nil)].
+			buttonHandlers get
+				at: aSymbol
+				ifPresent: [:list | list do: [:h | (h get at: #onButtonRelease) cull: (createInteractiveButtonEvent value: button value: nil)]].
 			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonRelease) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
 		yourself
 ]
