@@ -50,7 +50,9 @@ WorldDworph >> render: props [
 			#closeApplication -> [:appDescription | apps set: [:old | old copyWithout: appDescription]].
 			#applications -> apps get.
 			#worldPortal -> worldPortalRef.
-			#headTransform -> head get}
+			#headTransform -> head get.
+			#leftControllerTransform -> left get.
+			#rightControllerTransform -> right get}
 		children: {
 			Avatar new
 				left: left get;
