@@ -97,6 +97,27 @@ DworphicInteractableTest >> testButtonRelease [
 	self assert: release
 ]
 
+{ #category : #'as yet unclassified' }
+DworphicInteractableTest >> testHook [
+
+	| pressed released |
+	pressed := false.
+	released := false.
+	self openComponent: [
+		WorldDworph new children: [
+			GRComponent basicNew
+				useButtonPress: [:e | pressed := true]
+				release: [:e | released := true]
+				side: #left.
+			nil] asComponent].
+	self tick: {(self controllerNode: #left) toggleTrigger: true}.
+	self assert: pressed.
+	self deny: released.
+	
+	self tick: {(self controllerNode: #left) toggleTrigger: false}.
+	self assert: released
+]
+
 { #category : #tests }
 DworphicInteractableTest >> testHover [
 

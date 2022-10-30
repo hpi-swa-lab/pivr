@@ -7,15 +7,19 @@ Class {
 { #category : #'as yet unclassified' }
 WorldDworph >> render: props [
 
-	| handAreaHandlers apps worldPortalRef head left right |
+	| handAreaHandlers apps worldPortalRef head left right children buttonHandlers |
 	handAreaHandlers := self useState: Dictionary new.
 	apps := self useState: OrderedCollection new.
 	head := self useState: Matrix4x4 identity.
 	left := self useState: Matrix4x4 identity.
 	right := self useState: Matrix4x4 identity.
+	buttonHandlers := self useRef: (Dictionary withAll: {#left -> OrderedCollection new. #right -> OrderedCollection new}).
 	
 	worldPortalRef := self useRef: nil.
 	
+	children := (props at: #children) isCollection
+		ifTrue: [props at: #children]
+		ifFalse: [{props at: #children}].
 	^ GRProvider
 		values: {
 			#addHandAreaHandlers -> [:area :handlers | handAreaHandlers set: [:old | old copyWith: area -> handlers]].
@@ -37,7 +41,8 @@ WorldDworph >> render: props [
 			#headTransform -> head get.
 			#activeHand -> ((apps get select: #hasHandComponent)
 				ifEmpty: [nil]
-				ifNotEmpty: [:handApps | (handApps detectMax: #priority) handComponent])}
+				ifNotEmpty: [:handApps | (handApps detectMax: #priority) handComponent]).
+			#buttonHandlers -> buttonHandlers}
 		children: {
 			Avatar new
 				left: left get;
@@ -46,5 +51,5 @@ WorldDworph >> render: props [
 				setLeft: left setter;
 				setRight: right setter;
 				setHead: head setter.
-			GDSpatial new children: (props at: #children), (apps get collect: [:appDescription | appDescription buildComponent key: appDescription]), {GDSpatial new ref: worldPortalRef}}
+			GDSpatial new children: children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription]), {GDSpatial new ref: worldPortalRef}}
 ]

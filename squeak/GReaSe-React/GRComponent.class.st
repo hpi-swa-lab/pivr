@@ -82,10 +82,7 @@ GRComponent >> nextGodotId [
 { #category : #hooks }
 GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatrix controller: controllerRef [
 
-	| addHandAreaHandlers removeHandAreaHandlers createInteractiveEvent activeEventHandlers createInteractiveButtonEvent transformRef grabbedHandlers |
-	activeEventHandlers := self useState: OrderedCollection new.
-	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
-	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
+	| createInteractiveEvent createInteractiveButtonEvent transformRef grabbedHandlers activeEventHandlers buttonHandlers |
 	grabbedHandlers := self useState: nil.
 	
 	transformRef := self useRef: aMatrix.
@@ -103,26 +100,19 @@ GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatr
 				activeEventHandlers set: [:old | old copyRemove: releaseHandlers]]].
 	createInteractiveButtonEvent := [:button :handlers | ((createInteractiveEvent value: handlers) as: GRInteractiveAreaEventButton) button: button].
 	
-	self
-		useEffect: [
-			addHandAreaHandlers value: areaRef get value: (Dictionary withAll: {
-				#onAreaEntered -> [:eventHandlers |
-					grabbedHandlers get ifNil: [
-						(eventHandlers at: #onHover) ifNotNil: [:block | block cull: (createInteractiveEvent value: eventHandlers)].
-						activeEventHandlers set: [:old | old copyWith: eventHandlers]]].
-				#onAreaExited -> [:eventHandlers |
-					grabbedHandlers get ifNil: [
-						(eventHandlers at: #onBlur) ifNotNil: [:block | block cull: (createInteractiveEvent value: eventHandlers)].
-						activeEventHandlers set: [:old | "deliberately allowing this to not remove anything: if we had a grab we may try to unsubscribe twice"
-						old copyWithout: eventHandlers]]]}).
-			[removeHandAreaHandlers value: areaRef get]]
-		dependencies: #().
+	activeEventHandlers := self
+		useRegisterHandArea: areaRef
+		grabbed: grabbedHandlers
+		create: createInteractiveEvent.
+	buttonHandlers := self useProvided: #buttonHandlers.
 	
 	^ Dictionary new
-		at: #onButtonPress
-			put: [:button | (grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonPress) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
-		at: #onButtonRelease
-			put: [:button | (grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonRelease) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
+		at: #onButtonPress put: [:button |
+			(buttonHandlers get at: aSymbol) do: [:h | (h get at: #onButtonPress) cull: (createInteractiveButtonEvent value: button value: nil)].
+			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonPress) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
+		at: #onButtonRelease put: [:button |
+			(buttonHandlers get at: aSymbol) do: [:h | (h get at: #onButtonRelease) cull: (createInteractiveButtonEvent value: button value: nil)].
+			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonRelease) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
 		yourself
 ]
 
@@ -160,33 +150,25 @@ GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 ]
 
 { #category : #hooks }
-GRComponent >> useControllerTransform [
+GRComponent >> useButtonPress: aPressBlock release: aReleaseBlock side: aSymbol [
 
-	^ self useProvided: #controllerTransform
+	| buttonHandlers ref |
+	buttonHandlers := (self useProvided: #buttonHandlers) get at: aSymbol.
+	ref := self useRef: Dictionary new.
+	ref get at: #onButtonPress put: aPressBlock.
+	ref get at: #onButtonRelease put: aReleaseBlock.
+	
+	self
+		useEffect: [
+			buttonHandlers add: ref.
+			[buttonHandlers remove: ref]]
+		dependencies: {}
 ]
 
 { #category : #hooks }
 GRComponent >> useGodotRef [
 
 	^ CMFCurrentReact value useGodotRef
-]
-
-{ #category : #hooks }
-GRComponent >> useHandId [
-
-	^ self useProvided: #handId
-]
-
-{ #category : #hooks }
-GRComponent >> useHandIsFree [
-
-	^ self useProvided: #handIsFree
-]
-
-{ #category : #hooks }
-GRComponent >> useHandPortal [
-
-	^ self useProvided: #handPortal
 ]
 
 { #category : #hooks }
@@ -220,44 +202,27 @@ GRComponent >> useProvidedRef: aSymbol namespace: anotherSymbol [
 ]
 
 { #category : #hooks }
-GRComponent >> useTeleport [
+GRComponent >> useRegisterHandArea: areaRef grabbed: grabbedHandlers create: createInteractiveEvent [
 
-	^ self useProvided: #teleport
-]
-
-{ #category : #hooks }
-GRComponent >> useTriggerPressedDo: aBlock [
-
-	self useTriggerPressedDo: aBlock releasedDo: []
-]
-
-{ #category : #hooks }
-GRComponent >> useTriggerPressedDo: pressedBlock releasedDo: releasedBlock [
-
-	| trigger ready |
-	trigger := self useTriggerStrength.
-	ready := self useRef: true.
+	| activeEventHandlers addHandAreaHandlers removeHandAreaHandlers |
+	activeEventHandlers := self useState: OrderedCollection new.
+	addHandAreaHandlers := self useProvided: #addHandAreaHandlers.
+	removeHandAreaHandlers := self useProvided: #removeHandAreaHandlers.
 	self
 		useEffect: [
-			(trigger > 0.8 and: [ready get]) ifTrue: [
-				ready set: false.
-				pressedBlock value].
-			trigger < 0.6 ifTrue: [
-				ready get ifFalse: [releasedBlock value].
-				ready set: true]]
-		dependencies: {pressedBlock. releasedBlock. trigger}
-]
-
-{ #category : #hooks }
-GRComponent >> useTriggerReleasedDo: aBlock [
-
-	self useTriggerPressedDo: [] releasedDo: aBlock
-]
-
-{ #category : #hooks }
-GRComponent >> useTriggerStrength [
-
-	^ self useProvided: #trigger
+			addHandAreaHandlers value: areaRef get value: (Dictionary withAll: {
+				#onAreaEntered -> [:eventHandlers |
+					grabbedHandlers get ifNil: [
+						(eventHandlers at: #onHover) ifNotNil: [:block | block cull: (createInteractiveEvent value: eventHandlers)].
+						activeEventHandlers set: [:old | old copyWith: eventHandlers]]].
+				#onAreaExited -> [:eventHandlers |
+					grabbedHandlers get ifNil: [
+						(eventHandlers at: #onBlur) ifNotNil: [:block | block cull: (createInteractiveEvent value: eventHandlers)].
+						activeEventHandlers set: [:old | "deliberately allowing this to not remove anything: if we had a grab we may try to unsubscribe twice"
+						old copyWithout: eventHandlers]]]}).
+			[removeHandAreaHandlers value: areaRef get]]
+		dependencies: #().
+	^ activeEventHandlers
 ]
 
 { #category : #hooks }
