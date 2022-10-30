@@ -138,7 +138,7 @@ GRSocketSession >> handleRenderMessage: aMessage [
 		self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
 		true]
 		on: ConnectionClosed, SocketPrimitiveFailed
-		do: [:error | self halt. false]
+		do: [:error | false]
 		on: Error, Halt, Warning
 		do: [:error |
 			self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.

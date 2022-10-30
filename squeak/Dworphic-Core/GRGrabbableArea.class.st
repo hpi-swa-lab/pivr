@@ -22,7 +22,6 @@ GRGrabbableArea >> render: props [
 						props: rest;
 						isGrabbed: handRef get notNil;
 						transform: (isGrabbed ifTrue: [Matrix4x4 identity] ifFalse: [transform ifNil: [currentTransform get]]);
-						getHandRef: [handRef get];
 						setHandRef: [:ref | handRef set: ref];
 						setTransform: [:t | currentTransform set: t]}
 				in: (handRef get ifNil: [inPlaceRef]))]

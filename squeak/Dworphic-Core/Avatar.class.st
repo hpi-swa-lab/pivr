@@ -110,8 +110,17 @@ Avatar >> renderController: props [
 { #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	| handMesh |
+	| handMesh allHandlers setHandlers |
 	handMesh := self useHandMesh.
+	
+	allHandlers := OrderedCollection new.
+	setHandlers := [:handlers | allHandlers add: handlers].
+	(props at: #setHandlers) value: (Dictionary new
+		at: #onButtonPress
+			put: [:button | allHandlers do: [:h | (h at: #onButtonPress) value: button]];
+		at: #onButtonRelease
+			put: [:button | allHandlers do: [:h | (h at: #onButtonRelease) value: button]];
+		yourself).
 	
 	^ GDSpatial new children: {
 		GDMeshInstance new
@@ -120,14 +129,17 @@ Avatar >> renderHand: props [
 			translation: 0 @ -0.07 @ 0.1;
 			rotation: -1.6 @ 0 @ 0.
 		GRActingArea new
+			point: false;
+			touch: true;
 			side: (props at: #side);
 			actingTransform: (props at: #transform);
 			controllerRef: (props at: #controllerRef);
-			setHandlers: (props at: #setHandlers);
+			setHandlers: setHandlers;
 			children: {
 				GDCollisionShape new
 					shape: (GDSphereShape new radius: 0.05);
-					translation: 0 @ -0.07 @ 0.05}}
+					translation: 0 @ -0.07 @ 0.05}.
+		GRPointer new setHandlers: setHandlers}
 ]
 
 { #category : #'rendering - simulated' }

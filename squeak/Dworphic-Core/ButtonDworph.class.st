@@ -11,6 +11,7 @@ ButtonDworph >> render: props [
 		hovered := self useState: false.
 		GRInteractiveArea new
 			props: rest;
+			point: true;
 			translation: 0.02 @ 0 @ 0;
 			onHover: [hovered set: true];
 			onBlur: [hovered set: false];

@@ -8,18 +8,13 @@ Class {
 GRActingArea >> render: props [
 
 	| areaRef |
-	areaRef := self useGodotRef.
-
-	"TODO: consider moving the useActiveEventHandlersFor... hook into this class"
-	(props at: #setHandlers) value: (self
-		useActiveEventHandlersFor: areaRef
-		side: (props at: #side)
-		transform: (props at: #actingTransform)
-		controller: (props at: #controllerRef)).
-		
-	^ GDArea new
-		"TODO"
-		"setAll: props;"
-		ref: areaRef;
-		children: (props at: #children)
+	^ props extract: [:setHandlers :side :actingTransform :controllerRef :children :touch :point :rest |
+		areaRef := self useGodotRef.
+		setHandlers value: (self useActiveEventHandlersFor: areaRef side: side transform: actingTransform controller: controllerRef).
+		^ GDArea new
+			setAll: rest;
+			ref: areaRef;
+			collisionLayer: 0;
+			collisionMask: ((touch ifTrue: [GRInteractiveArea touchLayer] ifFalse: [0]) bitOr: (point ifTrue: [GRInteractiveArea pointLayer] ifFalse: [0]));
+			children: children]
 ]
