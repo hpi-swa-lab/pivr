@@ -218,12 +218,7 @@ func apply_updates(list):
 			'delete':
 				var target = get_node_and_resource(root_path + update[1])
 				var instance = target[1] if target[1] else target[0]
-				var toDelete = []
-				for sub in subscriptions:
-					if sub.instance == instance:
-						toDelete.append(sub)
-				for delete in toDelete:
-					subscriptions.remove(subscriptions.find(delete))
+				delete_subscriptions_recursively(instance)
 				if target[1]:
 					instance.set(target[2], null)
 				else:
@@ -309,6 +304,19 @@ func delete_subscription_for(instance, key):
 			return
 		index += 1
 	push_error("Did not find subscription for " + key + " on " + str(instance))
+
+func delete_subscriptions_recursively(instance):
+	var toDelete = []
+	_delete_sub_rec(instance, toDelete)
+	for delete in toDelete:
+		subscriptions.remove(subscriptions.find(delete))
+
+func _delete_sub_rec(instance, toDelete):
+	for sub in subscriptions:
+		if sub.instance == instance:
+			toDelete.append(sub)
+	for child in instance.get_children():
+		_delete_sub_rec(child, toDelete)
 
 func apply_prop(instance, key, value):
 	if key == 'groups':
