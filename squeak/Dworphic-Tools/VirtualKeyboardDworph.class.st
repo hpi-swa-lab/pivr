@@ -74,6 +74,8 @@ VirtualKeyboardDworph >> renderKey: props [
 	hovered := self useState: false.
 	
 	^ GRInteractiveArea new
+		touch: true;
+		point: true;
 		onButtonPress: [:e | e isTrigger ifTrue: [(props at: #onPressed) value]];
 		onHover: [hovered set: true];
 		onBlur: [hovered set: false];

@@ -15,7 +15,8 @@ GRActingArea >> render: props [
 		useActiveEventHandlersFor: areaRef
 		side: (props at: #side)
 		transform: (props at: #actingTransform)
-		controller: (props at: #controllerRef)).
+		controller: (props at: #controllerRef)
+		type: (props at: #type)).
 		
 	^ GDArea new
 		"TODO"

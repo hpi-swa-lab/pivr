@@ -14,6 +14,7 @@ GRPointer >> render: props [
 		side: (props at: #side ifAbsent: [#none]);
 		actingTransform: (props at: #transform ifAbsent: [Matrix4x4 identity]);
 		controllerRef: (props at: #controllerRef ifAbsent: [nil]);
+		type: #point;
 		setHandlers: (props at: #setHandlers);
 		children: {
 			GDCollisionShape new
@@ -22,10 +23,10 @@ GRPointer >> render: props [
 					length: 3).
 			GDArea new
 				onAreaEntered: [:area | 
-					((GDArea new objectId: area objectId) getMetaName: #isInteractive default: false)
+					((GDArea new objectId: area objectId) getMetaName: #allowsPointing default: false)
 						ifTrue: [overlappingAreas set: [:old | old copyWith: area]]];
 				onAreaExited: [:area |
-					((GDArea new objectId: area objectId) getMetaName: #isInteractive default: false)
+					((GDArea new objectId: area objectId) getMetaName: #allowsPointing default: false)
 						ifTrue: [overlappingAreas set: [:old | old copyRemove: area]]];
 				rotation: Float pi / 2 @ 0 @ 0;
 				translation: 0 @ 0 @ -1.5;

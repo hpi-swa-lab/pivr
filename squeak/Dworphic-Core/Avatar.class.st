@@ -119,15 +119,18 @@ Avatar >> renderHand: props [
 			scale: (self mirrorFactorForSide: (props at: #side)) @ 1 @ 1 * 0.25;
 			translation: 0 @ -0.07 @ 0.1;
 			rotation: -1.6 @ 0 @ 0.
-		GRActingArea new
+		GRPointer new
+			setHandlers: (props at: #setHandlers).
+		"GRActingArea new
 			side: (props at: #side);
 			actingTransform: (props at: #transform);
 			controllerRef: (props at: #controllerRef);
+			type: #touch;
 			setHandlers: (props at: #setHandlers);
 			children: {
 				GDCollisionShape new
 					shape: (GDSphereShape new radius: 0.05);
-					translation: 0 @ -0.07 @ 0.05}}
+					translation: 0 @ -0.07 @ 0.05}"}
 ]
 
 { #category : #'rendering - simulated' }
@@ -177,7 +180,8 @@ Avatar >> renderSimulatedController: props [
 		useActiveEventHandlersFor: handArea
 		side: (props at: #side)
 		transform: (props at: #transform)
-		controller: handPortal.
+		controller: handPortal;
+		type: #touch.
 	
 	^ GDSpatial new
 		transform: (props at: #transform);

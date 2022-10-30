@@ -12,6 +12,7 @@ DworphicInteractableTest >> testBlur [
 	self openComponent: [
 		WorldDworph new children: {
 			GRInteractiveArea new
+				touch: true;
 				onHover: [blur := true];
 				children: {
 					GDCollisionShape new
@@ -37,6 +38,7 @@ DworphicInteractableTest >> testButtonPress [
 	self openComponent: [
 		WorldDworph new children: {
 			GRInteractiveArea new
+				touch: true;
 				onButtonPress: [:event |
 					self assert: event button = GDGlobalConstants joyVrGrip.
 					press := true];
@@ -71,6 +73,7 @@ DworphicInteractableTest >> testButtonRelease [
 	self openComponent: [
 		WorldDworph new children: {
 			GRInteractiveArea new
+				touch: true;
 				onButtonRelease: [:event |
 					self assert: event button = GDGlobalConstants joyVrGrip.
 					release := true];
@@ -126,6 +129,7 @@ DworphicInteractableTest >> testHover [
 	self openComponent: [
 		WorldDworph new children: {
 			GRInteractiveArea new
+				touch: true;
 				onHover: [hovered := true];
 				children: {
 					GDCollisionShape new
