@@ -33,8 +33,8 @@ CubeRemoveDworph >> render: props [
 				ifTrue: [
 					GDArea new
 						children: {GDCollisionShape new shape: self collisionShape};
-						onAreaEntered: [:area | | id |
-							id := (area grAsClass: #GDArea) getMetaName: 'id' default: 0.
+						onBodyEntered: [:area | | id |
+							id := (area grAsClass: #GDRigidBody) getMetaName: 'id' default: 0.
 							(triggerPressed get and: [id ~~ 0]) ifTrue: [
 								cubes set: [:c |
 									self assert: (c anySatisfy: [:cube | cube third = id]).
