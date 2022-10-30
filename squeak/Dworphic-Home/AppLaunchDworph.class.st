@@ -25,8 +25,8 @@ AppLaunchDworph >> render: props [
 					horizontalAlignment: GDGlobalConstants halignRight;
 					pixelSize: 0.002;
 					text: app name.
-				GRInteractiveArea new
+				ButtonDworph new
+					onPress: [openApplication value: app copy];
 					translation: 0.02 @ 0 @ 0;
-					onButtonPress: [:event | event isTrigger ifTrue: [openApplication value: app copy]];
-					children: {self cubeOfSize: 0.02 color: (Color r: 0.0 g: 1 b: 0.0)}}])
+					color: Color green}])
 ]

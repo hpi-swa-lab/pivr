@@ -23,8 +23,8 @@ AppBarDworph >> render: props [
 					horizontalAlignment: GDGlobalConstants halignRight;
 					pixelSize: 0.002;
 					text: app name.
-				GRInteractiveArea new
+				ButtonDworph new
+					onPress: [closeApplication value: app];
 					translation: 0.02 @ 0 @ 0;
-					onButtonPress: [:event | event isTrigger ifTrue: [closeApplication value: app]];
-					children: {self cubeOfSize: 0.02 color: (Color r: 1 g: 0.0 b: 0.0)}}])
+					color: Color red}])
 ]
