@@ -10,7 +10,7 @@ GRActingArea >> render: props [
 	| areaRef |
 	^ props extract: [:setHandlers :side :actingTransform :controllerRef :children :touch :point :rest |
 		areaRef := self useGodotRef.
-		setHandlers value: (self useActiveEventHandlersFor: areaRef side: side transform: actingTransform controller: controllerRef).
+		setHandlers value: (self useActiveEventHandlersFor: areaRef side: side transform: actingTransform controller: controllerRef type: (point ifTrue: [#point] ifFalse: [#touch])).
 		^ GDArea new
 			setAll: rest;
 			ref: areaRef;
