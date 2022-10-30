@@ -33,8 +33,9 @@ GRGrabbableArea >> renderArea: props [
 	^ props extract: [:setHandRef :setTransform :onGrab :onRelease :onHover :onBlur :onButtonPress :onButtonRelease :children :isGrabbed :rest |
 		GRInteractiveArea new
 			props: rest;
-			onHover: onHover;
-			onBlur: onBlur;
+			touch: true;
+			onHover: (onHover ifNil: [[]]);
+			onBlur: (onBlur ifNil: [[]]);
 			onButtonPress: [:event |
 				event isGrip ifTrue: [
 					event

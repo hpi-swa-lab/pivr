@@ -121,6 +121,48 @@ GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatr
 ]
 
 { #category : #hooks }
+GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatrix controller: controllerRef type: typeSymbol [
+
+	| createInteractiveEvent createInteractiveButtonEvent transformRef grabbedHandlers activeEventHandlers buttonHandlers |
+	grabbedHandlers := self useState: nil.
+	
+	transformRef := self useRef: aMatrix.
+	transformRef set: aMatrix.
+	
+	createInteractiveEvent := [:handlers |
+		GRInteractiveAreaEvent new
+			controllerRef: controllerRef;
+			side: aSymbol;
+			transform: transformRef get;
+			type: typeSymbol;
+			targetHandlers: handlers;
+			grabState: grabbedHandlers;
+			grabRelease: [:releaseHandlers |
+				(releaseHandlers at: #onBlur) ifNotNil: [:block | block cull: (createInteractiveEvent value: releaseHandlers)].
+				activeEventHandlers set: [:old | old copyRemove: releaseHandlers]]].
+	createInteractiveButtonEvent := [:button :handlers | ((createInteractiveEvent value: handlers) as: GRInteractiveAreaEventButton) button: button].
+	
+	activeEventHandlers := self
+		useRegisterHandArea: areaRef
+		grabbed: grabbedHandlers
+		create: createInteractiveEvent.
+	buttonHandlers := self useProvided: #buttonHandlers.
+	
+	^ Dictionary new
+		at: #onButtonPress put: [:button |
+			buttonHandlers get
+				at: aSymbol
+				ifPresent: [:list | list do: [:h | (h get at: #onButtonPress) cull: (createInteractiveButtonEvent value: button value: nil)]].
+			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonPress) ifNotNil: [:block | block value: (createInteractiveButtonEvent value: button value: handlers)]]];
+		at: #onButtonRelease put: [:button |
+			buttonHandlers get
+				at: aSymbol
+				ifPresent: [:list | list do: [:h | (h get at: #onButtonRelease) cull: (createInteractiveButtonEvent value: button value: nil)]].
+			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonRelease) ifNotNil: [:block | block value: (createInteractiveButtonEvent value: button value: handlers)]]];
+		yourself
+]
+
+{ #category : #hooks }
 GRComponent >> useApplication: aBlock dependencies: aCollection [
 
 	| openApplication closeApplication appDesc |

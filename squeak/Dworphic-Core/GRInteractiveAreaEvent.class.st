@@ -7,7 +7,8 @@ Class {
 		'transform',
 		'grabState',
 		'targetHandlers',
-		'grabRelease'
+		'grabRelease',
+		'type'
 	],
 	#category : #'Dworphic-Core'
 }
@@ -88,4 +89,16 @@ GRInteractiveAreaEvent >> transform [
 GRInteractiveAreaEvent >> transform: aMatrix4x4 [
 
 	transform := aMatrix4x4
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> type [
+
+	^ type
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> type: aSymbol [
+
+	type := aSymbol
 ]
