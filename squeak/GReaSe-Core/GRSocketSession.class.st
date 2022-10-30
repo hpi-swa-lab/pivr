@@ -138,7 +138,7 @@ GRSocketSession >> handleRenderMessage: aMessage [
 		self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
 		true]
 		on: ConnectionClosed, SocketPrimitiveFailed
-		do: [:error | false]
+		do: [:error | self halt. false]
 		on: Error, Halt, Warning
 		do: [:error |
 			self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
@@ -155,6 +155,21 @@ GRSocketSession >> initialize [
 	codeChanged := false.
 	communicationLock := Mutex new.
 	renderingErrored := false
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketSession >> loadResource: aString [
+
+	| response |
+	"load resource and reference() it, so make sure to unreference()"
+	GRSocketListener
+		putVariant: {GRSocketListener messageTypeLoadResourceFromSqueak. aString}
+		on: stream.
+	
+	response := GRSocketListener readMessageFrom: stream.
+	self assert: response first = GRSocketListener messageTypeLoadedResourceFromGodot.
+	self assert: response second = sessionId.
+	^ response third
 ]
 
 { #category : #'as yet unclassified' }

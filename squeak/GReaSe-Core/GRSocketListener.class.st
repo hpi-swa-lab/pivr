@@ -56,6 +56,18 @@ GRSocketListener class >> messageTypeInitializedSessionFromSqueak [
 ]
 
 { #category : #'as yet unclassified' }
+GRSocketListener class >> messageTypeLoadResourceFromSqueak [
+
+	^ 14
+]
+
+{ #category : #'as yet unclassified' }
+GRSocketListener class >> messageTypeLoadedResourceFromGodot [
+
+	^ 15
+]
+
+{ #category : #'as yet unclassified' }
 GRSocketListener class >> messageTypePropertyGetFromSqueak [
 
 	^ 8

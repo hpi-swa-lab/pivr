@@ -55,7 +55,7 @@ Avatar >> render: props [
 							hdr: true;
 							arvr: true.
 						GDEngine instance iterationsPerSecond: 90.
-						GDOS instance vsyncEnabled: true.
+						GDOS instance vsyncEnabled: false.
 						vrSupported set: true]]]
 		dependencies: {}.
 	
