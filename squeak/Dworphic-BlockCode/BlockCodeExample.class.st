@@ -50,29 +50,31 @@ BlockCodeExample >> renderApps: props [
 	openApp := self useProvided: #openApplication.
 	closeApp := self useProvided: #closeApplication.
 	app := self useState: nil.
-
-	self useEffect: [ 
-		app set: (openApp value: (DworphicApplicationDescription new
-			render: [BlockCodeEditor new
-				layoutParams: (CodeBlockLayoutParamters new
-				blockDepth: 0.01;
-				morphicScale: 0.003)];
-			handComponent: [SphereHand new])).
-		
-		nil] dependencies: #().
-
-	^ GDNode new
-		children: {
-			GDTimer new
-				autostart: true;
-				waitTime: 5;
-				onTimeout: [app get
-					ifNil: [ | |
+	
+	self
+		useEffect: [
+			app set: (openApp value: (DworphicApplicationDescription new
+				render: [
+					BlockCodeEditor new layoutParams: (CodeBlockLayoutParamters new
+						blockDepth: 0.01;
+						morphicScale: 0.003)];
+				renderHand: [SphereHand new])).
+			
+			nil]
+		dependencies: #().
+	
+	^ GDNode new children: {
+		GDTimer new
+			autostart: true;
+			waitTime: 5;
+			onTimeout: [
+				app get
+					ifNil: [
 						app set: (openApp value: (DworphicApplicationDescription new
-							render: [BlockCodeEditor new
-								layoutParams: (CodeBlockLayoutParamters new
-								blockDepth: 0.01;
-								morphicScale: 0.003)];
+							render: [
+								BlockCodeEditor new layoutParams: (CodeBlockLayoutParamters new
+									blockDepth: 0.01;
+									morphicScale: 0.003)];
 							handComponent: [SphereHand new]))]
 					ifNotNil: [:desc |
 						Transcript showln: 'closing app ', desc name.
