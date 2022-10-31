@@ -12,11 +12,11 @@ CubeDworph >> render: props [
 	
 	^ GDRigidBody new
 		ref: rigidBodyRef;
+		meta: #id set: (props at: #id);
 		transform: (props at: #transform ifAbsent: [Matrix4x4 identity]);
 		children: {
 			GDCollisionShape new shape: (GDBoxShape new extents: 0.05 asVector3).
 			GRGrabbableArea new
-				sqmeta_id: (props at: #id);
 				transform: Matrix4x4 identity;
 				onRelease: [:event | rigidBodyRef get transform: event transform];
 				children: {
