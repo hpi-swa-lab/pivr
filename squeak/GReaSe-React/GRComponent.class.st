@@ -41,6 +41,12 @@ GRComponent class >> startWithArguments: aStringCollection [
 	GRReact startGodotWithArguments: {GRReact port asString}, aStringCollection
 ]
 
+{ #category : #deploy }
+GRComponent class >> toolIcon [
+
+	^ #dworph
+]
+
 { #category : #helpers }
 GRComponent >> cubeOfSize: aVector3OrNumber color: aColor [
 
