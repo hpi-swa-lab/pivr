@@ -5,6 +5,18 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+BlockCodeEditor class >> appDescription [
+	<home>
+
+	^ DworphicApplicationDescription new
+		name: self name;
+		render: [self new
+			layoutParams: (CodeBlockLayoutParamters new
+				blockDepth: 0.01;
+				morphicScale: 0.003)]
+]
+
+{ #category : #'as yet unclassified' }
 BlockCodeEditor >> blocks: props [
 
 	^ ((props at: #structure) at: #children) collect: [:structure |
