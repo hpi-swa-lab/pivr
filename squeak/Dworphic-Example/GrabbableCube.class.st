@@ -30,6 +30,7 @@ GrabbableCube >> render: props [
 		onRelease: [:event |
 			Transcript showln: 'cube release ', event side.
 			color set: (Color r: 1 g: 1 b: 0.0)];
+		onAxisChange: [:event | Transcript showln: ('axis {1} changed to {2}' format: {event axis. event strength})];
 		onButtonPress: [:event | Transcript showln: 'cube button press ', event button];
 		onButtonRelease: [:event | Transcript showln: 'cube button release ', event button];
 		children: {self cubeOfSize: 0.2 color: color get}

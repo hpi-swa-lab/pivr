@@ -273,6 +273,12 @@ GRMockNode >> subscribe: aSymbol set: anObject [
 	^ {properties at: 'sqsubscribe_', aSymbol. anObject}
 ]
 
+{ #category : #updates }
+GRMockNode >> subscribeCall: aSymbol index: aNumber with: anObject [
+
+	^ {(properties at: 'sqsubcall_', aSymbol, '_', aNumber) first. anObject}
+]
+
 { #category : #internal }
 GRMockNode >> tick: aReact [
 

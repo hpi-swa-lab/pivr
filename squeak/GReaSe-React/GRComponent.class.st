@@ -94,7 +94,7 @@ GRComponent >> nextGodotId [
 { #category : #hooks }
 GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatrix controller: controllerRef type: aTypeSymbol [
 
-	| createInteractiveEvent createInteractiveButtonEvent transformRef grabbedHandlers activeEventHandlers buttonHandlers |
+	| createInteractiveEvent createInteractiveButtonEvent transformRef grabbedHandlers activeEventHandlers buttonHandlers createButtonHandler createInteractiveAxisEvent |
 	grabbedHandlers := self useState: nil.
 	
 	transformRef := self useRef: aMatrix.
@@ -112,6 +112,10 @@ GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatr
 				(releaseHandlers at: #onBlur) ifNotNil: [:block | block cull: (createInteractiveEvent value: releaseHandlers)].
 				activeEventHandlers set: [:old | old copyRemove: releaseHandlers]]].
 	createInteractiveButtonEvent := [:button :handlers | ((createInteractiveEvent value: handlers) as: GRInteractiveAreaEventButton) button: button].
+	createInteractiveAxisEvent := [:axis :strength :handlers |
+		((createInteractiveEvent value: handlers) as: GRInteractiveAreaEventAxis)
+			axis: axis;
+			strength: strength].
 	
 	activeEventHandlers := self
 		useRegisterHandArea: areaRef
@@ -119,17 +123,20 @@ GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatr
 		create: createInteractiveEvent.
 	buttonHandlers := self useProvided: #buttonHandlers.
 	
+	createButtonHandler := [:event |
+		[:button |
+			buttonHandlers get
+				at: aSymbol
+				ifPresent: [:list | list do: [:h | (h get at: event) cull: (createInteractiveButtonEvent value: button value: nil)]].
+			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: event) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]]].
 	^ Dictionary new
-		at: #onButtonPress put: [:button |
+		at: #onButtonPress put: (createButtonHandler value: #onButtonPress);
+		at: #onButtonRelease put: (createButtonHandler value: #onButtonRelease);
+		at: #onAxisChange put: [:axis :strength |
 			buttonHandlers get
 				at: aSymbol
-				ifPresent: [:list | list do: [:h | (h get at: #onButtonPress) cull: (createInteractiveButtonEvent value: button value: nil)]].
-			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonPress) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
-		at: #onButtonRelease put: [:button |
-			buttonHandlers get
-				at: aSymbol
-				ifPresent: [:list | list do: [:h | (h get at: #onButtonRelease) cull: (createInteractiveButtonEvent value: button value: nil)]].
-			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onButtonRelease) ifNotNil: [:block | block cull: (createInteractiveButtonEvent value: button value: handlers)]]];
+				ifPresent: [:list | list do: [:h | (h get at: #onAxisChange) cull: (createInteractiveAxisEvent value: axis value: strength value: nil)]].
+			(grabbedHandlers get ifNotNil: [:g | {g}] ifNil: [activeEventHandlers get]) do: [:handlers | (handlers at: #onAxisChange) ifNotNil: [:block | block cull: (createInteractiveAxisEvent value: axis value: strength value: nil)]]];
 		yourself
 ]
 
@@ -167,13 +174,14 @@ GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 ]
 
 { #category : #hooks }
-GRComponent >> useButtonPress: aPressBlock release: aReleaseBlock side: aSymbol [
+GRComponent >> useButtonPress: aPressBlock release: aReleaseBlock axisChange: anAxisBlock side: aSymbol [
 
 	| buttonHandlers ref |
 	buttonHandlers := (self useProvided: #buttonHandlers) get at: aSymbol.
 	ref := self useRef: Dictionary new.
 	ref get at: #onButtonPress put: aPressBlock.
 	ref get at: #onButtonRelease put: aReleaseBlock.
+	ref get at: #onAxisChange put: anAxisBlock.
 	
 	self
 		useEffect: [

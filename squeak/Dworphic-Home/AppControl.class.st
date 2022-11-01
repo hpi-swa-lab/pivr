@@ -25,6 +25,7 @@ AppControl >> render: props [
 				shown set: [:o | o not].
 				transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)]]
 		release: [:e | ]
+		axisChange: [:e | ]
 		side: #right.
 	
 	^ shown get ifTrue: [
