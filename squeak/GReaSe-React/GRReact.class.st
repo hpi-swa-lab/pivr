@@ -106,8 +106,8 @@ GRReact class >> questRestartApp [
 
 	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
 		shell waitForCommand: 'adb reverse tcp:8292 tcp:8292'.
-		shell waitForCommand: 'adb shell am force-stop org.godotengine.vrandsqueaktest'.
-		shell waitForCommand: 'adb shell am start -n org.godotengine.vrandsqueaktest/com.godot.game.GodotApp']
+		shell waitForCommand: 'adb shell am force-stop org.godotengine.grease'.
+		shell waitForCommand: 'adb shell am start -n org.godotengine.grease/com.godot.game.GodotApp']
 ]
 
 { #category : #setup }
