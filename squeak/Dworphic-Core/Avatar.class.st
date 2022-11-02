@@ -166,6 +166,7 @@ Avatar >> renderSimulated: props [
 	
 	^ {
 		OrbitCameraDworph new
+			inverted: GRReact invertSimulatorCamera;
 			active: controlling get = #headset;
 			transform: (props at: #head);
 			setTransform: (props at: #setHead).

@@ -15,6 +15,7 @@ Class {
 		'CurrentGodotId',
 		'DebugCollisionShapes',
 		'GodotPath',
+		'InvertSimulatorCamera',
 		'Port',
 		'RunningGodotProcess',
 		'UseSimulator'
