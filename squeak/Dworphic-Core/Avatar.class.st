@@ -213,6 +213,7 @@ Avatar >> renderSimulatedController: props [
 		transform: (props at: #transform);
 		children: {
 			GDArea new
+				collisionMask: GRInteractiveArea touchLayer;
 				children: {
 					GDCollisionShape new shape: (GDSphereShape new
 						margin: 0.001;
