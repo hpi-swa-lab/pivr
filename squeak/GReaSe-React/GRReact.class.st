@@ -16,6 +16,7 @@ Class {
 		'DebugCollisionShapes',
 		'GodotPath',
 		'InvertSimulatorCamera',
+		'LogCommunication',
 		'Port',
 		'RunningGodotProcess',
 		'UseSimulator'
@@ -61,6 +62,19 @@ GRReact class >> findRepos [
 GRReact class >> isValidRenderResult: anObject [
 
 	^ anObject isGodotNode or: [anObject isSequenceable and: [anObject allSatisfy: [:o | o isGodotNode]]]
+]
+
+{ #category : #preferences }
+GRReact class >> logCommunication [
+	<preference: 'Log Communication' category: 'GReaSe' description: 'Log all communication events to Transcript' type: #Boolean>
+
+	^ LogCommunication ifNil: [false]
+]
+
+{ #category : #preferences }
+GRReact class >> logCommunication: aBoolean [
+
+	LogCommunication := aBoolean
 ]
 
 { #category : #utils }
