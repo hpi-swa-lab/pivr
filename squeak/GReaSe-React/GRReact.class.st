@@ -19,6 +19,7 @@ Class {
 		'LogCommunication',
 		'Port',
 		'RunningGodotProcess',
+		'SyncHeadAndControllerTransform',
 		'UseSimulator'
 	],
 	#category : #'GReaSe-React'

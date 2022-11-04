@@ -63,9 +63,12 @@ Avatar >> render: props [
 	
 	^ props extract: [:left :setLeft :right :setRight :head :setHead |
 		vrSupported get
-			ifTrue: [
+			ifTrue: [ | camera |
+				camera := GDARVRCamera new.
+				GRReact syncHeadAndControllerTransform ifTrue: [camera subscribeTo: #'global_transform' do: [:t | setHead value: t]].
+				
 				GDARVROrigin new children: {
-					GDARVRCamera new subscribeTo: #'global_transform' do: [:t | setHead value: t].
+					camera.
 					renderController value
 						side: #left;
 						transform: left;
@@ -94,7 +97,6 @@ Avatar >> renderController: props [
 	
 	controller := GDARVRController new
 		ref: controllerRef;
-		subscribeTo: #transform do: [:t | (props at: #setTransform) value: t];
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: (handlers get at: #onButtonPress);
@@ -117,6 +119,8 @@ Avatar >> renderController: props [
 			subscribeCall: #'get_joystick_axis'
 			with: {axis}
 			do: [:val | (handlers get at: #onAxisChange) value: axis value: val]].
+	
+	GRReact syncHeadAndControllerTransform ifTrue: [controller subscribeTo: #transform do: [:t | (props at: #setTransform) value: t]].
 	
 	^ controller
 ]
