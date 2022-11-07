@@ -25,11 +25,12 @@ CodeBlock >> computeTranslationFrom: layoutParams block: aBlock [
 { #category : #'as yet unclassified' }
 CodeBlock >> render: props [
 
-	props extract: [:sandblock :layoutParams :translation | | scale isHovered do |
+	props extract: [:sandblock :layoutParams :translation | | scale isHovered do editorTransform |
 		scale := self scale: props.
 		
 		isHovered := self useState: false.
 		do := self useProvided: #doSandblocksCommand.
+		editorTransform := self useProvided: #editorTransform.
 		
 		^ GRDraggableArea new
 			handle: sandblock;
@@ -43,7 +44,9 @@ CodeBlock >> render: props [
 				do value: (SBCombinedCommand newWith: {
 					sandblock parentSandblock deleteCommandFor: sandblock.
 					sandblock sandblockEditor insertCommandRequest: sandblock near: nil before: false})];
-			onDragEnd: [:event | sandblock setProperty: #vrTransform toValue: event transform];
+			onDragEnd: [:event | | localTransform |
+				localTransform := editorTransform value inverseTransformation * event transform.
+				sandblock setProperty: #vrTransform toValue: localTransform];
 			children: {
 				GDCollisionShape new
 					scale: scale;
