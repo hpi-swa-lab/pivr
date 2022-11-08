@@ -11,6 +11,7 @@ BlockCodeEditor class >> appDescription [
 	^ DworphicApplicationDescription new
 		name: self name;
 		render: [self new
+			translation: -1 @ 1 @ 1;
 			layoutParams: (CodeBlockLayoutParamters new
 				blockDepth: 0.01;
 				morphicScale: 0.003)]
@@ -31,14 +32,16 @@ BlockCodeEditor >> render: props [
 			"for testing purposes"
 			block := SBTSStMethod for: Dictionary >> #associationsDo:.
 			editor get openMorph: block.
-			World doOneCycle.
+			"World doOneCycle."
 			forceUpdate value.
 			
 			[editor get containingWindow ifNotNil: #delete]]
 		dependencies: #().
 	
 	doCommand := self
-		useCallback: [:command | Project current addDeferredUIMessage: [editor get do: command]]
+		useCallback: [:command |
+			Project current addDeferredUIMessage: [Transcript showln: 'doing ', command asString.editor get do: command].
+			"editor get world doOneCycle."]
 		dependencies: {}.
 	
 	globalTransform := self useRef: Matrix4x4 identity.
@@ -50,6 +53,7 @@ BlockCodeEditor >> render: props [
 				#doSandblocksCommand -> doCommand.
 				#editorTransform -> [globalTransform get]}
 			children: {
+				GRRerenderEnforcer new.
 				"dummy for retrieving global transform"
 				GDSpatial new
 					subscribeTo: 'global_transform' do: [:t | globalTransform set: t]},

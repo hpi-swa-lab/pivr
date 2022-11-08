@@ -30,9 +30,9 @@ WorldDworph >> provideAreaHandlers [
 WorldDworph >> provideDragAndDropHandlers [
 	<provider>
 	
-	| draggedHandles |
+	| draggedHandles dropInfos |
 	draggedHandles := self useState: Dictionary new.
-	self useEffect: [Transcript showln: draggedHandles get] dependencies: {draggedHandles get}.
+	dropInfos := self useState: Dictionary new.
 	
 	^ {
 		#beginDraggingHandle -> [:handle :areaRef |
@@ -41,7 +41,10 @@ WorldDworph >> provideDragAndDropHandlers [
 			draggedHandles set: [:old | old copyWithoutKey: handle]].
 		#handRefForDragHandle -> [:handle |
 			draggedHandles get at: handle
-				ifAbsent: [nil]]}
+				ifAbsent: [nil]].
+		#registerDropArea -> [:area :info | dropInfos set: [:old | old copyWith: (area -> info)]].
+		#unregisterDropArea -> [:area | dropInfos set: [:old | old copyWithoutKey: area]].
+		#getDropAreaInfo -> [:area | dropInfos get at: area]}
 ]
 
 { #category : #rendering }
