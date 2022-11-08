@@ -15,6 +15,10 @@ run/main_scene="res://GRRoot/GRRoot.tscn"
 run/flush_stdout_on_print=true
 config/icon="res://icon.png"
 
+[audio]
+
+enable_audio_input=true
+
 [display]
 
 window/stretch/mode="viewport"
