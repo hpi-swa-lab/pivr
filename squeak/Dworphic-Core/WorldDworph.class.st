@@ -26,6 +26,24 @@ WorldDworph >> provideAreaHandlers [
 		#buttonHandlers -> buttonHandlers}
 ]
 
+{ #category : #'drag and drop' }
+WorldDworph >> provideDragAndDropHandlers [
+	<provider>
+	
+	| draggedHandles |
+	draggedHandles := self useState: Dictionary new.
+	self useEffect: [Transcript showln: draggedHandles get] dependencies: {draggedHandles get}.
+	
+	^ {
+		#beginDraggingHandle -> [:handle :areaRef |
+			draggedHandles set: [:old | old copyWith: handle -> areaRef]].
+		#stopDraggingHandle -> [:handle |
+			draggedHandles set: [:old | old copyWithoutKey: handle]].
+		#handRefForDragHandle -> [:handle |
+			draggedHandles get at: handle
+				ifAbsent: [nil]]}
+]
+
 { #category : #rendering }
 WorldDworph >> render: props [
 

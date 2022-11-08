@@ -17,44 +17,47 @@ BlockCodeEditor class >> appDescription [
 ]
 
 { #category : #'as yet unclassified' }
-BlockCodeEditor >> blocks: props [
-
-	^ ((props at: #structure) at: #children) collect: [:structure |
-		CodeBlock asReactNodeBuilder
-			props: {
-				#key -> GRReact nextGodotId.
-				#structure -> structure.
-				#layoutParams -> (props at: #layoutParams).
-				#isRoot -> true};
-			 build]
-]
-
-{ #category : #'as yet unclassified' }
 BlockCodeEditor >> render: props [
 
-	| editor blocks forceUpdate |
+	| editor blocks forceUpdate doCommand globalTransform |
 	editor := self useRef: SBEditor new.
 	blocks := self useState: {}.
 	forceUpdate := self useForceUpdate.
 	
-	self useEffect: [ | block |
-		editor get openInWindow.
-		
-		"for testing purposes"
-		block := (SBTSStMethod for: Dictionary>>#associationsDo:).
-		editor get openMorph: block.
-		World doOneCycle.
-		forceUpdate value.
-				
-		[editor get containingWindow delete]] dependencies: #().
-
+	self
+		useEffect: [ | block |
+			editor get openInWindow.
+			
+			"for testing purposes"
+			block := SBTSStMethod for: Dictionary >> #associationsDo:.
+			editor get openMorph: block.
+			World doOneCycle.
+			forceUpdate value.
+			
+			[editor get containingWindow ifNotNil: #delete]]
+		dependencies: #().
+	
+	doCommand := self
+		useCallback: [:command | Project current addDeferredUIMessage: [editor get do: command]]
+		dependencies: {}.
+	
+	globalTransform := self useRef: Matrix4x4 identity.
+	
 	^ ApplicationDworph new
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
-		children: (Array streamContents: [:stream |
-			editor get childSandblocksDo: [:sandblock |
-				stream nextPut: (sandblock asCodeBlock
-					layoutParams: (props at: #layoutParams);
-					isRoot: true)]]), {"GRRerenderEnforcer new"}
+		children: (
+			GRProvider values: {
+				#doSandblocksCommand -> doCommand.
+				#editorTransform -> [globalTransform get]}
+			children: {
+				"dummy for retrieving global transform"
+				GDSpatial new
+					subscribeTo: 'global_transform' do: [:t | globalTransform set: t]},
+				(Array streamContents: [:stream |
+					editor get childSandblocksDo: [:sandblock |
+						stream nextPut: (sandblock asCodeBlock
+							layoutParams: (props at: #layoutParams);
+							translation: Vector3 zero)]]))
 ]
 
 { #category : #'as yet unclassified' }
