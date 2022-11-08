@@ -248,8 +248,13 @@ func create_node(update):
 	var props_dictionary = update[5]
 	
 	var instance = new_instance_for_name(gd_class_name)
+	# apply calls first as those may cause side effects that properties depend on
 	for key in props_dictionary.keys():
-		apply_prop(instance, key, props_dictionary[key])
+		if key.begins_with("sqcall_"):
+			apply_prop(instance, key, props_dictionary[key])
+	for key in props_dictionary.keys():
+		if not key.begins_with("sqcall_"):
+			apply_prop(instance, key, props_dictionary[key])
 	
 	return instance
 
