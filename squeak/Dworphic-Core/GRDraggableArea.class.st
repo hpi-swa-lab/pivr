@@ -28,7 +28,7 @@ GRDraggableArea >> render: props [
 							onAreaEntered: [:area |
 								Transcript showln: 'started overlapping ', area asString.
 								overlappingDropAreas set: [:old | old copyWith: area].
-								Transcript showln: overlappingDropAreas get];
+								Transcript showln: overlappingDropAreas get asString, ' ', overlappingDropAreas get identityHash asString];
 							onAreaExited: [:area |
 								Transcript showln: 'stopped overlapping ', area asString.
 								overlappingDropAreas set: [:old | old copyWithout: area].
@@ -51,7 +51,7 @@ GRDraggableArea >> render: props [
 									event releaseGrab.
 									stopDraggingHandle value: handle.
 									onDragEnd ifNotNil: [:block |
-										Transcript showln: 'overlapping areas at drag end ', overlappingDropAreas get asString.
+										Transcript showln: 'overlapping areas at drag end ', overlappingDropAreas get asString, ' ', overlappingDropAreas get identityHash asString.
 										block
 											cull: event
 											cull: (overlappingDropAreas get
