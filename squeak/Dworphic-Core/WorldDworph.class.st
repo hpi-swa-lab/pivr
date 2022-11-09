@@ -82,5 +82,5 @@ WorldDworph >> render: props [
 				setLeft: left setter;
 				setRight: right setter;
 				setHead: head setter.
-			GDSpatial new children: children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription]), {GDSpatial new ref: worldPortalRef}}
+			GDSpatial new ref: worldPortalRef}, children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription])
 ]
