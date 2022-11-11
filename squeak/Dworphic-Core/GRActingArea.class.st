@@ -7,14 +7,20 @@ Class {
 { #category : #'as yet unclassified' }
 GRActingArea >> render: props [
 
-	| areaRef |
-	^ props extract: [:setHandlers :side :actingTransform :controllerRef :children :touch :point :rest |
+	| actingAreaRefToHandRef areaRef |
+	props extract: [:handRef :touch :point :children :rest |
 		areaRef := self useGodotRef.
-		setHandlers value: (self useActiveEventHandlersFor: areaRef side: side transform: actingTransform controller: controllerRef type: (point ifTrue: [#point] ifFalse: [#touch])).
+		actingAreaRefToHandRef := self useProvided: #actingAreaRefToHandRef.
+		self useEffect: [
+			actingAreaRefToHandRef get at: areaRef get put: handRef get.
+			[actingAreaRefToHandRef get removeKey: areaRef get]].
+		
 		^ GDArea new
-			setAll: rest;
 			ref: areaRef;
+			setAll: rest;
 			collisionLayer: 0;
-			collisionMask: ((touch ifTrue: [GRInteractiveArea touchLayer] ifFalse: [0]) bitOr: (point ifTrue: [GRInteractiveArea pointLayer] ifFalse: [0]));
+			collisionMask:
+				((touch ifTrue: [GRInteractiveArea touchLayer] ifFalse: [0])
+				bitOr: (point ifTrue: [GRInteractiveArea pointLayer] ifFalse: [0]));
 			children: children]
 ]

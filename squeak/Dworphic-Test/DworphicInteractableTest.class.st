@@ -48,7 +48,7 @@ DworphicInteractableTest >> testBlur [
 		WorldDworph new children: {
 			GRInteractiveArea new
 				touch: true;
-				onHover: [blur := true];
+				onBlur: [blur := true];
 				children: {
 					GDCollisionShape new
 						shape: GDBoxShape new;
@@ -82,13 +82,11 @@ DworphicInteractableTest >> testButtonPress [
 						shape: GDBoxShape new;
 						name: 'shape'.
 					GDSpatial new}}].
-	
 	self tick: {
 		(self controllerNode: #left)
 			signal: #'button_pressed'
 			with: {GDGlobalConstants joyVrGrip}}.
 	self deny: press.
-	
 	self tick: {
 		(godotTree firstNodeNamed: 'shape') parent
 			signal: #'area_entered'

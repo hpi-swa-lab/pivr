@@ -176,18 +176,22 @@ GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 { #category : #hooks }
 GRComponent >> useButtonPress: aPressBlock release: aReleaseBlock axisChange: anAxisBlock side: aSymbol [
 
-	| buttonHandlers ref |
-	buttonHandlers := (self useProvided: #buttonHandlers) get at: aSymbol.
+	| ref evalIfSideCorrect eventReceivers |
+	eventReceivers := self useProvided: #eventReceivers.
+	evalIfSideCorrect := [:block |
+		[:event |
+			(aSymbol isNil or: [event side = aSymbol])
+				ifTrue: [block cull: event]]].
 	ref := self useRef: Dictionary new.
-	ref get at: #onButtonPress put: aPressBlock.
-	ref get at: #onButtonRelease put: aReleaseBlock.
-	ref get at: #onAxisChange put: anAxisBlock.
+	ref get at: #onButtonPress put: (evalIfSideCorrect value: aPressBlock).
+	ref get at: #onButtonRelease put: (evalIfSideCorrect value: aReleaseBlock).
+	ref get at: #onAxisChange put: (evalIfSideCorrect value: anAxisBlock).
 	
 	self
 		useEffect: [
-			buttonHandlers add: ref.
-			[buttonHandlers remove: ref]]
-		dependencies: {}
+			eventReceivers get add: ref.
+			[eventReceivers get remove: ref]]
+		dependencies: #()
 ]
 
 { #category : #hooks }

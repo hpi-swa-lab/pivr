@@ -48,6 +48,15 @@ WorldDworph >> provideDragAndDropHandlers [
 ]
 
 { #category : #rendering }
+WorldDworph >> provideInteractivity [
+	<provider>
+
+	^ {
+		#actingAreaRefToHandRef -> (self useRef: Dictionary new).
+		#eventReceivers -> (self useRef: OrderedCollection new)}
+]
+
+{ #category : #rendering }
 WorldDworph >> render: props [
 
 	| apps worldPortalRef head left right children provided |
