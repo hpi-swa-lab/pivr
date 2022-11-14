@@ -50,13 +50,14 @@ WorldDworph >> provideDragAndDropHandlers [
 { #category : #rendering }
 WorldDworph >> render: props [
 
-	| apps worldPortalRef head left right children provided |
+	| apps worldPortalRef head left right children provided headPortalRef |
 	apps := self useState: OrderedCollection new.
 	head := self useState: Matrix4x4 identity.
 	left := self useState: Matrix4x4 identity.
 	right := self useState: Matrix4x4 identity.
 	
 	worldPortalRef := self useRef: nil.
+	headPortalRef := self useRef: nil.
 	
 	provided := Array streamContents: [:stream | (Pragma allNamed: #provider in: self class) do: [:pragma | stream nextPutAll: (self perform: pragma selector)]].
 	
@@ -73,7 +74,8 @@ WorldDworph >> render: props [
 			#worldPortal -> worldPortalRef.
 			#headTransform -> head get.
 			#leftControllerTransform -> left get.
-			#rightControllerTransform -> right get}
+			#rightControllerTransform -> right get.
+			#headPortal -> headPortalRef}
 		children: {
 			Avatar new
 				left: left get;
@@ -81,6 +83,7 @@ WorldDworph >> render: props [
 				head: head get;
 				setLeft: left setter;
 				setRight: right setter;
-				setHead: head setter.
+				setHead: head setter;
+				worldPortalRef: headPortalRef.
 			GDSpatial new ref: worldPortalRef}, children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription])
 ]
