@@ -81,6 +81,7 @@ DworphicGrabbableTest >> testExitAndGrab [
 { #category : #tests }
 DworphicGrabbableTest >> testGrab [
 
+	Transcript showln: '-------------------------------'.
 	self openComponent: [
 		WorldDworph new children: {
 			GRGrabbableArea new children: {

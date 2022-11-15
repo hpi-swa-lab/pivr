@@ -19,16 +19,22 @@ GRInteractiveArea class >> touchLayer [
 { #category : #'as yet unclassified' }
 GRInteractiveArea >> render: props [
 
-	^ props extract: [:children :onHover :onBlur :onButtonPress :onButtonRelease :touch :point :rest | | overlappingActingAreas actingAreaRefToHandRef eventReceivers handlers isOverlappingHand |
+	^ props extract: [:children :onHover :onBlur :onButtonPress :onButtonRelease :touch :point :exclusiveHandRef :rest | | overlappingActingAreas actingAreaRefToHandRef eventReceivers handlers isOverlappingHand eventIsRelevant |
 		overlappingActingAreas := self useState: {}.
 		actingAreaRefToHandRef := self useProvided: #actingAreaRefToHandRef.
+		
 		isOverlappingHand := [:handRef |
 			overlappingActingAreas get anySatisfy: [:actingAreaRef | 
-				(actingAreaRefToHandRef get at: actingAreaRef) = handRef]].
+				(actingAreaRefToHandRef get at: actingAreaRef) get = handRef]].
+		
+		eventIsRelevant := [:event |
+			exclusiveHandRef
+				ifNil: [isOverlappingHand value: event handRef]
+				ifNotNil: [event handRef = exclusiveHandRef]].
 		
 		handlers := self useRef: (#(onButtonPress onButtonRelease #onAxisChange) collect: [:symbol |
 			symbol -> [:event |
-				(isOverlappingHand value: event handRef)
+				(eventIsRelevant value: event)
 					ifTrue: [props at: symbol ifPresent: [:block | block cull: event]]]] as: Dictionary).
 		
 		eventReceivers := self useProvided: #eventReceivers.

@@ -7,6 +7,28 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
+	props extract: [ | inPlaceRef handLocks |
+		inPlaceRef := self useRef: nil.
+		handLocks := self useProvided: #handLocks.
+		
+		^ GDSpatial new
+			ref: inPlaceRef;
+			children: {
+				CMFReactNodePortal
+					child: {
+					GRInteractiveArea new
+						props: props;
+						transform: Matrix4x4 identity;
+						onButtonPress: [:event |
+							"self halt."
+							Transcript showln: (handLocks get associationsSelect: [:assoc | assoc key get = event handRef])];
+						onButtonRelease: []}
+					in: inPlaceRef}]
+]
+
+{ #category : #'as yet unclassified' }
+GRDraggableArea >> renderOld: props [
+
 	props extract: [:handle :onDragBegin :onDragEnd :onButtonPress :onButtonRelease :transform :rest | | overlappingDropAreas beginDraggingHandle getDropAreaInfo handRef inPlaceRef isDragged stopDraggingHandle |
 		beginDraggingHandle := self useProvided: #beginDraggingHandle.
 		stopDraggingHandle := self useProvided: #stopDraggingHandle.

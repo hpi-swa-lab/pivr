@@ -7,24 +7,8 @@ Class {
 { #category : #'as yet unclassified' }
 GRGrabbableArea >> render: props [
 
-	^ props extract: [:transform :rest | | handRef currentTransform isGrabbed inPlaceRef |
-		handRef := self useState: nil.
-		inPlaceRef := self useRef: nil.
-		isGrabbed := handRef get notNil.
-		
-		currentTransform := self useState: Matrix4x4 identity.
-		
-		^ GDSpatial new
-			ref: inPlaceRef;
-			children: (CMFReactNodePortal
-				child: {
-					(self methodAsComponent: #renderArea:)
-						props: rest;
-						isGrabbed: handRef get notNil;
-						transform: (isGrabbed ifTrue: [Matrix4x4 identity] ifFalse: [transform ifNil: [currentTransform get]]);
-						setHandRef: [:ref | handRef set: ref];
-						setTransform: [:t | currentTransform set: t]}
-				in: (handRef get ifNil: [inPlaceRef]))]
+	^ GRDraggableArea new
+		props: props
 ]
 
 { #category : #'as yet unclassified' }
@@ -52,4 +36,27 @@ GRGrabbableArea >> renderArea: props [
 					setTransform value: event transform].
 				onButtonRelease ifNotNil: [:block | block cull: event]];
 			children: children]
+]
+
+{ #category : #'as yet unclassified' }
+GRGrabbableArea >> renderOld: props [
+
+	^ props extract: [:transform :rest | | handRef currentTransform isGrabbed inPlaceRef |
+		handRef := self useState: nil.
+		inPlaceRef := self useRef: nil.
+		isGrabbed := handRef get notNil.
+		
+		currentTransform := self useState: Matrix4x4 identity.
+		
+		^ GDSpatial new
+			ref: inPlaceRef;
+			children: (CMFReactNodePortal
+				child: {
+					(self methodAsComponent: #renderArea:)
+						props: rest;
+						isGrabbed: handRef get notNil;
+						transform: (isGrabbed ifTrue: [Matrix4x4 identity] ifFalse: [transform ifNil: [currentTransform get]]);
+						setHandRef: [:ref | handRef set: ref];
+						setTransform: [:t | currentTransform set: t]}
+				in: (handRef get ifNil: [inPlaceRef]))]
 ]

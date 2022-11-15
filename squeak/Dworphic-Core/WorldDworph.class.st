@@ -53,7 +53,8 @@ WorldDworph >> provideInteractivity [
 
 	^ {
 		#actingAreaRefToHandRef -> (self useRef: Dictionary new).
-		#eventReceivers -> (self useRef: OrderedCollection new)}
+		#eventReceivers -> (self useRef: OrderedCollection new).
+		#handLocks -> (self useRef: Dictionary new)}
 ]
 
 { #category : #rendering }

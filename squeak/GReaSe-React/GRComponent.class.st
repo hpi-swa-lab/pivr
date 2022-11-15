@@ -231,6 +231,17 @@ GRComponent >> useProvidedRef: aSymbol namespace: anotherSymbol [
 ]
 
 { #category : #hooks }
+GRComponent >> useRegisterHand: handRef [
+
+	| handLocks |
+	handLocks := self useProvided: #handLocks.
+	self useEffect: [
+		handLocks get at: handRef put: nil.
+		[handLocks get removeKey: handRef]]
+		dependencies: #()
+]
+
+{ #category : #hooks }
 GRComponent >> useRegisterHandArea: areaRef grabbed: grabbedHandlers create: createInteractiveEvent [
 
 	| activeEventHandlers addHandAreaHandlers removeHandAreaHandlers |

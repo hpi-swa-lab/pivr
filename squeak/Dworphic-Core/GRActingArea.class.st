@@ -12,7 +12,7 @@ GRActingArea >> render: props [
 		areaRef := self useGodotRef.
 		actingAreaRefToHandRef := self useProvided: #actingAreaRefToHandRef.
 		self useEffect: [
-			actingAreaRefToHandRef get at: areaRef get put: handRef get.
+			actingAreaRefToHandRef get at: areaRef get put: handRef.
 			[actingAreaRefToHandRef get removeKey: areaRef get]].
 		
 		^ GDArea new
