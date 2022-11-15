@@ -50,11 +50,28 @@ WorldDworph >> provideDragAndDropHandlers [
 { #category : #rendering }
 WorldDworph >> provideInteractivity [
 	<provider>
+	
+	| handLocks |
+	handLocks := self useRef: Dictionary new.
 
 	^ {
 		#actingAreaRefToHandRef -> (self useRef: Dictionary new).
 		#eventReceivers -> (self useRef: OrderedCollection new).
-		#handLocks -> (self useRef: Dictionary new)}
+		#handLocks -> handLocks.
+		#acquireHandLock -> [:handRef :handle :successBlock :failBlock |
+			(handLocks get associationsSelect: [:assoc | assoc key get = handRef])
+				associations
+					ifEmpty: [self error: 'Attempted to acquire unregistered hand']
+					ifNotEmpty: [:assocs | | selectedAssoc |
+						self assert: assocs size = 1 description: 'Multiple hands found'.
+						selectedAssoc := assocs first.
+						selectedAssoc value
+							ifNil: [
+								handLocks get at: selectedAssoc key put: handle.
+								successBlock value]
+							ifNotNil: [failBlock value]]].
+		#releaseHandLock -> [:handRef :handle |
+			self notYetImplemented]}
 ]
 
 { #category : #rendering }

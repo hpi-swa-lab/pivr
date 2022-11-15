@@ -7,12 +7,16 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
-	props extract: [ | inPlaceRef handLocks |
+	props extract: [:handle || inPlaceRef handLocks acquireHandLock heldHandRef |
+		self assert: [handle notNil] description: ('The handle property of a {1} may not be nil' format: {self class}).
+		
 		inPlaceRef := self useRef: nil.
 		handLocks := self useProvided: #handLocks.
+		acquireHandLock := self useProvided: #acquireHandLock.
+		heldHandRef := self useState: nil.
 		
 		^ GDSpatial new
-			ref: inPlaceRef;
+			ref:  inPlaceRef;
 			children: {
 				CMFReactNodePortal
 					child: {
@@ -20,10 +24,19 @@ GRDraggableArea >> render: props [
 						props: props;
 						transform: Matrix4x4 identity;
 						onButtonPress: [:event |
-							"self halt."
-							Transcript showln: (handLocks get associationsSelect: [:assoc | assoc key get = event handRef])];
+							acquireHandLock
+								value: event handRef
+								value: handle
+								value: [heldHandRef set: event handRef2. Transcript showln: 'success reserved ', handle]
+								value: [Transcript showln: 'failed reserved ', handle].
+							"(handLocks get associationsSelect: [:assoc | assoc key get = event handRef])
+								associations ifNotEmpty: [:assocs |
+									assocs first value ifNil: [
+										Transcript showln: 'reserved ', handle.
+										handLocks at: event handRef put: handle]
+										ifNotNil: [Transcript showln: 'could not reserve ', handle]]"];
 						onButtonRelease: []}
-					in: inPlaceRef}]
+					in: (heldHandRef get ifNil: [inPlaceRef])}]
 ]
 
 { #category : #'as yet unclassified' }

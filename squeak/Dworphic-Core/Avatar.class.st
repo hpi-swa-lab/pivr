@@ -90,8 +90,9 @@ Avatar >> render: props [
 { #category : #'rendering - vr' }
 Avatar >> renderController: props [
 
-	| controllerRef renderHand handlers controller handleButtonEvent |
+	| controllerRef renderHand handlers controller handleButtonEvent controllerRef2 |
 	controllerRef := self useGodotRef.
+	controllerRef2 := self useRef: nil.
 	handlers := self useState: (#(onButtonPress onButtonRelease onAxisChange)
 		collect: [:symbol | symbol -> [:x | self error: 'No handler set for ', symbol]]
 		as: Dictionary).
@@ -110,8 +111,11 @@ Avatar >> renderController: props [
 		onButtonPressed: (handleButtonEvent value: (handlers get at: #onButtonPress));
 		onButtonRelease: (handleButtonEvent value: (handlers get at: #onButtonRelease));
 		children: {
+			GDSpatial new
+				ref: controllerRef2.
 			renderHand value
 				handRef: controllerRef;
+				handRef2: controllerRef2;
 				setHandlers: handlers setter;
 				side: (props at: #side);
 				transform: (props at: #transform)}.
@@ -140,7 +144,7 @@ Avatar >> renderController: props [
 { #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	props extract: [:side :reset :setHandlers :handRef || handMesh eventReceivers |
+	props extract: [:side :reset :setHandlers :handRef :handRef2 || handMesh eventReceivers |
 		handMesh := self useHandMesh.
 		eventReceivers := self useProvided: #eventReceivers.
 		self useEffect: [
@@ -148,6 +152,7 @@ Avatar >> renderHand: props [
 				collect: [:symbol |
 					symbol -> [:event |
 						event handRef: handRef get.
+						event handRef2: handRef2.
 						eventReceivers get do: [:handler |
 							(handler get at: symbol) cull: event]]]
 				as: Dictionary)] dependencies: #().

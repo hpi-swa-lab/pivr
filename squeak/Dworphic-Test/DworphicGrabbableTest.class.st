@@ -84,11 +84,13 @@ DworphicGrabbableTest >> testGrab [
 	Transcript showln: '-------------------------------'.
 	self openComponent: [
 		WorldDworph new children: {
-			GRGrabbableArea new children: {
-				GDCollisionShape new
-					shape: GDBoxShape new;
-					name: 'shape'.
-				GDSpatial new}}].
+			GRGrabbableArea new
+				handle: 1;
+				children: {
+					GDCollisionShape new
+						shape: GDBoxShape new;
+						name: 'shape'.
+					GDSpatial new}}].
 	
 	self deny: ((godotTree firstNodeNamed: 'shape') hasParent: (self controllerNode: #left)).
 	
@@ -161,4 +163,10 @@ DworphicGrabbableTest >> testGrabAndRelease [
 			signal: #'button_pressed'
 			with: {GDGlobalConstants joyVrGrip}}.
 	self assert: ((godotTree firstNodeNamed: 'shape2') hasParent: (self controllerNode: #left))
+]
+
+{ #category : #tests }
+DworphicGrabbableTest >> testGrabLock [
+
+	self assert: false
 ]
