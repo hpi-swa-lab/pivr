@@ -21,6 +21,14 @@ GRRayTest >> testIntersectSphereNonOriginRay [
 ]
 
 { #category : #'as yet unclassified' }
+GRRayTest >> testIntersectSphereOutside [
+
+	self assert: 5 @ 0 @ 0 equals: ((GRRay origin: 10 @ 0 @ 0 direction: -1 @ 0 @ 0)
+		intersectSphere: 0 @ 0 @ 0
+		radius: 5)
+]
+
+{ #category : #'as yet unclassified' }
 GRRayTest >> testIntersectSphereRotated [
 
 	self assert: (3.51 @ 2.51 @ 2.51 distanceTo: ((GRRay origin: 2 @ 1 @ 1 direction: 1 @ 1 @ 1)

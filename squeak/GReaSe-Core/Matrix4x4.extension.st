@@ -4,7 +4,7 @@ Extension { #name : #Matrix4x4 }
 Matrix4x4 >> forwardRay [
 
 	| direction |
-	direction := (self translatedBy: self translation negated) transform: 0 @ 0 @ 1.
+	direction := (self translatedBy: self translation negated) transform: 0 @ 0 @ -1.
 	^ GRRay origin: self translation direction: direction normalized
 ]
 
