@@ -4,6 +4,12 @@ Class {
 	#category : #'Dworphic-Test'
 }
 
+{ #category : #'as yet unclassified' }
+DworphicInteractableTest >> testAlwaysReceivesExclusiveHandEvents [
+
+	self assert: false
+]
+
 { #category : #tests }
 DworphicInteractableTest >> testAxisChanged [
 

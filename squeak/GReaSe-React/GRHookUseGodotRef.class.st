@@ -33,7 +33,6 @@ GRHookUseGodotRef >> printOn: aStream [
 { #category : #private }
 GRHookUseGodotRef >> set: aNode [
 
-	Transcript showln: 'setting godotref: ', aNode asString, ' ', self identityHash.
 	state := aNode
 ]
 

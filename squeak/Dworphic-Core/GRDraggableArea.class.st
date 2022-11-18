@@ -7,13 +7,28 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
-	props extract: [:handle || inPlaceRef handLocks acquireHandLock heldHandRef |
+	| registerHandleInContainer |
+	props extract: [:handle :onButtonPress :onButtonRelease :onGrabBegin :onGrabEnd :releaseCondition || inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock exclusiveHandRef endGrab selectedReleaseCondition |
 		self assert: [handle notNil] description: ('The handle property of a {1} may not be nil' format: {self class}).
 		
 		inPlaceRef := self useRef: nil.
+		heldHandRef := self useState: nil.
+		exclusiveHandRef := self useState: nil.
 		handLocks := self useProvided: #handLocks.
 		acquireHandLock := self useProvided: #acquireHandLock.
-		heldHandRef := self useState: nil.
+		releaseHandLock := self useProvided: #releaseHandLock.
+		selectedReleaseCondition := releaseCondition ifNil: [#selfUnmount].
+		registerHandleInContainer := self useProvided: #registerHandleInContainer.
+		
+		endGrab := [
+			releaseHandLock value: handle.
+			onGrabEnd ifNotNil: [onGrabEnd value]].
+		self useEffect: [
+			selectedReleaseCondition = #containerUnmount ifTrue: [
+				registerHandleInContainer value: handle].
+			
+			[endGrab value]]
+			dependencies: #().
 		
 		^ GDSpatial new
 			ref:  inPlaceRef;
@@ -22,20 +37,26 @@ GRDraggableArea >> render: props [
 					child: {
 					GRInteractiveArea new
 						props: props;
+						exclusiveHandRef: exclusiveHandRef get;
 						transform: Matrix4x4 identity;
 						onButtonPress: [:event |
+							"self halt."
 							acquireHandLock
 								value: event handRef
 								value: handle
-								value: [heldHandRef set: event handRef2. Transcript showln: 'success reserved ', handle]
-								value: [Transcript showln: 'failed reserved ', handle].
-							"(handLocks get associationsSelect: [:assoc | assoc key get = event handRef])
-								associations ifNotEmpty: [:assocs |
-									assocs first value ifNil: [
-										Transcript showln: 'reserved ', handle.
-										handLocks at: event handRef put: handle]
-										ifNotNil: [Transcript showln: 'could not reserve ', handle]]"];
-						onButtonRelease: []}
+								value: [
+									exclusiveHandRef set: event handRef.
+									heldHandRef set: event handRef2.
+									onGrabBegin ifNotNil: [onGrabBegin cull: event]
+									]
+								value: ["do nothing"].
+							onButtonPress ifNotNil: [onButtonPress cull: event]];
+						onButtonRelease: [:event |
+							releaseHandLock value: handle.
+							exclusiveHandRef set: nil.
+							heldHandRef set: nil.
+							onButtonRelease ifNotNil: [onButtonRelease cull: event].
+							selectedReleaseCondition = #selfUnmount ifTrue: [endGrab value]]}
 					in: (heldHandRef get ifNil: [inPlaceRef])}]
 ]
 

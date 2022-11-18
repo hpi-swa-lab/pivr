@@ -17,6 +17,7 @@ GRActingArea >> render: props [
 		
 		^ GDArea new
 			ref: areaRef;
+			name: 'actingArea';
 			setAll: rest;
 			collisionLayer: 0;
 			collisionMask:
