@@ -4,7 +4,13 @@ Class {
 	#category : #'Dworphic-Test'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #failures }
+DworphicInteractableTest >> expectedFailures [
+
+	^ #(testAlwaysReceivesExclusiveHandEvents)
+]
+
+{ #category : #tests }
 DworphicInteractableTest >> testAlwaysReceivesExclusiveHandEvents [
 
 	self assert: false
@@ -139,7 +145,7 @@ DworphicInteractableTest >> testButtonRelease [
 	self assert: release
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #tests }
 DworphicInteractableTest >> testHook [
 
 	| pressed released |

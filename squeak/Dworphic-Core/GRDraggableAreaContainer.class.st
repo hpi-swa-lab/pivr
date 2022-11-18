@@ -14,18 +14,16 @@ GRDraggableAreaContainer >> render: props [
 
 	| handles releaseHandLock |
 	releaseHandLock := self useProvided: #releaseHandLock.
-	handles := self useRef: OrderedCollection new.
+	handles := self useRef: Set new.
 	self useEffect: [
-		 [handles do: [:handle | releaseHandLock value: handle]]]
+		 [handles get do: [:handle | releaseHandLock value: handle]]]
 		dependencies: #().
 
 	^ GRProvider values: {
 			#registerHandleInContainer -> [:handle |
-				self assert: (handles get includes: handle) not
-					description: ('Handle {1} registered twice in container' format: {handle}).
-				handles add: handle]}
+				handles get add: handle]}
 		children: {
 			GDSpatial new
 				setAll: props;
-				children: #children}
+				children: (props at: #children)}
 ]

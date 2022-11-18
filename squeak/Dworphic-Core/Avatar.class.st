@@ -105,7 +105,7 @@ Avatar >> renderController: props [
 			button: button)]].
 	
 	controller := GDARVRController new
-		ref: controllerRef;
+		ref: controllerRef2;
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: (handleButtonEvent value: (handlers get at: #onButtonPress));
@@ -119,7 +119,7 @@ Avatar >> renderController: props [
 				transform: (props at: #transform).
 			GDSpatial new
 				name: 'dummy';
-				ref: controllerRef2.}.
+				ref: controllerRef.}.
 	{
 		GDGlobalConstants joyVrAnalogGrip.
 		GDGlobalConstants joyVrAnalogTrigger.
@@ -156,7 +156,7 @@ Avatar >> renderHand: props [
 						eventReceivers get do: [:handler |
 							(handler get at: symbol) cull: event]]]
 				as: Dictionary)] dependencies: #().
-		self useRegisterHand: handRef.
+		self useRegisterHand: handRef2.
 	
 		^ GDSpatial new children: {
 			GDMeshInstance new

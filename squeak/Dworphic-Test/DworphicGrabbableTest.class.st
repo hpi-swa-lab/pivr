@@ -4,6 +4,12 @@ Class {
 	#category : #'Dworphic-Test'
 }
 
+{ #category : #failures }
+DworphicGrabbableTest >> expectedFailures [
+
+	^ #(testOnGrabEndUnmountContainer)
+]
+
 { #category : #tests }
 DworphicGrabbableTest >> testCantGrabMultiple [
 
@@ -218,7 +224,36 @@ DworphicGrabbableTest >> testGrabLock [
 { #category : #tests }
 DworphicGrabbableTest >> testHandleSurvivesRemount [
 
-	self assert: false
+	| toggleableGrabbableArea released |
+	released := false.
+	toggleableGrabbableArea := self conditionalComponent: [
+		GRGrabbableArea new
+			handle: 1;
+			releaseCondition: #containerUnmount;
+			name: 'area';
+			children: {
+				GDCollisionShape new
+					shape: GDBoxShape new;
+					name: 'shape1'.}]
+		default: true.
+	
+	self openComponent: [
+		WorldDworph new children: {
+			GRDraggableAreaContainer new
+				children: {toggleableGrabbableArea second}}].
+	
+	self tick: {
+		(godotTree firstNodeNamed: 'shape1') parent
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}.
+		(self controllerNode: #left) toggleGrip: true}.
+	
+	toggleableGrabbableArea first value: false.
+	self tick.	
+	toggleableGrabbableArea first value: true.
+	self tick.
+	
+	self assert: ((godotTree firstNodeNamed: 'area') hasParent: (self controllerNode: #left)).
 ]
 
 { #category : #tests }
@@ -320,16 +355,17 @@ DworphicGrabbableTest >> testOnGrabEndButtonRelease [
 { #category : #tests }
 DworphicGrabbableTest >> testOnGrabEndUnmountContainer [
 
-	| released toggleableGrabbableArea toggleableGrabbableAreaContainer |
+	| toggleableGrabbableArea toggleableGrabbableAreaContainer released |
 	released := false.
 	toggleableGrabbableArea := self conditionalComponent: [
 		GRGrabbableArea new
 			handle: 1;
-			onRelease: [released := true];
+			releaseCondition: #containerUnmount;
+			onGrabEnd: [released := true];
 			children: {
 				GDCollisionShape new
 					shape: GDBoxShape new;
-					name: 'shape'.}]
+					name: 'shape1'.}]
 		default: true.
 	toggleableGrabbableAreaContainer := self conditionalComponent: [
 		GRDraggableAreaContainer new
@@ -339,21 +375,24 @@ DworphicGrabbableTest >> testOnGrabEndUnmountContainer [
 	self openComponent: [
 		WorldDworph new children: {
 			toggleableGrabbableAreaContainer second}].
-		
+	
 	self tick: {
-		(godotTree firstNodeNamed: 'shape') parent
+		(godotTree firstNodeNamed: 'shape1') parent
 			signal: #'area_entered'
 			with: {self controllerCollider: #left}.
-		(self controllerNode: #left)
-			signal: #'button_pressed'
-			with: {GDGlobalConstants joyVrGrip}}.
-	
+		(self controllerNode: #left) toggleGrip: true}.
 	toggleableGrabbableArea first value: false.
 	self tick.	
+	self tick: {
+		(self controllerNode: #left) toggleGrip: true}.
+	
 	self assert: released not.
 
 	toggleableGrabbableAreaContainer first value: false.
 	self tick.
+	self tick: {
+		(self controllerNode: #left) toggleGrip: true}.
+	
 	self assert: released.
 ]
 
@@ -392,16 +431,16 @@ DworphicGrabbableTest >> testOnGrabEndUnmountSelf [
 { #category : #tests }
 DworphicGrabbableTest >> testReleaseLockUnmountContainer [
 
-	| released toggleableGrabbableArea toggleableGrabbableAreaContainer |
-	released := false.
+	| toggleableGrabbableArea toggleableGrabbableAreaContainer grabbed |
+	grabbed := false.
 	toggleableGrabbableArea := self conditionalComponent: [
 		GRGrabbableArea new
 			handle: 1;
-			onRelease: [released := true];
+			releaseCondition: #containerUnmount;
 			children: {
 				GDCollisionShape new
 					shape: GDBoxShape new;
-					name: 'shape'.}]
+					name: 'shape1'.}]
 		default: true.
 	toggleableGrabbableAreaContainer := self conditionalComponent: [
 		GRDraggableAreaContainer new
@@ -410,23 +449,40 @@ DworphicGrabbableTest >> testReleaseLockUnmountContainer [
 	
 	self openComponent: [
 		WorldDworph new children: {
-			toggleableGrabbableAreaContainer second}].
-		
+			toggleableGrabbableAreaContainer second.
+			GRGrabbableArea new
+					handle: 2;
+					onGrabBegin: [grabbed := true];
+					children: {
+						GDCollisionShape new
+							shape: GDBoxShape new;
+							name: 'shape2'}}].
+	
 	self tick: {
-		(godotTree firstNodeNamed: 'shape') parent
+		(godotTree firstNodeNamed: 'shape1') parent
 			signal: #'area_entered'
 			with: {self controllerCollider: #left}.
-		(self controllerNode: #left)
-			signal: #'button_pressed'
-			with: {GDGlobalConstants joyVrGrip}}.
+		(self controllerNode: #left) toggleGrip: true.
+		(godotTree firstNodeNamed: 'shape2') parent
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}.
+		(self controllerNode: #left) toggleGrip: true}.
+	
+	self assert: grabbed not.
 	
 	toggleableGrabbableArea first value: false.
 	self tick.	
-	self assert: released not.
+	self tick: {
+		(self controllerNode: #left) toggleGrip: true}.
+	
+	self assert: grabbed not.
 
 	toggleableGrabbableAreaContainer first value: false.
 	self tick.
-	self assert: released.
+	self tick: {
+		(self controllerNode: #left) toggleGrip: true}.
+	
+	self assert: grabbed.
 ]
 
 { #category : #tests }
@@ -471,6 +527,7 @@ DworphicGrabbableTest >> testReleaseLockUnmountSelf [
 	
 	self assert: grabbed not.
 	toggleAndGrabbableArea first value: false.
+	self tick. "make sure that the first area unmounts"
 	self tick: {
 		(self controllerNode: #left)
 			signal: #'button_pressed'

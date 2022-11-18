@@ -12,13 +12,16 @@ GRDraggableArea >> render: props [
 		self assert: [handle notNil] description: ('The handle property of a {1} may not be nil' format: {self class}).
 		
 		inPlaceRef := self useRef: nil.
-		heldHandRef := self useState: nil.
 		exclusiveHandRef := self useState: nil.
 		handLocks := self useProvided: #handLocks.
 		acquireHandLock := self useProvided: #acquireHandLock.
 		releaseHandLock := self useProvided: #releaseHandLock.
 		selectedReleaseCondition := releaseCondition ifNil: [#selfUnmount].
 		registerHandleInContainer := self useProvided: #registerHandleInContainer.
+		
+		heldHandRef := handLocks get associations detect: [:assoc | assoc value = handle]
+			ifFound: [:assoc | assoc key]
+			ifNone: [nil].
 		
 		endGrab := [
 			releaseHandLock value: handle.
@@ -27,7 +30,7 @@ GRDraggableArea >> render: props [
 			selectedReleaseCondition = #containerUnmount ifTrue: [
 				registerHandleInContainer value: handle].
 			
-			[endGrab value]]
+			[selectedReleaseCondition = #selfUnmount ifTrue: [endGrab value]]]
 			dependencies: #().
 		
 		^ GDSpatial new
@@ -42,11 +45,10 @@ GRDraggableArea >> render: props [
 						onButtonPress: [:event |
 							"self halt."
 							acquireHandLock
-								value: event handRef
+								value: event handRef2
 								value: handle
 								value: [
-									exclusiveHandRef set: event handRef.
-									heldHandRef set: event handRef2.
+									exclusiveHandRef set: event handRef2.
 									onGrabBegin ifNotNil: [onGrabBegin cull: event]
 									]
 								value: ["do nothing"].
@@ -54,10 +56,9 @@ GRDraggableArea >> render: props [
 						onButtonRelease: [:event |
 							releaseHandLock value: handle.
 							exclusiveHandRef set: nil.
-							heldHandRef set: nil.
 							onButtonRelease ifNotNil: [onButtonRelease cull: event].
 							selectedReleaseCondition = #selfUnmount ifTrue: [endGrab value]]}
-					in: (heldHandRef get ifNil: [inPlaceRef])}]
+					in: (heldHandRef ifNil: [inPlaceRef])}]
 ]
 
 { #category : #'as yet unclassified' }

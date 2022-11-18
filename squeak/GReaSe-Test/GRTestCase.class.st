@@ -15,10 +15,9 @@ GRTestCase >> conditionalComponent: aBlock default: aBoolean [
 	active := aBoolean.
 	^ {
 		[:val | active := val].
-		[GDSpatial new
-			children: (active
-				ifTrue: {aBlock value}
-				ifFalse: #())] asComponent}
+		[active
+			ifTrue: [aBlock value]
+			ifFalse: [nil]] asComponent}
 ]
 
 { #category : #'as yet unclassified' }

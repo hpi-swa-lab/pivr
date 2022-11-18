@@ -59,7 +59,7 @@ WorldDworph >> provideInteractivity [
 		#eventReceivers -> (self useRef: OrderedCollection new).
 		#handLocks -> handLocks.
 		#acquireHandLock -> [:handRef :handle :successBlock :failBlock |
-			(handLocks get associationsSelect: [:assoc | assoc key get = handRef])
+			(handLocks get associationsSelect: [:assoc | assoc key = handRef])
 				associations
 					ifEmpty: [self error: 'Attempted to acquire unregistered hand']
 					ifNotEmpty: [:assocs | | selectedAssoc |
