@@ -52,7 +52,7 @@ WorldDworph >> provideInteractivity [
 	<provider>
 	
 	| handLocks |
-	handLocks := self useRef: Dictionary new.
+	handLocks := self useState: Dictionary new.
 
 	^ {
 		#actingAreaRefToHandRef -> (self useRef: Dictionary new).
@@ -67,12 +67,12 @@ WorldDworph >> provideInteractivity [
 						selectedAssoc := assocs first.
 						selectedAssoc value
 							ifNil: [
-								handLocks get at: selectedAssoc key put: handle.
+								handLocks set: [:old | old copy at: selectedAssoc key put: handle; yourself].
 								successBlock value]
 							ifNotNil: [failBlock value]]].
 		#releaseHandLock -> [:handle |
 			handLocks get keysAndValuesDo: [:key :value |
-				value = handle ifTrue: [handLocks get at: key put: nil]]].
+				value = handle ifTrue: [handLocks set: [:old | old copy at: key put: nil; yourself]]]].
 		#registerHandleInContainer -> [:x | self error: 'No container for container-bound draggable area']}
 ]
 

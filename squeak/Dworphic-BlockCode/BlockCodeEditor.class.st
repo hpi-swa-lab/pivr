@@ -35,7 +35,8 @@ BlockCodeEditor >> render: props [
 			"World doOneCycle."
 			forceUpdate value.
 			
-			[editor get containingWindow ifNotNil: #delete]]
+			[[editor get containingWindow ifNotNil: #delete]
+				valueSupplyingAnswer: true]]
 		dependencies: #().
 	
 	doCommand := self
@@ -53,21 +54,15 @@ BlockCodeEditor >> render: props [
 				#doSandblocksCommand -> doCommand.
 				#editorTransform -> [globalTransform get]}
 			children: {
-				GRRerenderEnforcer new.
-				"dummy for retrieving global transform"
-				GDSpatial new
-					subscribeTo: 'global_transform' do: [:t | globalTransform set: t]},
-				(Array streamContents: [:stream |
-					editor get childSandblocksDo: [:sandblock |
-						stream nextPut: (sandblock asCodeBlock
-							layoutParams: (props at: #layoutParams);
-							translation: Vector3 zero)]]))
-]
-
-{ #category : #'as yet unclassified' }
-BlockCodeEditor >> useForceUpdate [
-
-	| n |
-	n := self useState: 0.
-	^ [n set: [:old | old + 1]]
+				GRDraggableAreaContainer new
+					children: {
+						GRRerenderEnforcer new.
+						"dummy for retrieving global transform"
+						GDSpatial new
+							subscribeTo: 'global_transform' do: [:t | globalTransform set: t]},
+						(Array streamContents: [:stream |
+							editor get childSandblocksDo: [:sandblock |
+								stream nextPut: (sandblock asCodeBlock
+									layoutParams: (props at: #layoutParams);
+									translation: Vector3 zero)]])})
 ]

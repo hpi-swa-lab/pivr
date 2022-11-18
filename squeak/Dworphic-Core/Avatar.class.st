@@ -101,6 +101,7 @@ Avatar >> renderController: props [
 		[:button |
 			block value: (GRInteractiveAreaEventButton new
 			side: (props at: #side);
+			transform: (props at: #transform);
 			button: button)]].
 	
 	controller := GDARVRController new

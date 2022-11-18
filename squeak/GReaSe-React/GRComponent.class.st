@@ -195,6 +195,14 @@ GRComponent >> useButtonPress: aPressBlock release: aReleaseBlock axisChange: an
 ]
 
 { #category : #hooks }
+GRComponent >> useForceUpdate [
+
+	| n |
+	n := self useState: 0.
+	^ [n set: [:old | old + 1]]
+]
+
+{ #category : #hooks }
 GRComponent >> useGodotRef [
 
 	^ CMFCurrentReact value useGodotRef

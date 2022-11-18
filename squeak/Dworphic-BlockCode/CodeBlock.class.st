@@ -42,6 +42,7 @@ CodeBlock >> renderBlock: props [
 		editorTransform := self useProvided: #editorTransform.
 		
 		^ GRDraggableArea new
+			releaseCondition: #containerUnmount;
 			handle: sandblock;
 			transform: (sandblock floating
 				ifTrue: [sandblock valueOfProperty: #vrTransform ifAbsentPut: [self computeDefaultTransform]]

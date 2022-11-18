@@ -128,10 +128,10 @@ DworphicGrabbableTest >> testGrab [
 			signal: #'button_release'
 			with: {GDGlobalConstants joyVrGrip}}.
 	
-	"self
+	self deny: ((godotTree firstNodeNamed: 'shape') hasParent: (self controllerNode: #left)).
+	self
 		assert: (Matrix4x4 withOffset: 1 @ 2 @ 3)
-		equals: (godotTree firstNodeNamed: 'shape') parent transform."
-	self deny: ((godotTree firstNodeNamed: 'shape') hasParent: (self controllerNode: #left))
+		equals: (godotTree firstNodeNamed: 'shape') parent transform
 ]
 
 { #category : #tests }
@@ -302,7 +302,7 @@ DworphicGrabbableTest >> testOnGrabBegin [
 		WorldDworph new children: {
 			GRGrabbableArea new
 				handle: 1;
-				onGrabBegin: [grabbed := true];
+				onDragBegin: [grabbed := true];
 				children: {
 					GDCollisionShape new
 						shape: GDBoxShape new;
@@ -330,7 +330,7 @@ DworphicGrabbableTest >> testOnGrabEndButtonRelease [
 		WorldDworph new children: {
 			GRGrabbableArea new
 				handle: 1;
-				onGrabEnd: [released := true];
+				onDragEnd: [released := true];
 				children: {
 					GDCollisionShape new
 						shape: GDBoxShape new;
@@ -404,7 +404,7 @@ DworphicGrabbableTest >> testOnGrabEndUnmountSelf [
 	toggleAndGrabbableArea := self conditionalComponent: [
 		GRGrabbableArea new
 			handle: 1;
-			onGrabEnd: [released := true];
+			onDragEnd: [released := true];
 			children: {
 				GDCollisionShape new
 					shape: GDBoxShape new;
@@ -452,7 +452,7 @@ DworphicGrabbableTest >> testReleaseLockUnmountContainer [
 			toggleableGrabbableAreaContainer second.
 			GRGrabbableArea new
 					handle: 2;
-					onGrabBegin: [grabbed := true];
+					onDragBegin: [grabbed := true];
 					children: {
 						GDCollisionShape new
 							shape: GDBoxShape new;
@@ -504,7 +504,7 @@ DworphicGrabbableTest >> testReleaseLockUnmountSelf [
 				toggleAndGrabbableArea second.
 				GRGrabbableArea new
 					handle: 2;
-					onGrabBegin: [grabbed := true];
+					onDragBegin: [grabbed := true];
 					children: {
 						GDCollisionShape new
 							shape: GDBoxShape new;
