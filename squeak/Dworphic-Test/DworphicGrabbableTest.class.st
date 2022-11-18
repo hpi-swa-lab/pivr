@@ -386,7 +386,7 @@ DworphicGrabbableTest >> testOnGrabEndUnmountContainer [
 	self tick: {
 		(self controllerNode: #left) toggleGrip: true}.
 	
-	self assert: released not.
+	self deny: released.
 
 	toggleableGrabbableAreaContainer first value: false.
 	self tick.
@@ -468,14 +468,14 @@ DworphicGrabbableTest >> testReleaseLockUnmountContainer [
 			with: {self controllerCollider: #left}.
 		(self controllerNode: #left) toggleGrip: true}.
 	
-	self assert: grabbed not.
+	self deny: grabbed.
 	
 	toggleableGrabbableArea first value: false.
 	self tick.	
 	self tick: {
 		(self controllerNode: #left) toggleGrip: true}.
 	
-	self assert: grabbed not.
+	self deny: grabbed.
 
 	toggleableGrabbableAreaContainer first value: false.
 	self tick.
@@ -525,7 +525,7 @@ DworphicGrabbableTest >> testReleaseLockUnmountSelf [
 			signal: #'button_pressed'
 			with: {GDGlobalConstants joyVrGrip}}.
 	
-	self assert: grabbed not.
+	self deny: grabbed.
 	toggleAndGrabbableArea first value: false.
 	self tick. "make sure that the first area unmounts"
 	self tick: {

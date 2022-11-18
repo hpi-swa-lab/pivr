@@ -90,9 +90,8 @@ Avatar >> render: props [
 { #category : #'rendering - vr' }
 Avatar >> renderController: props [
 
-	| controllerRef renderHand handlers controller handleButtonEvent controllerRef2 |
-	controllerRef := self useGodotRef.
-	controllerRef2 := self useRef: nil.
+	| renderHand handlers controller handleButtonEvent controllerRef |
+	controllerRef := self useRef: nil.
 	handlers := self useState: (#(onButtonPress onButtonRelease onAxisChange)
 		collect: [:symbol | symbol -> [:x | self error: 'No handler set for ', symbol]]
 		as: Dictionary).
@@ -105,7 +104,7 @@ Avatar >> renderController: props [
 			button: button)]].
 	
 	controller := GDARVRController new
-		ref: controllerRef2;
+		ref: controllerRef;
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: (handleButtonEvent value: (handlers get at: #onButtonPress));
@@ -113,13 +112,9 @@ Avatar >> renderController: props [
 		children: {
 			renderHand value
 				handRef: controllerRef;
-				handRef2: controllerRef2;
 				setHandlers: handlers setter;
 				side: (props at: #side);
-				transform: (props at: #transform).
-			GDSpatial new
-				name: 'dummy';
-				ref: controllerRef.}.
+				transform: (props at: #transform)}.
 	{
 		GDGlobalConstants joyVrAnalogGrip.
 		GDGlobalConstants joyVrAnalogTrigger.
@@ -144,7 +139,7 @@ Avatar >> renderController: props [
 { #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	props extract: [:side :reset :setHandlers :handRef :handRef2 || handMesh eventReceivers |
+	props extract: [:side :reset :setHandlers :handRef || handMesh eventReceivers |
 		handMesh := self useHandMesh.
 		eventReceivers := self useProvided: #eventReceivers.
 		self useEffect: [
@@ -152,11 +147,10 @@ Avatar >> renderHand: props [
 				collect: [:symbol |
 					symbol -> [:event |
 						event handRef: handRef get.
-						event handRef2: handRef2.
 						eventReceivers get do: [:handler |
 							(handler get at: symbol) cull: event]]]
 				as: Dictionary)] dependencies: #().
-		self useRegisterHand: handRef2.
+		self useRegisterHand: handRef.
 	
 		^ GDSpatial new children: {
 			GDMeshInstance new

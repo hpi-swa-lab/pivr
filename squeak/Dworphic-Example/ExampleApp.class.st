@@ -9,7 +9,8 @@ ExampleApp >> render: props [
 
 	^ ApplicationDworph new
 		children: {
-			GRInteractiveArea new
-				onButtonPress: [:event | Transcript showln: 'pressed ', event button];
+			GRDraggableArea new
+				transform: (Matrix4x4 withOffset: 0 @ 1 @ 0);
+				handle: 1;
 				children: {self cubeOfSize: 0.5 color: Color green}}
 ]
