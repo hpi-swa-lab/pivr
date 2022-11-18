@@ -32,7 +32,8 @@ GRInteractiveArea >> render: props [
 				ifNil: [isOverlappingHand value: event handRef]
 				ifNotNil: [event handRef = exclusiveHandRef]].
 		
-		handlers := self useRef: (#(onButtonPress onButtonRelease #onAxisChange) collect: [:symbol |
+		handlers := self useRef: nil.
+		handlers set: (#(onButtonPress onButtonRelease #onAxisChange) collect: [:symbol |
 			symbol -> [:event |
 				(eventIsRelevant value: event)
 					ifTrue: [props at: symbol ifPresent: [:block | block cull: event]]]] as: Dictionary).

@@ -222,6 +222,12 @@ DworphicGrabbableTest >> testGrabLock [
 ]
 
 { #category : #tests }
+DworphicGrabbableTest >> testGrabOnlyOnGrip [
+
+	self assert: false
+]
+
+{ #category : #tests }
 DworphicGrabbableTest >> testHandleSurvivesRemount [
 
 	| toggleableGrabbableArea released |
@@ -302,7 +308,7 @@ DworphicGrabbableTest >> testOnGrabBegin [
 		WorldDworph new children: {
 			GRGrabbableArea new
 				handle: 1;
-				onDragBegin: [grabbed := true];
+				onGrab: [grabbed := true];
 				children: {
 					GDCollisionShape new
 						shape: GDBoxShape new;
@@ -330,7 +336,7 @@ DworphicGrabbableTest >> testOnGrabEndButtonRelease [
 		WorldDworph new children: {
 			GRGrabbableArea new
 				handle: 1;
-				onDragEnd: [released := true];
+				onRelease: [released := true];
 				children: {
 					GDCollisionShape new
 						shape: GDBoxShape new;
@@ -404,7 +410,7 @@ DworphicGrabbableTest >> testOnGrabEndUnmountSelf [
 	toggleAndGrabbableArea := self conditionalComponent: [
 		GRGrabbableArea new
 			handle: 1;
-			onDragEnd: [released := true];
+			onRelease: [released := true];
 			children: {
 				GDCollisionShape new
 					shape: GDBoxShape new;
@@ -452,7 +458,7 @@ DworphicGrabbableTest >> testReleaseLockUnmountContainer [
 			toggleableGrabbableAreaContainer second.
 			GRGrabbableArea new
 					handle: 2;
-					onDragBegin: [grabbed := true];
+					onGrab: [grabbed := true];
 					children: {
 						GDCollisionShape new
 							shape: GDBoxShape new;
@@ -504,7 +510,7 @@ DworphicGrabbableTest >> testReleaseLockUnmountSelf [
 				toggleAndGrabbableArea second.
 				GRGrabbableArea new
 					handle: 2;
-					onDragBegin: [grabbed := true];
+					onGrab: [grabbed := true];
 					children: {
 						GDCollisionShape new
 							shape: GDBoxShape new;

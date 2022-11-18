@@ -70,9 +70,13 @@ WorldDworph >> provideInteractivity [
 								handLocks set: [:old | old copy at: selectedAssoc key put: handle; yourself].
 								successBlock value]
 							ifNotNil: [failBlock value]]].
-		#releaseHandLock -> [:handle |
+		#releaseHandLock -> [:handle | | released |
+			released := false.
 			handLocks get keysAndValuesDo: [:key :value |
-				value = handle ifTrue: [handLocks set: [:old | old copy at: key put: nil; yourself]]]].
+				value = handle ifTrue: [
+					released := true.
+					handLocks set: [:old | old copy at: key put: nil; yourself]]].
+			released].
 		#registerHandleInContainer -> [:x | self error: 'No container for container-bound draggable area']}
 ]
 

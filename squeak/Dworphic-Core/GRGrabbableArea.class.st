@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRGrabbableArea >> render: props [
 
-	self deprecated.
+	"self deprecated."
 	^ GRDraggableArea new
 		props: props
 ]
