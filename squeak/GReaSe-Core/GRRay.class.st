@@ -25,6 +25,12 @@ GRRay class >> origin: aVector direction: anotherVector [
 ]
 
 { #category : #'as yet unclassified' }
+GRRay >> direction [
+
+	^ direction
+]
+
+{ #category : #'as yet unclassified' }
 GRRay >> intersectPlane: aPlaneOriginVector normal: aPlaneNormalVector [
 
 	| denom |
@@ -34,6 +40,12 @@ GRRay >> intersectPlane: aPlaneOriginVector normal: aPlaneNormalVector [
 			t := (aPlaneOriginVector - origin dot: aPlaneNormalVector) / denom.
 			origin + (t * direction)]
 		ifTrue: [nil]
+]
+
+{ #category : #'as yet unclassified' }
+GRRay >> origin [
+
+	^ origin
 ]
 
 { #category : #'as yet unclassified' }
