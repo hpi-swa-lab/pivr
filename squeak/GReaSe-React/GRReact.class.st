@@ -100,6 +100,12 @@ GRReact class >> pivrRepo [
 ]
 
 { #category : #setup }
+GRReact class >> pivrToolsPath [
+
+	^ self pivrToolsRepo repository git workingDir
+]
+
+{ #category : #setup }
 GRReact class >> pivrToolsRepo [
 
 	^ self repoOfName: 'pivr-tools'
@@ -200,6 +206,20 @@ GRReact class >> update [
 		get;
 		load.
 	
+	Metacello new
+		baseline: 'CmfcmfReact';
+		onConflict: [:ex | ex allow];
+		repository: 'github://cmfcmf/ReactS:main/packages';
+		get;
+		load.
+	
+	(SquitInteractivePullFromUpstream workingCopy: self pivrToolsRepo) pull.
+	(SquitInteractivePullFromUpstream workingCopy: self pivrRepo) pull
+]
+
+{ #category : #setup }
+GRReact class >> updateFast [
+
 	Metacello new
 		baseline: 'CmfcmfReact';
 		onConflict: [:ex | ex allow];
