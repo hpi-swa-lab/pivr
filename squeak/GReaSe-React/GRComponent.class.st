@@ -23,7 +23,11 @@ GRComponent class >> start [
 { #category : #deploy }
 GRComponent class >> startIn: aProjectFolderString [
 
+	| scenePath |
 	self startListener.
+	
+	scenePath := aProjectFolderString, '/GRRoot/GRRoot.tscn'.
+	(FSReference / scenePath) exists ifFalse: [GRReact pivrPath / 'project' / 'GRRoot' copyAllTo: FSReference / aProjectFolderString / 'GRRoot'].
 	GRReact
 		startGodotWithArguments: {aProjectFolderString, '/GRRoot/GRRoot.tscn'}
 		in: aProjectFolderString
