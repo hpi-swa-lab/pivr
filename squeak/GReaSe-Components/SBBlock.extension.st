@@ -9,6 +9,13 @@ SBBlock >> asCodeBlock [
 ]
 
 { #category : #'*GReaSe-Components-BlockCode' }
+SBBlock >> childrenAsCodeBlocks [
+
+	"Only implemented for tree sitter blocks at the moment"
+	^ #()
+]
+
+{ #category : #'*GReaSe-Components-BlockCode' }
 SBBlock >> exportStructure [
 
 	^ {

@@ -13,7 +13,7 @@ OrbitCameraDworph >> mouseSensitivity [
 { #category : #'as yet unclassified' }
 OrbitCameraDworph >> render: props [
 
-	| transform totalPitch isMouseLocked moving mouseMoving nonControlledTransform setTransform active |
+	| transform totalPitch isMouseLocked moving mouseMoving nonControlledTransform setTransform active invertedFactor |
 	nonControlledTransform := self useState: Matrix4x4 identity.
 	transform := props at: #transform ifAbsent: [nonControlledTransform get].
 	setTransform := props at: #setTransform ifAbsent: [nonControlledTransform setter].
@@ -24,6 +24,10 @@ OrbitCameraDworph >> render: props [
 	
 	active := props at: #active ifAbsent: [true].
 	mouseMoving := isMouseLocked get and: [active].
+	
+	invertedFactor := (props at: #inverted ifAbsent: [false])
+		ifTrue: [-1]
+		ifFalse: [1].
 	
 	self
 		useEffect: [GDInput instance mouseMode: (mouseMoving ifTrue: [GDInput mouseModeCaptured] ifFalse: [GDInput mouseModeVisible])]
@@ -47,8 +51,8 @@ OrbitCameraDworph >> render: props [
 				yaw := delta x * self mouseSensitivity.
 				totalPitch set: totalPitch get + pitch.
 				setTransform value: [:t |
-					(t rotatedGlobalBy: yaw around: 0 @ 1 @ 0)
-						rotatedLocalBy: pitch
+					(t rotatedGlobalBy: invertedFactor * yaw around: 0 @ 1 @ 0)
+						rotatedLocalBy: invertedFactor * pitch
 						around: 1 @ 0 @ 0]]];
 		onButton: [:pressed :button :position | isMouseLocked set: pressed];
 		onKeyboard: [:pressed :scanCode :key | | dir |

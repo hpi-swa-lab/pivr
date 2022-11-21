@@ -136,7 +136,7 @@ CMFHostConfigGodot >> resetAfterCommit [
 
 	changesBlock ifNil: [^ self].
 	
-	false ifTrue: [
+	GRReact logCommunication ifTrue: [
 		Transcript showln: '------------'.
 		pendingUpdates do: [:u | Transcript showln: u]].
 	

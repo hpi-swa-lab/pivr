@@ -19,12 +19,17 @@ AppControl >> render: props [
 	transform := self useState: (Matrix4x4 withOffset: 0 @ 1.2 @ -1.2).
 	head := self useProvidedRef: #headTransform.
 	
+	self useVoiceIntent: 'toggle apps' do: [
+		shown set: [:o | o not].
+		transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)].
+	
 	self
 		useButtonPress: [:e |
 			e button = GDGlobalConstants joyOculusAx ifTrue: [
 				shown set: [:o | o not].
 				transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)]]
 		release: [:e | ]
+		axisChange: [:e | ]
 		side: #right.
 	
 	^ shown get ifTrue: [

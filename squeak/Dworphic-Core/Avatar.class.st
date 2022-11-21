@@ -63,9 +63,12 @@ Avatar >> render: props [
 	
 	^ props extract: [:left :setLeft :right :setRight :head :setHead |
 		vrSupported get
-			ifTrue: [
+			ifTrue: [ | camera |
+				camera := GDARVRCamera new children: {GDSpatial new ref: (props at: #worldPortalRef)}.
+				GRReact syncHeadAndControllerTransform ifTrue: [camera subscribeTo: #'global_transform' do: [:t | setHead value: t]].
+				
 				GDARVROrigin new children: {
-					GDARVRCamera new subscribeTo: #'global_transform' do: [:t | setHead value: t].
+					camera.
 					renderController value
 						side: #left;
 						transform: left;
@@ -87,14 +90,13 @@ Avatar >> render: props [
 { #category : #'rendering - vr' }
 Avatar >> renderController: props [
 
-	| controllerRef renderHand handlers |
+	| controllerRef renderHand handlers controller |
 	controllerRef := self useRef: nil.
 	handlers := self useRef: ({#onButtonPress -> [:x | ]. #onButtonRelease -> [:x | ]} as: Dictionary).
 	renderHand := self useRenderHand.
 	
-	^ GDARVRController new
+	controller := GDARVRController new
 		ref: controllerRef;
-		subscribeTo: #transform do: [:t | (props at: #setTransform) value: t];
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
 		onButtonPressed: (handlers get at: #onButtonPress);
@@ -104,7 +106,23 @@ Avatar >> renderController: props [
 				controllerRef: controllerRef;
 				setHandlers: [:h | handlers set: h];
 				side: (props at: #side);
-				transform: (props at: #transform)}
+				transform: (props at: #transform)}.
+	
+	{
+		GDGlobalConstants joyVrAnalogGrip.
+		GDGlobalConstants joyVrAnalogTrigger.
+		GDGlobalConstants joyAnalogLx.
+		GDGlobalConstants joyAnalogLy.
+		GDGlobalConstants joyAnalogRx.
+		GDGlobalConstants joyAnalogRy} do: [:axis |
+		controller
+			subscribeCall: #'get_joystick_axis'
+			with: {axis}
+			do: [:val | (handlers get at: #onAxisChange) value: axis value: val]].
+	
+	GRReact syncHeadAndControllerTransform ifTrue: [controller subscribeTo: #transform do: [:t | (props at: #setTransform) value: t]].
+	
+	^ controller
 ]
 
 { #category : #'rendering - vr' }
@@ -116,6 +134,8 @@ Avatar >> renderHand: props [
 	allHandlers := OrderedCollection new.
 	setHandlers := [:handlers | allHandlers add: handlers].
 	(props at: #setHandlers) value: (Dictionary new
+		at: #onAxisChange
+			put: [:button :strength | allHandlers do: [:h | (h at: #onAxisChange) value: button value: strength]];
 		at: #onButtonPress
 			put: [:button | allHandlers do: [:h | (h at: #onButtonPress) value: button]];
 		at: #onButtonRelease
@@ -150,6 +170,7 @@ Avatar >> renderSimulated: props [
 	
 	^ {
 		OrbitCameraDworph new
+			inverted: GRReact invertSimulatorCamera;
 			active: controlling get = #headset;
 			transform: (props at: #head);
 			setTransform: (props at: #setHead).
@@ -196,6 +217,7 @@ Avatar >> renderSimulatedController: props [
 		transform: (props at: #transform);
 		children: {
 			GDArea new
+				collisionMask: GRInteractiveArea touchLayer;
 				children: {
 					GDCollisionShape new shape: (GDSphereShape new
 						margin: 0.001;

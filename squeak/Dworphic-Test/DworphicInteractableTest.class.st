@@ -5,6 +5,41 @@ Class {
 }
 
 { #category : #tests }
+DworphicInteractableTest >> testAxisChanged [
+
+	| strength |
+	strength := nil.
+	self openComponent: [
+		WorldDworph new children: {
+			GRInteractiveArea new
+				touch: true;
+				onAxisChange: [:event |
+					self assert: event isGrip.
+					strength := event strength];
+				children: {
+					GDCollisionShape new
+						shape: GDBoxShape new;
+						name: 'shape'.
+					GDSpatial new}}].
+	
+	self tick: {
+		(self controllerNode: #left)
+			signal: #'button_release'
+			with: {GDGlobalConstants joyVrAnalogGrip}}.
+	
+	self tick: {
+		(godotTree firstNodeNamed: 'shape') parent
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}}.
+	self tick: {
+		(self controllerNode: #left)
+			subscribeCall: #'get_joystick_axis'
+			index: 0
+			with: 0.3}.
+	self assert: 0.3 equals: strength
+]
+
+{ #category : #tests }
 DworphicInteractableTest >> testBlur [
 
 	| blur |
@@ -111,6 +146,7 @@ DworphicInteractableTest >> testHook [
 			GRComponent basicNew
 				useButtonPress: [:e | pressed := true]
 				release: [:e | released := true]
+				axisChange: [:e | ]
 				side: #left.
 			nil] asComponent].
 	self tick: {(self controllerNode: #left) toggleTrigger: true}.

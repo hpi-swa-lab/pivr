@@ -26,16 +26,38 @@ WorldDworph >> provideAreaHandlers [
 		#buttonHandlers -> buttonHandlers}
 ]
 
+{ #category : #'drag and drop' }
+WorldDworph >> provideDragAndDropHandlers [
+	<provider>
+	
+	| draggedHandles dropInfos |
+	draggedHandles := self useState: Dictionary new.
+	dropInfos := self useState: Dictionary new.
+	
+	^ {
+		#beginDraggingHandle -> [:handle :areaRef |
+			draggedHandles set: [:old | old copyWith: handle -> areaRef]].
+		#stopDraggingHandle -> [:handle |
+			draggedHandles set: [:old | old copyWithoutKey: handle]].
+		#handRefForDragHandle -> [:handle |
+			draggedHandles get at: handle
+				ifAbsent: [nil]].
+		#registerDropArea -> [:area :info | dropInfos set: [:old | old copyWith: (area -> info)]].
+		#unregisterDropArea -> [:area | dropInfos set: [:old | old copyWithoutKey: area]].
+		#getDropAreaInfo -> [:area | dropInfos get at: area]}
+]
+
 { #category : #rendering }
 WorldDworph >> render: props [
 
-	| apps worldPortalRef head left right children provided |
+	| apps worldPortalRef head left right children provided headPortalRef |
 	apps := self useState: OrderedCollection new.
 	head := self useState: Matrix4x4 identity.
 	left := self useState: Matrix4x4 identity.
 	right := self useState: Matrix4x4 identity.
 	
 	worldPortalRef := self useRef: nil.
+	headPortalRef := self useRef: nil.
 	
 	provided := Array streamContents: [:stream | (Pragma allNamed: #provider in: self class) do: [:pragma | stream nextPutAll: (self perform: pragma selector)]].
 	
@@ -52,7 +74,8 @@ WorldDworph >> render: props [
 			#worldPortal -> worldPortalRef.
 			#headTransform -> head get.
 			#leftControllerTransform -> left get.
-			#rightControllerTransform -> right get}
+			#rightControllerTransform -> right get.
+			#headPortal -> headPortalRef}
 		children: {
 			Avatar new
 				left: left get;
@@ -60,6 +83,7 @@ WorldDworph >> render: props [
 				head: head get;
 				setLeft: left setter;
 				setRight: right setter;
-				setHead: head setter.
-			GDSpatial new children: children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription]), {GDSpatial new ref: worldPortalRef}}
+				setHead: head setter;
+				worldPortalRef: headPortalRef.
+			GDSpatial new ref: worldPortalRef}, children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription])
 ]

@@ -41,7 +41,9 @@ GRSocketSession >> callOn: anObject method: aString arguments: aCollection [
 { #category : #'as yet unclassified' }
 GRSocketSession >> close [
 
-	react hostConfig onShutdown.
+	GRReactCurrentSession
+		value: GRMockSession new
+		during: [react hostConfig onShutdown].
 	[stream ifNotNil: #close] on: Error do: [:error | ]
 ]
 
