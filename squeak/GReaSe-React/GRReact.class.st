@@ -100,6 +100,12 @@ GRReact class >> pivrRepo [
 ]
 
 { #category : #setup }
+GRReact class >> pivrToolsPath [
+
+	^ self pivrToolsRepo repository git workingDir
+]
+
+{ #category : #setup }
 GRReact class >> pivrToolsRepo [
 
 	^ self repoOfName: 'pivr-tools'
@@ -122,6 +128,7 @@ GRReact class >> questRestartApp [
 
 	(Smalltalk classNamed: #OSProcess) ifNotNil: [:shell |
 		shell waitForCommand: 'adb reverse tcp:8292 tcp:8292'.
+		shell waitForCommand: 'adb reverse tcp:5000 tcp:5000'.
 		shell waitForCommand: 'adb shell am force-stop org.godotengine.grease'.
 		shell waitForCommand: 'adb shell am start -n org.godotengine.grease/com.godot.game.GodotApp']
 ]
@@ -152,6 +159,12 @@ GRReact class >> resetPort [
 { #category : #deploy }
 GRReact class >> startGodotWithArguments: aStringCollection [
 
+	self startGodotWithArguments: aStringCollection in: (self pivrPath / 'project') asString
+]
+
+{ #category : #deploy }
+GRReact class >> startGodotWithArguments: aStringCollection in: aFolderNameString [
+
 	(Smalltalk classNamed: #OSProcess)
 		ifNotNil: [:shell |
 			RunningGodotProcess ifNotNil: [
@@ -168,14 +181,14 @@ GRReact class >> startGodotWithArguments: aStringCollection [
 			(GodotPath isEmptyOrNil not and: [(FileDirectory directoryEntryFor: GodotPath) notNil]) ifFalse: [GodotPath := nil].
 			GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
 			RunningGodotProcess := shell isWindows
-				ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {GodotPath. (self pivrPath / 'project') asString. aStringCollection joinSeparatedBy: ' '})]
+				ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {GodotPath. aFolderNameString. aStringCollection joinSeparatedBy: ' '})]
 				ifFalse: [
 					ExternalUnixOSProcess
 						forkAndExec: GodotPath
 						arguments: aStringCollection
 						environment: nil
 						descriptors: nil
-						workingDir: (self pivrPath / 'project') asString]]
+						workingDir: aFolderNameString]]
 		ifNil: [self error: 'starting godot requires OSProcess to be installed (or you can launch it externally)']
 ]
 
@@ -199,6 +212,20 @@ GRReact class >> update [
 		get;
 		load.
 	
+	Metacello new
+		baseline: 'CmfcmfReact';
+		onConflict: [:ex | ex allow];
+		repository: 'github://cmfcmf/ReactS:main/packages';
+		get;
+		load.
+	
+	(SquitInteractivePullFromUpstream workingCopy: self pivrToolsRepo) pull.
+	(SquitInteractivePullFromUpstream workingCopy: self pivrRepo) pull
+]
+
+{ #category : #setup }
+GRReact class >> updateFast [
+
 	Metacello new
 		baseline: 'CmfcmfReact';
 		onConflict: [:ex | ex allow];
