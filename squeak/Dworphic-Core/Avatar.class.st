@@ -166,7 +166,9 @@ Avatar >> renderHand: props [
 				children: {
 					GDCollisionShape new
 						shape: (GDSphereShape new radius: 0.05);
-						translation: 0 @ -0.07 @ 0.05}}]
+						translation: 0 @ -0.07 @ 0.05}.
+			GRPointer new
+				handRef: handRef}]
 ]
 
 { #category : #'rendering - simulated' }

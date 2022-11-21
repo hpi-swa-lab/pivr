@@ -224,7 +224,26 @@ DworphicGrabbableTest >> testGrabLock [
 { #category : #tests }
 DworphicGrabbableTest >> testGrabOnlyOnGrip [
 
-	self assert: false
+	self openComponent: [
+		WorldDworph new children: {
+			GRGrabbableArea new
+				handle: 1;
+				children: {
+					GDCollisionShape new
+						shape: GDBoxShape new;
+						name: 'shape'.
+					GDSpatial new}}].
+	
+	self tick: {
+		(godotTree firstNodeNamed: 'shape') parent
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}}.
+	self tick: {
+		(self controllerNode: #left)
+			signal: #'button_pressed'
+			with: {GDGlobalConstants joyVrTrigger}}.
+			
+	self deny: ((godotTree firstNodeNamed: 'shape') hasParent: (self controllerNode: #left)).
 ]
 
 { #category : #tests }

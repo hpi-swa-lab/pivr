@@ -13,11 +13,11 @@ GRActingArea >> render: props [
 		actingAreaRefToHandRef := self useProvided: #actingAreaRefToHandRef.
 		self useEffect: [
 			actingAreaRefToHandRef get at: areaRef get put: handRef.
-			[actingAreaRefToHandRef get removeKey: areaRef get]].
+			[actingAreaRefToHandRef get removeKey: areaRef get]]
+			dependencies: #().
 		
 		^ GDArea new
 			ref: areaRef;
-			name: 'actingArea';
 			setAll: rest;
 			collisionLayer: 0;
 			collisionMask:
