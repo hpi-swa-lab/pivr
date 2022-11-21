@@ -104,6 +104,14 @@ GRComponent >> nextGodotId [
 	^ GRReact nextGodotId
 ]
 
+{ #category : #helpers }
+GRComponent >> sendKeyEvent: aBlock [
+
+	GDInputEventKey externalNewDuring: [:inputEvent |
+		aBlock value: inputEvent.
+		GDInput instance parseInputEvent: inputEvent]
+]
+
 { #category : #hooks }
 GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatrix controller: controllerRef type: aTypeSymbol [
 
@@ -273,6 +281,25 @@ GRComponent >> useSceneInstance: aScenePath [
 			(GDPackedScene basicNew objectId: gameScene objectId) instance]
 		dependencies: {}.
 	^ GDNode new call: 'add_child' arguments: {scene}
+]
+
+{ #category : #hooks }
+GRComponent >> useViewportTextureContaining: aCollectionofNodes size: aPoint [
+
+	| viewportTex |
+	viewportTex := self useState: nil.
+	^ {
+		GDViewport new
+			size: aPoint;
+			renderTargetVFlip: true;
+			renderTargetUpdateMode: GDViewport updateAlways;
+			subscribeCall: 'get_texture' with: #() do: [:tex | viewportTex set: tex];
+			children: aCollectionofNodes.
+		GDSpatialMaterial new
+			flagsUnshaded: true;
+			flagsAlbedoTexForceSrgb: true;
+			albedoTexture: viewportTex get;
+			resourceLocalToScene: true}
 ]
 
 { #category : #hooks }
