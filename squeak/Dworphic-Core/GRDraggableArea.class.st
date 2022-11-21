@@ -28,9 +28,9 @@ GRDraggableArea >> render: props [
 			ifNone: [nil].
 		isDragged := heldHandRef notNil.
 		
-		endGrab := [
+		endGrab := [:eventOrNil |
 			releaseHandLock value: realHandle.
-			onRelease ifNotNil: [onRelease value]].
+			onRelease ifNotNil: [onRelease cull: eventOrNil]].
 		self
 			useEffect: [
 				realReleaseCondition = #containerUnmount ifTrue: [registerHandleInContainer value: realHandle].
@@ -59,7 +59,7 @@ GRDraggableArea >> render: props [
 								onButtonRelease ifNotNil: [onButtonRelease cull: event].
 								event isGrip ifTrue: [
 									currentTransform set: event transform.
-									endGrab value]]}
+									endGrab value: event]]}
 					in: (heldHandRef ifNil: [inPlaceRef])}]
 ]
 

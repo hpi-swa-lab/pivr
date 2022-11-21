@@ -14,6 +14,7 @@ GRDropArea class >> dropLayer [
 GRDropArea >> render: props [
 
 	| areaRef registerDropArea unregisterDropArea |
+	self deprecated: 'Check for overlapping areas in onRelease instead'.
 	registerDropArea := self useProvided: #registerDropArea.
 	unregisterDropArea := self useProvided: #unregisterDropArea.
 	areaRef := self useGodotRef.

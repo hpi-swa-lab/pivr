@@ -20,7 +20,7 @@ BlockCodeEditor class >> appDescription [
 { #category : #'as yet unclassified' }
 BlockCodeEditor >> render: props [
 
-	| editor blocks forceUpdate doCommand globalTransform |
+	| editor blocks forceUpdate doCommand globalTransform dropAreas |
 	editor := self useRef: SBEditor new.
 	blocks := self useState: {}.
 	forceUpdate := self useForceUpdate.
@@ -47,12 +47,20 @@ BlockCodeEditor >> render: props [
 	
 	globalTransform := self useRef: Matrix4x4 identity.
 	
+	dropAreas := self useRef: Dictionary new.
+	
 	^ ApplicationDworph new
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
 		children: (
 			GRProvider values: {
 				#doSandblocksCommand -> doCommand.
-				#editorTransform -> [globalTransform get]}
+				#editorTransform -> [globalTransform get].
+				#registerDropArea -> [:area :sandblock | dropAreas get at: area put: sandblock].
+				#unregisterDropArea -> [:area | dropAreas get removeKey: area].
+				#getDropAreaSandblock -> [:area |
+					(dropAreas get associations select: [:assoc | assoc key get = area])
+						ifEmpty: [nil]
+						ifNotEmpty: [:assocs | assocs first value]]}
 			children: {
 				GRDraggableAreaContainer new
 					children: {

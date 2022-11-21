@@ -34,12 +34,15 @@ CodeBlock >> render: props [
 { #category : #'as yet unclassified' }
 CodeBlock >> renderBlock: props [
 
-	props extract: [:sandblock :layoutParams :translation | | scale isHovered do editorTransform |
+	props extract: [:sandblock :layoutParams :translation | | do editorTransform isHovered scale overlappingDropAreas getDropAreaSandblock |
 		scale := self scale: props.
 		
 		isHovered := self useState: false.
 		do := self useProvided: #doSandblocksCommand.
 		editorTransform := self useProvided: #editorTransform.
+		
+		overlappingDropAreas := self useState: #().
+		getDropAreaSandblock := self useProvided: #getDropAreaSandblock.
 		
 		^ GRDraggableArea new
 			releaseCondition: #containerUnmount;
@@ -49,28 +52,37 @@ CodeBlock >> renderBlock: props [
 				ifFalse: [Matrix4x4 withOffset: (self computeTranslationFrom: layoutParams block: sandblock)]);
 			onHover: [isHovered set: true];
 			onBlur: [isHovered set: false];
-			onDragBegin: [
-				Transcript showln: 'drag begin ', sandblock identityHash.
+			onGrab: [
 				do value: (SBCombinedCommand newWith: {
 					sandblock parentSandblock deleteCommandFor: sandblock.
 					sandblock sandblockEditor insertCommandRequest: sandblock near: nil before: false})];
-			onDragEnd: [:event :otherSandblock | | localTransform |
-				Transcript showln: 'drag end ', sandblock identityHash, '; otherSandblock ', otherSandblock identityHash.
-				otherSandblock
-					ifNil: [
-						"just leave me floating"
+			onRelease: [:event | | localTransform |
+				(overlappingDropAreas get
+					collect: [:area | getDropAreaSandblock value: area]
+					thenSelect: #notNil)
+					ifEmpty: [
 						localTransform := editorTransform value inverseTransformation * event transform.
 						sandblock setProperty: #vrTransform toValue: localTransform]
-					ifNotNil: [
+					ifNotEmpty: [:otherSandblocks | | otherSandblock |
+						otherSandblock := otherSandblocks first.
 						do value: (SBCombinedCommand newWith: {
 							sandblock parentSandblock deleteCommandFor: sandblock.
 							SBReplaceCommand new
 								target: otherSandblock
-								replacer: (sandblock "copyBlock adaptSlotFor: otherSandblock slot")})]];
+								replacer: (sandblock copyBlock adaptSlotFor: otherSandblock slot)})]];
 			children: {
 				GDCollisionShape new
 					scale: scale;
 					shape: (GDBoxShape new extents: 0.5 asVector3).
+				GDArea new
+					collisionMask: GRDropArea dropLayer;
+					collisionLayer: 0;
+					onAreaEntered: [:area | overlappingDropAreas set: [:old | old copyWith: area]];
+					onAreaExited: [:area | overlappingDropAreas set: [:old | old copyWithout: area]];
+					children: {
+						GDCollisionShape new
+							scale: scale;
+							shape: (GDBoxShape new extents: 0.5 asVector3)}.
 				GDMeshInstance new
 					scale: scale;
 					mesh: (GDCubeMesh new
@@ -81,15 +93,19 @@ CodeBlock >> renderBlock: props [
 { #category : #'as yet unclassified' }
 CodeBlock >> renderUnknown: props [
 
-	props extract: [:sandblock :layoutParams :translation | | scale isHovered do editorTransform |
-		scale := self scale: props.
+	props extract: [:sandblock :layoutParams :translation | | areaRef registerDropArea unregisterDropArea | 
+		registerDropArea := self useProvided: #registerDropArea.
+		unregisterDropArea := self useProvided: #unregisterDropArea.
+		areaRef := self useGodotRef.
+		self useEffect: [
+			registerDropArea value: areaRef value: sandblock.
+			[unregisterDropArea value: areaRef]]
+			dependencies: {sandblock}.
 		
-		isHovered := self useState: false.
-		do := self useProvided: #doSandblocksCommand.
-		editorTransform := self useProvided: #editorTransform.
-		
-		^ GRDropArea new
-			info: sandblock;
+		^ GDArea new
+			ref: areaRef;
+			collisionMask: 0;
+			collisionLayer: GRDropArea dropLayer;
 			children: {
 				(self cubeOfSize: 1 color: Color blue)
 					scale: (self scale: props);
