@@ -21,6 +21,15 @@ GRComponent class >> start [
 ]
 
 { #category : #deploy }
+GRComponent class >> startIn: aProjectFolderString [
+
+	self startListener.
+	GRReact
+		startGodotWithArguments: {aProjectFolderString, '/GRRoot/GRRoot.tscn'}
+		in: aProjectFolderString
+]
+
+{ #category : #deploy }
 GRComponent class >> startListener [
 	"replaces the current listener and opens a new one, serving this component class as the root"
 
@@ -248,6 +257,18 @@ GRComponent >> useRegisterHandArea: areaRef grabbed: grabbedHandlers create: cre
 			[removeHandAreaHandlers value: areaRef get]]
 		dependencies: #().
 	^ activeEventHandlers
+]
+
+{ #category : #hooks }
+GRComponent >> useSceneInstance: aScenePath [
+
+	| scene |
+	scene := self
+		useMemo: [ | gameScene |
+			gameScene := GRReactCurrentSession value loadResource: aScenePath.
+			(GDPackedScene basicNew objectId: gameScene objectId) instance]
+		dependencies: {}.
+	^ GDNode new call: 'add_child' arguments: {scene}
 ]
 
 { #category : #hooks }

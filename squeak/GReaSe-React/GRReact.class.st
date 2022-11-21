@@ -159,6 +159,12 @@ GRReact class >> resetPort [
 { #category : #deploy }
 GRReact class >> startGodotWithArguments: aStringCollection [
 
+	self startGodotWithArguments: aStringCollection in: (self pivrPath / 'project') asString
+]
+
+{ #category : #deploy }
+GRReact class >> startGodotWithArguments: aStringCollection in: aFolderNameString [
+
 	(Smalltalk classNamed: #OSProcess)
 		ifNotNil: [:shell |
 			RunningGodotProcess ifNotNil: [
@@ -175,14 +181,14 @@ GRReact class >> startGodotWithArguments: aStringCollection [
 			(GodotPath isEmptyOrNil not and: [(FileDirectory directoryEntryFor: GodotPath) notNil]) ifFalse: [GodotPath := nil].
 			GodotPath ifNil: [GodotPath := UIManager default request: 'Path to godot executable?'].
 			RunningGodotProcess := shell isWindows
-				ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {GodotPath. (self pivrPath / 'project') asString. aStringCollection joinSeparatedBy: ' '})]
+				ifTrue: [OSProcess command: ('{1} --path {2} {3}' format: {GodotPath. aFolderNameString. aStringCollection joinSeparatedBy: ' '})]
 				ifFalse: [
 					ExternalUnixOSProcess
 						forkAndExec: GodotPath
 						arguments: aStringCollection
 						environment: nil
 						descriptors: nil
-						workingDir: (self pivrPath / 'project') asString]]
+						workingDir: aFolderNameString]]
 		ifNil: [self error: 'starting godot requires OSProcess to be installed (or you can launch it externally)']
 ]
 
