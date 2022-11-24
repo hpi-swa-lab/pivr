@@ -9,8 +9,7 @@ Class {
 		'targetHandlers',
 		'grabRelease',
 		'type',
-		'handRef',
-		'handRef2'
+		'handRef'
 	],
 	#category : #'Dworphic-Core'
 }

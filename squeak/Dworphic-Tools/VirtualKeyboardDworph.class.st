@@ -58,11 +58,11 @@ VirtualKeyboardDworph >> render: props [
 								keyCode = GDGlobalConstants keyShift
 									ifTrue: [shiftPressed set: shiftPressed not]
 									ifFalse: [
-										self sendKeyEvent: [:ev |
-											ev
-												scancode: keyCode;
-												pressed: true;
-												shift: shiftPressed get].
+										GDInputEventKey externalNewDuring: [:inputEvent |
+											inputEvent scancode: keyCode.
+											inputEvent pressed: true.
+											inputEvent shift: shiftPressed get.
+											GDInput instance parseInputEvent: inputEvent].
 										shiftPressed set: false.
 										Transcript showln: letter]]]])}}
 ]

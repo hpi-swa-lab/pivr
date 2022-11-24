@@ -25,12 +25,6 @@ GRRay class >> origin: aVector direction: anotherVector [
 ]
 
 { #category : #'as yet unclassified' }
-GRRay >> direction [
-
-	^ direction
-]
-
-{ #category : #'as yet unclassified' }
 GRRay >> intersectPlane: aPlaneOriginVector normal: aPlaneNormalVector [
 
 	| denom |
@@ -43,39 +37,10 @@ GRRay >> intersectPlane: aPlaneOriginVector normal: aPlaneNormalVector [
 ]
 
 { #category : #'as yet unclassified' }
-GRRay >> intersectSphere: sphereOrigin radius: sphereRadius [
-
-	| oMinC p q discriminant dRoot |
-	oMinC := origin - sphereOrigin.
-	p := direction normalized dot: oMinC.
-	q := (oMinC dot: oMinC) - (sphereRadius * sphereRadius).
-	
-	discriminant := p * p - q.
-	discriminant < 0 ifTrue: [^ {}].
-	
-	dRoot := discriminant sqrt.
-	^ q < 0
-		ifTrue: [self pointFromOrigin: p * -1 + dRoot]
-		ifFalse: [self pointFromOrigin: p * -1 - dRoot]
-]
-
-{ #category : #'as yet unclassified' }
-GRRay >> origin [
-
-	^ origin
-]
-
-{ #category : #'as yet unclassified' }
 GRRay >> origin: aVector direction: anotherVector [
 
 	origin := aVector.
 	direction := anotherVector
-]
-
-{ #category : #'as yet unclassified' }
-GRRay >> pointFromOrigin: dist [
-
-	^ origin + ((direction normalized) * dist)
 ]
 
 { #category : #'as yet unclassified' }

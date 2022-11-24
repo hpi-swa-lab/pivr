@@ -10,17 +10,11 @@ BlockCodeEditor class >> appDescription [
 
 	^ DworphicApplicationDescription new
 		name: self name;
-		render: [self render]
-]
-
-{ #category : #'as yet unclassified' }
-BlockCodeEditor class >> render [
-
-	^ self new
-		translation: 1.5 @ 1 @ 1;
-		layoutParams: (CodeBlockLayoutParamters new
-			blockDepth: 0.01;
-			morphicScale: 0.003)
+		render: [self new
+			translation: -1 @ 1 @ 1;
+			layoutParams: (CodeBlockLayoutParamters new
+				blockDepth: 0.01;
+				morphicScale: 0.003)]
 ]
 
 { #category : #'as yet unclassified' }

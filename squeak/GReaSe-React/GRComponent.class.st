@@ -21,19 +21,6 @@ GRComponent class >> start [
 ]
 
 { #category : #deploy }
-GRComponent class >> startIn: aProjectFolderString [
-
-	| scenePath |
-	self startListener.
-	
-	scenePath := aProjectFolderString, '/GRRoot/GRRoot.tscn'.
-	(FSReference / scenePath) exists ifFalse: [GRReact pivrPath / 'project' / 'GRRoot' copyAllTo: FSReference / aProjectFolderString / 'GRRoot'].
-	GRReact
-		startGodotWithArguments: {aProjectFolderString, '/GRRoot/GRRoot.tscn'}
-		in: aProjectFolderString
-]
-
-{ #category : #deploy }
 GRComponent class >> startListener [
 	"replaces the current listener and opens a new one, serving this component class as the root"
 
@@ -102,14 +89,6 @@ GRComponent >> godot: aClassName [
 GRComponent >> nextGodotId [
 
 	^ GRReact nextGodotId
-]
-
-{ #category : #helpers }
-GRComponent >> sendKeyEvent: aBlock [
-
-	GDInputEventKey externalNewDuring: [:inputEvent |
-		aBlock value: inputEvent.
-		GDInput instance parseInputEvent: inputEvent]
 ]
 
 { #category : #hooks }
@@ -292,37 +271,6 @@ GRComponent >> useRegisterHandArea: areaRef grabbed: grabbedHandlers create: cre
 			[removeHandAreaHandlers value: areaRef get]]
 		dependencies: #().
 	^ activeEventHandlers
-]
-
-{ #category : #hooks }
-GRComponent >> useSceneInstance: aScenePath [
-
-	| scene |
-	scene := self
-		useMemo: [ | gameScene |
-			gameScene := GRReactCurrentSession value loadResource: aScenePath.
-			(GDPackedScene basicNew objectId: gameScene objectId) instance]
-		dependencies: {}.
-	^ GDNode new call: 'add_child' arguments: {scene}
-]
-
-{ #category : #hooks }
-GRComponent >> useViewportTextureContaining: aCollectionofNodes size: aPoint [
-
-	| viewportTex |
-	viewportTex := self useState: nil.
-	^ {
-		GDViewport new
-			size: aPoint;
-			renderTargetVFlip: true;
-			renderTargetUpdateMode: GDViewport updateAlways;
-			subscribeCall: 'get_texture' with: #() do: [:tex | viewportTex set: tex];
-			children: aCollectionofNodes.
-		GDSpatialMaterial new
-			flagsUnshaded: true;
-			flagsAlbedoTexForceSrgb: true;
-			albedoTexture: viewportTex get;
-			resourceLocalToScene: true}
 ]
 
 { #category : #hooks }

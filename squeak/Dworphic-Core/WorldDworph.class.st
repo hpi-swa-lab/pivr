@@ -83,14 +83,13 @@ WorldDworph >> provideInteractivity [
 { #category : #rendering }
 WorldDworph >> render: props [
 
-	| apps worldPortalRef head left right children provided headPortalRef |
+	| apps worldPortalRef head left right children provided |
 	apps := self useState: OrderedCollection new.
 	head := self useState: Matrix4x4 identity.
 	left := self useState: Matrix4x4 identity.
 	right := self useState: Matrix4x4 identity.
 	
 	worldPortalRef := self useRef: nil.
-	headPortalRef := self useRef: nil.
 	
 	provided := Array streamContents: [:stream | (Pragma allNamed: #provider in: self class) do: [:pragma | stream nextPutAll: (self perform: pragma selector)]].
 	
@@ -107,8 +106,7 @@ WorldDworph >> render: props [
 			#worldPortal -> worldPortalRef.
 			#headTransform -> head get.
 			#leftControllerTransform -> left get.
-			#rightControllerTransform -> right get.
-			#headPortal -> headPortalRef}
+			#rightControllerTransform -> right get}
 		children: {
 			Avatar new
 				left: left get;
@@ -116,7 +114,6 @@ WorldDworph >> render: props [
 				head: head get;
 				setLeft: left setter;
 				setRight: right setter;
-				setHead: head setter;
-				worldPortalRef: headPortalRef.
+				setHead: head setter.
 			GDSpatial new ref: worldPortalRef}, children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription])
 ]

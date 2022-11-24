@@ -56,23 +56,20 @@ CodeBlock >> renderBlock: props [
 				do value: (SBCombinedCommand newWith: {
 					sandblock parentSandblock deleteCommandFor: sandblock.
 					sandblock sandblockEditor insertCommandRequest: sandblock near: nil before: false})];
-			onRelease: [:event | | localTransform inserted |
-				inserted := false.
+			onRelease: [:event | | localTransform |
 				(overlappingDropAreas get
 					collect: [:area | getDropAreaSandblock value: area]
 					thenSelect: #notNil)
+					ifEmpty: [
+						localTransform := editorTransform value inverseTransformation * event transform.
+						sandblock setProperty: #vrTransform toValue: localTransform]
 					ifNotEmpty: [:otherSandblocks | | otherSandblock |
 						otherSandblock := otherSandblocks first.
-						(sandblock copyBlock adaptSlotFor: otherSandblock slot ifFailed: [nil]) ifNotNil: [:newBlock |
 						do value: (SBCombinedCommand newWith: {
 							sandblock parentSandblock deleteCommandFor: sandblock.
 							SBReplaceCommand new
 								target: otherSandblock
-								replacer: newBlock}).
-						inserted := true]].
-				inserted ifFalse: [
-					localTransform := editorTransform value inverseTransformation * event transform.
-					sandblock setProperty: #vrTransform toValue: localTransform]];
+								replacer: (sandblock copyBlock adaptSlotFor: otherSandblock slot)})]];
 			children: {
 				GDCollisionShape new
 					scale: scale;
