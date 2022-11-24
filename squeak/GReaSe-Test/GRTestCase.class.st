@@ -9,6 +9,18 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GRTestCase >> conditionalComponent: aBlock default: aBoolean [
+
+	| active |
+	active := aBoolean.
+	^ {
+		[:val | active := val].
+		[active
+			ifTrue: [aBlock value]
+			ifFalse: [nil]] asComponent}
+]
+
+{ #category : #'as yet unclassified' }
 GRTestCase >> controllerCollider: aSideSymbol [
 
 	^ GRObjectId new objectId: ((self controllerNode: aSideSymbol) firstNodeOfType: #Area) path

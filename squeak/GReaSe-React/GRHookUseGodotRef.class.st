@@ -21,6 +21,15 @@ GRHookUseGodotRef >> hostConfig: aHost [
 	hostConfig := aHost
 ]
 
+{ #category : #public }
+GRHookUseGodotRef >> printOn: aStream [
+
+	super printOn: aStream.
+	aStream nextPut: $(.
+	state objectId printOn: aStream.
+	aStream nextPut: $).
+]
+
 { #category : #private }
 GRHookUseGodotRef >> set: aNode [
 
