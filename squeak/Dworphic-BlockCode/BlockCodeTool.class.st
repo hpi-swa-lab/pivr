@@ -13,7 +13,7 @@ BlockCodeTool >> render: props [
 		children: {
 			GDMeshInstance new
 				mesh: (GDCylinderMesh new
-					height: 20 centimeter;
-					bottomRadius: 5 centimeter;
-					topRadius: 1 centimeter)}
+					height: 20 cm;
+					bottomRadius: 5 cm;
+					topRadius: 1 cm)}
 ]

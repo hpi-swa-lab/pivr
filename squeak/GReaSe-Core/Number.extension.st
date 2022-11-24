@@ -7,9 +7,15 @@ Number >> asVector3 [
 ]
 
 { #category : #'*GReaSe-Core' }
-Number >> centimeter [
+Number >> cm [
 
 	^ self * 0.01
+]
+
+{ #category : #'*GReaSe-Core' }
+Number >> m [
+
+	^ self
 ]
 
 { #category : #'*GReaSe-Core' }
@@ -19,7 +25,7 @@ Number >> mapFromLow: aLowNumber high: aHighNumber toLow: aTargetLowNumber high:
 ]
 
 { #category : #'*GReaSe-Core' }
-Number >> meter [
+Number >> mm [
 
-	^ self
+	^ self * 0.001
 ]
