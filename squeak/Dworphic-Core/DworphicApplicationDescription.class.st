@@ -55,6 +55,15 @@ DworphicApplicationDescription >> name: aString [
 ]
 
 { #category : #'as yet unclassified' }
+DworphicApplicationDescription >> printOn: aStream [
+
+	aStream
+		nextPutAll: self class name;
+		nextPutAll: ' for ';
+		nextPutAll: self name
+]
+
+{ #category : #'as yet unclassified' }
 DworphicApplicationDescription >> priority [
 
 	^ priority ifNil: [0]
