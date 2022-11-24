@@ -64,7 +64,7 @@ Avatar >> render: props [
 	^ props extract: [:left :setLeft :right :setRight :head :setHead |
 		vrSupported get
 			ifTrue: [ | camera |
-				camera := GDARVRCamera new.
+				camera := GDARVRCamera new children: {GDSpatial new ref: (props at: #worldPortalRef)}.
 				GRReact syncHeadAndControllerTransform ifTrue: [camera subscribeTo: #'global_transform' do: [:t | setHead value: t]].
 				
 				GDARVROrigin new children: {

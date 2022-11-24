@@ -46,16 +46,10 @@ var session_id: int
 var quit = false
 
 func port():
-	if OS.get_cmdline_args().size() < 1:
-		return 8292
-	else:
-		return int(OS.get_cmdline_args()[0])
+	return 8292
 
 func ip():
-	if OS.get_cmdline_args().size() < 2:
-		return '127.0.0.1'
-	else:
-		return OS.get_cmdline_args()[1]
+	return '127.0.0.1'
 
 func debug_print_bytes(obj):
 	var squeak_bytes = '#['
@@ -125,12 +119,16 @@ func update():
 					bind_refs(response[1][1])
 				MessageType.call_from_squeak:
 					var ret = object_for(response[1]).callv(response[2], deserialize_args(response[3]))
+					if ret is Reference:
+						ret.reference()
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
 				MessageType.property_set_from_squeak:
 					object_for(response[1]).set(response[2], deserialize_arg(response[3]))
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, null])
 				MessageType.property_get_from_squeak:
 					var ret = object_for(response[1]).get(response[2])
+					if ret is Reference:
+						ret.reference()
 					tcp.put_var([MessageType.response_to_call_from_godot, session_id, ret])
 				MessageType.create_instance_from_squeak:
 					var ret = ClassDB.instance(response[1])
