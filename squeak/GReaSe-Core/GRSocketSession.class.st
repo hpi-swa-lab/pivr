@@ -7,7 +7,8 @@ Class {
 		'stream',
 		'communicationLock',
 		'codeChanged',
-		'renderingErrored'
+		'renderingErrored',
+		'renderWarnedOnce'
 	],
 	#category : #'GReaSe-Core'
 }
@@ -52,6 +53,7 @@ GRSocketSession >> codeChanged: event [
 
 	event isDoIt ifTrue: [^ self].
 	renderingErrored := false.
+	renderWarnedOnce := false.
 	self synchronousCodeReload ifFalse: [
 		codeChanged := true.
 		^ self].
@@ -126,7 +128,9 @@ GRSocketSession >> handleMessage: aMessage [
 GRSocketSession >> handleRenderMessage: aMessage [
 
 	renderingErrored ifTrue: [
-		Transcript showln: 'Ignoring update from Godot until next code change because of error.'.
+		renderWarnedOnce ifFalse: [
+			Transcript showln: 'Ignoring update from Godot until next code change because of error.'.
+			renderWarnedOnce := true].
 		self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
 		^ true].
 	
@@ -145,6 +149,7 @@ GRSocketSession >> handleRenderMessage: aMessage [
 		do: [:error |
 			self putVariant: {GRSocketListener messageTypeTickCompletedFromSqueak}.
 			renderingErrored := true.
+			renderWarnedOnce := false.
 			self handleError: error.
 			false]
 ]
@@ -156,7 +161,8 @@ GRSocketSession >> initialize [
 	
 	codeChanged := false.
 	communicationLock := Mutex new.
-	renderingErrored := false
+	renderingErrored := false.
+	renderWarnedOnce := false
 ]
 
 { #category : #'as yet unclassified' }
