@@ -90,24 +90,32 @@ Avatar >> render: props [
 { #category : #'rendering - vr' }
 Avatar >> renderController: props [
 
-	| controllerRef renderHand handlers controller |
+	| renderHand handlers controller handleButtonEvent controllerRef |
 	controllerRef := self useRef: nil.
-	handlers := self useRef: ({#onButtonPress -> [:x | ]. #onButtonRelease -> [:x | ]} as: Dictionary).
+	handlers := self useState: (#(onButtonPress onButtonRelease onAxisChange)
+		collect: [:symbol | symbol -> [:x | self error: 'No handler set for ', symbol]]
+		as: Dictionary).
 	renderHand := self useRenderHand.
+	
+	handleButtonEvent := [:block |
+		[:button |
+			block value: (GRInteractiveAreaEventButton new
+			side: (props at: #side);
+			transform: (props at: #transform);
+			button: button)]].
 	
 	controller := GDARVRController new
 		ref: controllerRef;
 		translation: (Vector3 value: 99999);
 		controllerId: (self controllerIdForSide: (props at: #side));
-		onButtonPressed: (handlers get at: #onButtonPress);
-		onButtonRelease: (handlers get at: #onButtonRelease);
+		onButtonPressed: (handleButtonEvent value: (handlers get at: #onButtonPress));
+		onButtonRelease: (handleButtonEvent value: (handlers get at: #onButtonRelease));
 		children: {
 			renderHand value
-				controllerRef: controllerRef;
-				setHandlers: [:h | handlers set: h];
+				handRef: controllerRef;
+				setHandlers: handlers setter;
 				side: (props at: #side);
 				transform: (props at: #transform)}.
-	
 	{
 		GDGlobalConstants joyVrAnalogGrip.
 		GDGlobalConstants joyVrAnalogTrigger.
@@ -118,7 +126,11 @@ Avatar >> renderController: props [
 		controller
 			subscribeCall: #'get_joystick_axis'
 			with: {axis}
-			do: [:val | (handlers get at: #onAxisChange) value: axis value: val]].
+			do: [:strength | (handlers get at: #onAxisChange) value: (
+					GRInteractiveAreaEventAxis new
+						side: (props at: #side);
+						axis: axis;
+						strength: strength)]].
 	
 	GRReact syncHeadAndControllerTransform ifTrue: [controller subscribeTo: #transform do: [:t | (props at: #setTransform) value: t]].
 	
@@ -128,38 +140,35 @@ Avatar >> renderController: props [
 { #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	| handMesh allHandlers setHandlers |
-	handMesh := self useHandMesh.
+	props extract: [:side :reset :setHandlers :handRef || handMesh eventReceivers |
+		handMesh := self useHandMesh.
+		eventReceivers := self useProvided: #eventReceivers.
+		self useEffect: [
+			setHandlers value: (#(onButtonPress onButtonRelease onAxisChange)
+				collect: [:symbol |
+					symbol -> [:event |
+						event handRef: handRef get.
+						eventReceivers get do: [:handler |
+							(handler get at: symbol) cull: event]]]
+				as: Dictionary)] dependencies: #().
+		self useRegisterHand: handRef.
 	
-	allHandlers := OrderedCollection new.
-	setHandlers := [:handlers | allHandlers add: handlers].
-	(props at: #setHandlers) value: (Dictionary new
-		at: #onAxisChange
-			put: [:button :strength | allHandlers do: [:h | (h at: #onAxisChange) value: button value: strength]];
-		at: #onButtonPress
-			put: [:button | allHandlers do: [:h | (h at: #onButtonPress) value: button]];
-		at: #onButtonRelease
-			put: [:button | allHandlers do: [:h | (h at: #onButtonRelease) value: button]];
-		yourself).
-	
-	^ GDSpatial new children: {
-		GDMeshInstance new
-			mesh: handMesh;
-			scale: (self mirrorFactorForSide: (props at: #side)) @ 1 @ 1 * 0.25;
-			translation: 0 @ -0.07 @ 0.1;
-			rotation: -1.6 @ 0 @ 0.
-		GRActingArea new
-			point: false;
-			touch: true;
-			side: (props at: #side);
-			actingTransform: (props at: #transform);
-			controllerRef: (props at: #controllerRef);
-			setHandlers: setHandlers;
-			children: {
-				GDCollisionShape new
-					shape: (GDSphereShape new radius: 0.05);
-					translation: 0 @ -0.07 @ 0.05}.
-		GRPointer new setHandlers: setHandlers}
+		^ GDSpatial new children: {
+			GDMeshInstance new
+				mesh: handMesh;
+				scale: (self mirrorFactorForSide: side) @ 1 @ 1 * 0.25;
+				translation: 0 @ -0.07 @ 0.1;
+				rotation: -1.6 @ 0 @ 0.
+			GRActingArea new
+				point: false;
+				touch: true;
+				handRef: handRef;
+				children: {
+					GDCollisionShape new
+						shape: (GDSphereShape new radius: 0.05);
+						translation: 0 @ -0.07 @ 0.05}.
+			GRPointer new
+				handRef: handRef}]
 ]
 
 { #category : #'rendering - simulated' }

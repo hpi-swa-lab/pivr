@@ -40,6 +40,12 @@ GRReact class >> syncHeadAndControllerTransform: aBoolean [
 ]
 
 { #category : #'*Dworphic-Core-preferences' }
+GRReact class >> togglePerformance [
+
+	self syncHeadAndControllerTransform: self syncHeadAndControllerTransform not
+]
+
+{ #category : #'*Dworphic-Core-preferences' }
 GRReact class >> useSimulator [
 	<preference: 'Use Simulator' category: 'GReaSe' description: 'Ignore VR if available and always start simulator' type: #Boolean>
 

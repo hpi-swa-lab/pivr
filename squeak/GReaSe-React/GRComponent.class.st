@@ -197,18 +197,30 @@ GRComponent >> useAreaWithIntersectionFor: aBlock dependencies: aCollection [
 { #category : #hooks }
 GRComponent >> useButtonPress: aPressBlock release: aReleaseBlock axisChange: anAxisBlock side: aSymbol [
 
-	| buttonHandlers ref |
-	buttonHandlers := (self useProvided: #buttonHandlers) get at: aSymbol.
+	| ref evalIfSideCorrect eventReceivers |
+	eventReceivers := self useProvided: #eventReceivers.
+	evalIfSideCorrect := [:block |
+		[:event |
+			(aSymbol isNil or: [event side = aSymbol])
+				ifTrue: [block cull: event]]].
 	ref := self useRef: Dictionary new.
-	ref get at: #onButtonPress put: aPressBlock.
-	ref get at: #onButtonRelease put: aReleaseBlock.
-	ref get at: #onAxisChange put: anAxisBlock.
+	ref get at: #onButtonPress put: (evalIfSideCorrect value: aPressBlock).
+	ref get at: #onButtonRelease put: (evalIfSideCorrect value: aReleaseBlock).
+	ref get at: #onAxisChange put: (evalIfSideCorrect value: anAxisBlock).
 	
 	self
 		useEffect: [
-			buttonHandlers add: ref.
-			[buttonHandlers remove: ref]]
-		dependencies: {}
+			eventReceivers get add: ref.
+			[eventReceivers get remove: ref]]
+		dependencies: #()
+]
+
+{ #category : #hooks }
+GRComponent >> useForceUpdate [
+
+	| n |
+	n := self useState: 0.
+	^ [n set: [:old | old + 1]]
 ]
 
 { #category : #hooks }
@@ -245,6 +257,17 @@ GRComponent >> useProvidedRef: aSymbol [
 GRComponent >> useProvidedRef: aSymbol namespace: anotherSymbol [
 
 	^ CMFCurrentReact value useProvidedRef: aSymbol namespace: anotherSymbol
+]
+
+{ #category : #hooks }
+GRComponent >> useRegisterHand: handRef [
+
+	| handLocks |
+	handLocks := self useProvided: #handLocks.
+	self useEffect: [
+		handLocks get at: handRef put: nil.
+		[handLocks get removeKey: handRef]]
+		dependencies: #()
 ]
 
 { #category : #hooks }

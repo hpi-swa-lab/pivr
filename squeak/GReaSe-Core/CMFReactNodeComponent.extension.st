@@ -15,4 +15,5 @@ CMFReactNodeComponent >> doesNotUnderstand: aMessage [
 		props at: prop put: value.
 		^ self].
 	^ super doesNotUnderstand: aMessage
+
 ]

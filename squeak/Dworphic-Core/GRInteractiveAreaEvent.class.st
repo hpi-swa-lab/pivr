@@ -8,7 +8,9 @@ Class {
 		'grabState',
 		'targetHandlers',
 		'grabRelease',
-		'type'
+		'type',
+		'handRef',
+		'handRef2'
 	],
 	#category : #'Dworphic-Core'
 }
@@ -48,6 +50,30 @@ GRInteractiveAreaEvent >> grabRelease: aClosure [
 GRInteractiveAreaEvent >> grabState: aState [
 
 	grabState := aState
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> handRef [
+
+	^ handRef
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> handRef2 [
+
+	^ handRef2
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> handRef2: aRef [
+
+	handRef2 := aRef
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> handRef: anObject [
+
+	handRef := anObject
 ]
 
 { #category : #'as yet unclassified' }
