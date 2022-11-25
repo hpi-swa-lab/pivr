@@ -35,7 +35,7 @@ GRInteractiveAreaEventAxis >> isStickX [
 { #category : #'as yet unclassified' }
 GRInteractiveAreaEventAxis >> isStickY [
 
-	^ self axis = GDGlobalConstants joyAnalogLx
+	^ self axis = GDGlobalConstants joyAnalogLy
 ]
 
 { #category : #'as yet unclassified' }
