@@ -347,7 +347,8 @@ func apply_prop(instance, key, value):
 		if not instance.has_method(key):
 			print("No method named " + key + " on " + str(instance))
 			return
-		instance.callv(key, deserialize_args(value))
+		if value:
+			instance.callv(key, deserialize_args(value))
 		return
 	
 	if key.begins_with('sqsubcall_'):
