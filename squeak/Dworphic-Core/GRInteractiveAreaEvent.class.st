@@ -16,6 +16,14 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GRInteractiveAreaEvent class >> fake [
+
+	^ GRInteractiveAreaEvent new
+		side: #none;
+		transform: Matrix4x4 identity
+]
+
+{ #category : #'as yet unclassified' }
 GRInteractiveAreaEvent >> acquireGrab: aBlock ifBlocked: anotherBlock [
 
 	grabState set: [:current |

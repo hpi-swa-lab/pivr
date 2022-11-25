@@ -303,6 +303,24 @@ GRMockNode >> tick: aReact updates: aCollection [
 ]
 
 { #category : #utilities }
+GRMockNode >> toggleAX: aBoolean [
+
+	self assert: godotClass = #ARVRController.
+	^ self
+		signal: (aBoolean ifTrue: [#'button_pressed'] ifFalse: [#'button_release'])
+		with: {GDGlobalConstants joyOculusAx}
+]
+
+{ #category : #utilities }
+GRMockNode >> toggleBY: aBoolean [
+
+	self assert: godotClass = #ARVRController.
+	^ self
+		signal: (aBoolean ifTrue: [#'button_pressed'] ifFalse: [#'button_release'])
+		with: {GDGlobalConstants joyOculusBy}
+]
+
+{ #category : #utilities }
 GRMockNode >> toggleGrip: aBoolean [
 
 	self assert: godotClass = #ARVRController.

@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
-	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake |
+	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake startGrab |
 		realReleaseCondition := releaseCondition ifNil: [#selfUnmount].
 		fallbackHandle := self useMemo: [GRReact nextGodotId] dependencies: #().
 		realHandle := handle ifNil: [
@@ -28,13 +28,16 @@ GRDraggableArea >> render: props [
 			ifNone: [nil].
 		isDragged := heldHandRef notNil.
 		
+		startGrab := [:event |
+			acquireHandLock
+				value: event handRef
+				value: realHandle
+				value: [onGrab ifNotNil: [onGrab cull: event]]
+				value: []].
 		endGrab := [:eventOrNil |
 			releaseHandLock value: realHandle.
 			onRelease ifNotNil: [onRelease cull: eventOrNil]].
-		endGrabFake := [
-			endGrab value: (GRInteractiveAreaEvent new
-				side: #none;
-				transform: Matrix4x4 identity)].
+		endGrabFake := [endGrab value: GRInteractiveAreaEvent fake].
 		self useEffect: [
 				realReleaseCondition = #containerUnmount ifTrue: [registerHandleInContainer value: realHandle].
 				
@@ -42,7 +45,9 @@ GRDraggableArea >> render: props [
 			dependencies: #().
 		
 		api ifNotNil: [
-			api at: #endGrab put: [endGrabFake value]].
+			api
+				at: #endGrab put: endGrabFake;
+				at: #startGrab put: startGrab].
 		
 		^ GDSpatial new
 			ref: inPlaceRef;
@@ -50,16 +55,11 @@ GRDraggableArea >> render: props [
 				CMFReactNodePortal
 					child: {
 						GRInteractiveArea new
-							props: (props copyWithoutKeys: #(#handle));
+							props: (props copyWithoutKeys: #(#handle api));
 							exclusiveHandRef: (heldHandRef ifNotNil: [heldHandRef get]);
 							transform: (isDragged ifTrue: [Matrix4x4 identity] ifFalse: [transform ifNil: [currentTransform get]]);
 							onButtonPress: [:event |
-								event isGrip ifTrue: [
-									acquireHandLock
-										value: event handRef
-										value: realHandle
-										value: [onGrab ifNotNil: [onGrab cull: event]]
-										value: []].
+								event isGrip ifTrue: [startGrab value: event].
 								onButtonPress ifNotNil: [onButtonPress cull: event]];
 							onButtonRelease: [:event |
 								onButtonRelease ifNotNil: [onButtonRelease cull: event].
