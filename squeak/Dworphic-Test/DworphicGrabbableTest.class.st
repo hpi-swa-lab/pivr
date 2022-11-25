@@ -319,6 +319,41 @@ DworphicGrabbableTest >> testMakesHandRefExclusive [
 ]
 
 { #category : #tests }
+DworphicGrabbableTest >> testManualRelease [
+
+	| shouldRelease timesCalled |
+	timesCalled := 0.
+	shouldRelease := false.
+	self openComponent: [
+		WorldDworph new children: {[ | api |
+			api := Dictionary new.
+			CMFReact useEffect: [
+				shouldRelease ifTrue: [(api at: #endGrab) value]]
+				dependencies: {shouldRelease}.
+			
+			GRDraggableArea new
+				api: api;
+				onRelease: [timesCalled := timesCalled + 1];
+				children: {
+					GDCollisionShape new
+						shape: GDBoxShape new;
+						name: 'shape'.
+					GDSpatial new}.
+			] asComponent}].
+		
+	self tick: {
+		(godotTree firstNodeNamed: 'shape') parent
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}.
+		(self controllerNode: #left) toggleGrip: true}.
+	shouldRelease := true.
+	self tick.
+	self tick: {(self controllerNode: #left) toggleGrip: false}.
+			
+	self assert: 1 equals: timesCalled.
+]
+
+{ #category : #tests }
 DworphicGrabbableTest >> testOnGrabBegin [
 
 	| grabbed |

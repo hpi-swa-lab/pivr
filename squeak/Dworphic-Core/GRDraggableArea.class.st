@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
-	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform |
+	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake |
 		realReleaseCondition := releaseCondition ifNil: [#selfUnmount].
 		fallbackHandle := self useMemo: [GRReact nextGodotId] dependencies: #().
 		realHandle := handle ifNil: [
@@ -31,16 +31,18 @@ GRDraggableArea >> render: props [
 		endGrab := [:eventOrNil |
 			releaseHandLock value: realHandle.
 			onRelease ifNotNil: [onRelease cull: eventOrNil]].
-		self
-			useEffect: [
+		endGrabFake := [
+			endGrab value: (GRInteractiveAreaEvent new
+				side: #none;
+				transform: Matrix4x4 identity)].
+		self useEffect: [
 				realReleaseCondition = #containerUnmount ifTrue: [registerHandleInContainer value: realHandle].
 				
-				[realReleaseCondition = #selfUnmount ifTrue: [
-					"call with a fake event"
-					endGrab value: (GRInteractiveAreaEvent new
-						side: #none;
-						transform: Matrix4x4 identity)]]]
+				[realReleaseCondition = #selfUnmount ifTrue: [endGrabFake value]]]
 			dependencies: #().
+		
+		api ifNotNil: [
+			api at: #endGrab put: [endGrabFake value]].
 		
 		^ GDSpatial new
 			ref: inPlaceRef;
@@ -61,7 +63,7 @@ GRDraggableArea >> render: props [
 								onButtonPress ifNotNil: [onButtonPress cull: event]];
 							onButtonRelease: [:event |
 								onButtonRelease ifNotNil: [onButtonRelease cull: event].
-								event isGrip ifTrue: [
+								(event isGrip and: isDragged) ifTrue: [
 									currentTransform set: event transform.
 									endGrab value: event]]}
 					in: (heldHandRef ifNil: [inPlaceRef])}]
