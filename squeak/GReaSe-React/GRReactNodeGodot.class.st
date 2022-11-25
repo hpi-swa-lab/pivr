@@ -290,7 +290,7 @@ GRReactNodeGodot >> subscribeCall: aMethodString with: aCollection do: aCallback
 { #category : #accessing }
 GRReactNodeGodot >> subscribeTo: aPropertyNameString do: aCallbackClosure [
 
-	properties at: 'sqsubscribe_', aPropertyNameString put: aCallbackClosure
+	aCallbackClosure ifNotNil: [properties at: 'sqsubscribe_', aPropertyNameString put: aCallbackClosure]
 ]
 
 { #category : #accessing }

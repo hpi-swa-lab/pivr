@@ -41,7 +41,7 @@ GRPointer >> render: props [
 				monitorable: false;
 				collisionLayer: 0;
 				collisionMask: GRInteractiveArea pointLayer;
-				onAreaEntered: [:area | Transcript showln: 'overlapping ', area. overlappingAreas set: [:old | old copyWith: area]];
+				onAreaEntered: [:area | overlappingAreas set: [:old | old copyWith: area]];
 				onAreaExited: [:area | overlappingAreas set: [:old | old copyRemove: area]];
 				rotation: Float pi / 2 @ 0 @ 0;
 				translation: 0 @ 0 @ -1.5;

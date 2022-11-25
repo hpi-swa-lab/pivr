@@ -81,6 +81,15 @@ WorldDworph >> provideInteractivity [
 ]
 
 { #category : #rendering }
+WorldDworph >> provideTextFocus [
+	<provider>
+
+	| textFocus |
+	textFocus := self useState: GRTextFocus none.
+	^ {#textFocus -> textFocus}
+]
+
+{ #category : #rendering }
 WorldDworph >> render: props [
 
 	| apps worldPortalRef head left right children provided headPortalRef |

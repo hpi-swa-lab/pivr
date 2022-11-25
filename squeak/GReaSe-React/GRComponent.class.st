@@ -307,6 +307,15 @@ GRComponent >> useSceneInstance: aScenePath [
 ]
 
 { #category : #hooks }
+GRComponent >> useUpdatingRef: anObject [
+
+	| ref |
+	ref := self useRef: nil.
+	ref set: anObject.
+	^ ref
+]
+
+{ #category : #hooks }
 GRComponent >> useViewportTextureContaining: aCollectionofNodes size: aPoint [
 
 	| viewportTex |

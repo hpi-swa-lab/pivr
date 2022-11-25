@@ -61,7 +61,7 @@ CMFHostConfigGodot >> diffPropsFrom: anOldNode to: aNewNode [
 									ifTrue: [old = new ifFalse: [changes at: key put: (GRBlockReplace new id: (callbacks idFor: old block) block: new block)]]
 									ifFalse: [(new isGodotNode not and: [(old grEqual: new) not]) ifTrue: [changes at: key put: new]]]].
 					"did some properties disappear?"
-					newProps size = oldProps size ifFalse: [oldProps keysDo: [:key | (newProps includesKey: key) ifFalse: [changes at: key put: nil]]]]
+					oldProps keysDo: [:key | (newProps includesKey: key) ifFalse: [changes at: key put: nil]]]
 				ifNil: ["all removed"
 				oldProps keysDo: [:key | changes at: key put: nil]].
 			changes ifEmpty: [nil]]

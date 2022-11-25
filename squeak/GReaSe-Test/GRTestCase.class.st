@@ -76,6 +76,18 @@ GRTestCase >> openComponentBlock: aBlockOrClass [
 ]
 
 { #category : #'as yet unclassified' }
+GRTestCase >> pointerCollider: aSideSymbol [
+
+	^ GRObjectId new objectId: (self pointerNode: aSideSymbol) path
+]
+
+{ #category : #'as yet unclassified' }
+GRTestCase >> pointerNode: aSymbol [
+
+	^ (self controllerNode: aSymbol) firstNodeThat: [:node | node godotClass = #Area and: [(node properties includesKey: #'collision_mask') and: [(node properties at: #'collision_mask') = GRInteractiveArea pointLayer]]]
+]
+
+{ #category : #'as yet unclassified' }
 GRTestCase >> remoteCalls [
 
 	^ react hostConfig session calls

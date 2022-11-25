@@ -156,7 +156,19 @@ GRMockNode >> godotClass: aClass [
 { #category : #accessing }
 GRMockNode >> hasParent: aNode [
 
-	self parentsDo: [:p | p = aNode ifTrue: [^ true]].
+	^ self hasParentThat: [:p | p = aNode]
+]
+
+{ #category : #accessing }
+GRMockNode >> hasParentNamed: aString [
+
+	^ self hasParentThat: [:p | p name = aString]
+]
+
+{ #category : #accessing }
+GRMockNode >> hasParentThat: aBlock [
+
+	self parentsDo: [:p | (aBlock value: p) ifTrue: [^ true]].
 	^ false
 ]
 

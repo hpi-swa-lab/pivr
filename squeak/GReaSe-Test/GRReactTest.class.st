@@ -554,6 +554,23 @@ GRReactTest >> testUnregistersCallbacks [
 ]
 
 { #category : #tests }
+GRReactTest >> testUpdateCall [
+
+	| update |
+	update := false.
+	self openComponent: [ | b |
+		b := self godot: #Button.
+		update
+			ifTrue: [b call: 'grab_acquire' arguments: #()]
+			ifFalse: [b call: 'grab_release' arguments: #()].
+		b].
+	self assert: #() equals: ((godotTree firstNodeOfType: #Button) properties at: 'sqcall_grab_release').
+	update := true.
+	self tick.
+	self assert: nil equals: ((godotTree firstNodeOfType: #Button) properties at: 'sqcall_grab_release')
+]
+
+{ #category : #tests }
 GRReactTest >> testUseEffectNoDependencies [
 
 	| runs |
