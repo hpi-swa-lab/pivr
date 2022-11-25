@@ -35,7 +35,7 @@ GRDraggableArea >> render: props [
 			useEffect: [
 				realReleaseCondition = #containerUnmount ifTrue: [registerHandleInContainer value: realHandle].
 				
-				[realReleaseCondition = #selfUnmount ifTrue: [endGrab value]]]
+				[realReleaseCondition = #selfUnmount ifTrue: [endGrab value: nil]]]
 			dependencies: #().
 		
 		^ GDSpatial new
