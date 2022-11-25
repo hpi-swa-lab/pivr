@@ -51,7 +51,7 @@ GRRay >> intersectSphere: sphereOrigin radius: sphereRadius [
 	q := (oMinC dot: oMinC) - (sphereRadius * sphereRadius).
 	
 	discriminant := p * p - q.
-	discriminant < 0 ifTrue: [^ {}].
+	discriminant < 0 ifTrue: [^ nil].
 	
 	dRoot := discriminant sqrt.
 	^ q < 0
