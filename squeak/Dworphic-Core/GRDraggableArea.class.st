@@ -35,7 +35,11 @@ GRDraggableArea >> render: props [
 			useEffect: [
 				realReleaseCondition = #containerUnmount ifTrue: [registerHandleInContainer value: realHandle].
 				
-				[realReleaseCondition = #selfUnmount ifTrue: [endGrab value: nil]]]
+				[realReleaseCondition = #selfUnmount ifTrue: [
+					"call with a fake event"
+					endGrab value: (GRInteractiveAreaEvent new
+						side: #none;
+						transform: Matrix4x4 identity)]]]
 			dependencies: #().
 		
 		^ GDSpatial new
