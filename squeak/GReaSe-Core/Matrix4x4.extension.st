@@ -4,7 +4,7 @@ Extension { #name : #Matrix4x4 }
 Matrix4x4 >> forwardRay [
 
 	| direction |
-	direction := (self translatedBy: self translation negated) transform: 0 @ 0 @ -1.
+	direction := self orientation transform: 0 @ 0 @ -1.
 	^ GRRay origin: self translation direction: direction normalized
 ]
 
@@ -18,6 +18,30 @@ Matrix4x4 >> grEqual: anObject [
 Matrix4x4 >> localTranslatedBy: aVector3 [
 
 	^ self * (self class withOffset: aVector3)
+]
+
+{ #category : #'*GReaSe-Core-override' }
+Matrix4x4 class >> lookAt: center from: eye up: up [
+
+	| forward sideward upward |
+	"Build a right-handed look at view matrix. The camera is positioned at eye, looks at center, and is positioned in a world where up points upwards in world space. Up is expected to be normalized already."
+	forward := (eye - center) normalized.
+	sideward := (up cross: forward) normalized.
+	upward := forward cross: sideward.
+	^ self identity
+		a11: sideward x;
+		a21: sideward y;
+		a31: sideward z;
+		a12: upward x;
+		a22: upward y;
+		a32: upward z;
+		a13: forward x;
+		a23: forward y;
+		a33: forward z;
+		a14: eye x;
+		a24: eye y;
+		a34: eye z;
+		yourself
 ]
 
 { #category : #'*GReaSe-Core' }

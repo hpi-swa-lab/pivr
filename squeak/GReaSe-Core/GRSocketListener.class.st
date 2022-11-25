@@ -171,8 +171,6 @@ GRSocketListener class >> readVariantFrom: aStream [
 				y: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
 				z: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))].
 		[13] -> [
-			self flag: #todo.
-			"is the rotation in the right order? translation is correct"
 			Matrix4x4 new
 				a11: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
 				a12: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));

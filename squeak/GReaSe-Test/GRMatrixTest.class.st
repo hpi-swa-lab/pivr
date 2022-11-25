@@ -34,7 +34,7 @@ GRMatrixTest >> testForwardRayRotateZ [
 { #category : #'as yet unclassified' }
 GRMatrixTest >> testTransformWithAngle [
 
-	self assert: (((Matrix4x4 withRotation: 90 around: 1 @ 0 @ 0) transform: 0 @ 1 @ 0) distanceTo: 0 @ 0 @ 1) < 0.01
+	self assert: (((Matrix4x4 withRotation: 90 around: 1 @ 0 @ 0) transform: 0 @ -1 @ 0) distanceTo: 0 @ 0 @ -1) < 0.01
 ]
 
 { #category : #'as yet unclassified' }

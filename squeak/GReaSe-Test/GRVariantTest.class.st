@@ -5,12 +5,6 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
-GRVariantTest >> expectedFailures [
-
-	^ #(#testTransform)
-]
-
-{ #category : #'as yet unclassified' }
 GRVariantTest >> testArrayWithStrings [
 	" Godot: {'a': 'b'} "
 
@@ -92,5 +86,31 @@ GRVariantTest >> testTransform [
 	
 	"Transform(Basis(Vector3(0, 1, 0), PI), Vector3(0, 0, 0))"
 	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 0 0 128 191 0 0 0 0 46 189 187 179 0 0 0 0 0 0 128 63 0 0 0 0 46 189 187 51 0 0 0 0 0 0 128 191 0 0 0 0 0 0 0 0 0 0 0 0] readStream.
-	self assert: (matrix rotation closeTo: 0 @ 180 @ 0)
+	matrix forwardRay.
+	self assert: (matrix forwardRay direction closeTo: 0 @ 0 @ 1)
+]
+
+{ #category : #'as yet unclassified' }
+GRVariantTest >> testTransformSerialize [
+
+	| matrix bytes |
+	"Transform().looking_at(Vector3(1, 2, 3), Vector3(0, 1, 0)).translated(Vector3(0, 0, -0.5))"
+	bytes := #[13 0 0 0 233 220 114 191 109 22 45 190 119 214 136 190 0 0 0 0 7 92 88 63 119 214 8 191 156 232 161 62 210 208 1 191 178 65 77 191 119 214 8 62 119 214 136 62 178 65 205 62].
+	matrix := GRSocketListener readVariantFrom: bytes readStream.
+	self assert: bytes equals: (ByteArray streamContents: [:s | matrix putVariantOn: s])
+]
+
+{ #category : #'as yet unclassified' }
+GRVariantTest >> testTransformTranslated [
+
+	| matrix reference |
+	"Transform().looking_at(Vector3(1, 2, 3), Vector3(0, 1, 0))"
+	reference := Matrix4x4 lookAt: 1 @ 2 @ 3 from: 0 @ 0 @ 0 up: 0 @ 1 @ 0.
+	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 233 220 114 191 109 22 45 190 119 214 136 190 0 0 0 0 7 92 88 63 119 214 8 191 156 232 161 62 210 208 1 191 178 65 77 191 0 0 0 0 0 0 0 0 0 0 0 0] readStream.
+	reference with: matrix do: [:a :b | self assert: (a - b) abs < 0.01].
+	
+	"Transform().looking_at(Vector3(1, 2, 3), Vector3(0, 1, 0)).translated(Vector3(0, 0, -0.5))"
+	reference := reference localTranslatedBy: 0 @ 0 @ -0.5.
+	matrix := GRSocketListener readVariantFrom: #[13 0 0 0 233 220 114 191 109 22 45 190 119 214 136 190 0 0 0 0 7 92 88 63 119 214 8 191 156 232 161 62 210 208 1 191 178 65 77 191 119 214 8 62 119 214 136 62 178 65 205 62] readStream.
+	reference with: matrix do: [:a :b | self assert: (a - b) abs < 0.01]
 ]
