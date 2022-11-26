@@ -65,12 +65,10 @@ DworphicTextInputTest >> testOpensKeyboardOnFocus [
 	self tick: {
 		(godotTree firstNodeWithProp: 'sqsubscribe_rect_size')
 			subscribe: 'rect_size'
-			set: 100 @ 50.
+			set: {100. 50}.
 		(godotTree firstNodeThat: [:n | (n properties includesKey: 'sqsubscribe_global_transform') and: [n godotClass = #MeshInstance]])
 			subscribe: 'global_transform'
 			set: (Matrix4x4 withOffset: 20 @ 10 @ 0)}.
 	self shouldnt: shiftKey raise: Error.
-	self
-		assert: (Matrix4x4 withOffset: 20 @ 11 @ 0)
-		equals: ((shiftKey value parentOfType: #Area) parentOfType: #Area) transform
+	self assert: ((Matrix4x4 withOffset: 20 @ 9.9 @ 0.05) translation closeTo: ((shiftKey value parentOfType: #Area) parentOfType: #Area) transform translation)
 ]

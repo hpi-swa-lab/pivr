@@ -45,7 +45,7 @@ Avatar >> render: props [
 	renderController := self useRenderController.
 	
 	self
-		useEffect: [
+		useSingletonEffect: [
 			GRReact useSimulator ifTrue: [vrSupported set: false] ifFalse: [
 				(GDARVRServer instance findInterfaceName: 'OpenXR')
 					ifNil: [vrSupported set: false]

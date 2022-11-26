@@ -42,7 +42,7 @@ VirtualKeyboardDworph >> render: props [
 	
 	^ focus notNone ifTrue: [
 		(self methodAsComponent: #renderKeyboard:)
-			transform: focus textAreaBottomCenter;
+			transform: (focus textAreaBottomCenter localTranslatedBy: 0 @ -20 cm @ 5 cm);
 			onTextEntered: focus textEnteredCallback]
 ]
 
