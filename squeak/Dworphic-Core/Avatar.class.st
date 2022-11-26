@@ -202,11 +202,11 @@ Avatar >> renderSimulated: props [
 { #category : #'rendering - simulated' }
 Avatar >> renderSimulatedController: props [
 
-	| handPortal handArea handIsFree pressedButtons axes handlers |
+	| handPortal controllerRef handIsFree pressedButtons axes handlers renderHand |
 	handIsFree := self useState: true.
 	pressedButtons := self useState: {}.
 	handPortal := self useRef: nil.
-	handArea := self useGodotRef.
+	controllerRef := self useGodotRef.
 	axes := {
 		{GDGlobalConstants joyVrTrigger. #trigger}.
 		{GDGlobalConstants joyVrGrip. #grip}.
@@ -215,32 +215,27 @@ Avatar >> renderSimulatedController: props [
 		state := self useState: 0.0.
 		axis, {state}].
 	
-	handlers := self
-		useActiveEventHandlersFor: handArea
-		side: (props at: #side)
-		transform: (props at: #transform)
-		controller: handPortal
-		type: #touch.
+	handlers := self useState: (#(#onButtonPress #onButtonRelease #onAxisChange)
+		collect: [:symbol | symbol -> [:x | self error: 'No handler set for ', symbol]]
+		as: Dictionary).
+	
+	renderHand := self useRenderHand.
 	
 	^ GDSpatial new
+		ref: controllerRef;
 		transform: (props at: #transform);
 		children: {
-			GDArea new
-				collisionMask: GRInteractiveArea touchLayer;
-				children: {
-					GDCollisionShape new shape: (GDSphereShape new
-						margin: 0.001;
-						radius: 0.01)};
-				ref: handArea.
-			GDSpatial new ref: handPortal.
-			GDMeshInstance new mesh: (GDSphereMesh new
-				radius: 0.01;
-				height: 0.02;
-				material: (GDSpatialMaterial new albedoColor: (Color r: 1 g: 0.0 b: 0.0))).
+			renderHand value
+				handRef: controllerRef;
+				setHandlers: handlers setter;
+				side: (props at: #side);
+				transform: (props at: #transform).
 			(props at: #active)
 				ifTrue: [
 					(self methodAsComponent: #renderSimulatedControllerControls:)
 						setControllerTransform: (props at: #setTransform);
+						side: (props at: #side);
+						transform: (props at: #transform);
 						handlers: handlers]
 				ifFalse: [nil]}
 ]
@@ -251,8 +246,8 @@ Avatar >> renderSimulatedControllerControls: props [
 	| ref controllerTransform press release |
 	controllerTransform := props at: #setControllerTransform.
 	ref := self useGodotRef.
-	press := (props at: #handlers) at: #onButtonPress.
-	release := (props at: #handlers) at: #onButtonRelease.
+	press := (props at: #handlers) get at: #onButtonPress.
+	release := (props at: #handlers) get at: #onButtonRelease.
 	
 	^ GDSpatial new
 		ref: ref;
@@ -265,8 +260,16 @@ Avatar >> renderSimulatedControllerControls: props [
 						do: [:point | controllerTransform value: (Matrix4x4 withOffset: point)]];
 				onKeyboard: [:pressed :scanCode :key | | cb |
 					cb := pressed ifTrue: [press] ifFalse: [release].
-					scanCode = GDGlobalConstants keySpace ifTrue: [cb value: GDGlobalConstants joyVrGrip].
-					scanCode = GDGlobalConstants keyTab ifTrue: [cb value: GDGlobalConstants joyVrTrigger].
+					scanCode = GDGlobalConstants keySpace ifTrue: [
+						cb value: (GRInteractiveAreaEventButton new
+							side: (props at: #side);
+							transform: (props at: #transform);
+							button: GDGlobalConstants joyVrGrip)].
+					scanCode = GDGlobalConstants keyTab ifTrue: [
+						cb value: (GRInteractiveAreaEventButton new
+							side: (props at: #side);
+							transform: (props at: #transform);
+							button: GDGlobalConstants joyVrTrigger)].
 					
 					(self directionFromScancode: scanCode) ifNotNil: [:dir | controllerTransform value: [:o | o translatedBy: dir * 0.03]]]}
 ]

@@ -14,5 +14,5 @@ TextDemoDworph class >> appDescription [
 { #category : #'as yet unclassified' }
 TextDemoDworph >> render: props [
 
-	^ {TextInputDworph new. TextInputDworph new}
+	^ {TextInputDworph new}
 ]
