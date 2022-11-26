@@ -3,9 +3,9 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'textEnteredCallback',
-		'textAreaTopLeft',
 		'cursorTransform',
-		'textAreaExtent'
+		'textAreaExtent',
+		'textAreaCenter'
 	],
 	#category : #'GReaSe-Core'
 }
@@ -14,15 +14,6 @@ Class {
 GRTextFocus class >> none [
 
 	^ self new
-]
-
-{ #category : #'as yet unclassified' }
-GRTextFocus class >> textAreaTopLeft: aTranform extent: aPoint cursor: aTransform [
-
-	^ self new
-		textAreaTopLeft: aTranform;
-		textAreaExtent: aPoint;
-		cursorTransform: aTransform
 ]
 
 { #category : #'as yet unclassified' }
@@ -43,9 +34,33 @@ GRTextFocus >> initialize [
 	super initialize.
 	
 	textAreaExtent := 0 @ 0.
-	textAreaTopLeft := Matrix4x4 identity.
+	textAreaCenter := Matrix4x4 identity.
 	cursorTransform := Matrix4x4 identity.
-	textEnteredCallback := [:text | ]
+	textEnteredCallback := nil
+]
+
+{ #category : #'as yet unclassified' }
+GRTextFocus >> notNone [
+
+	^ textEnteredCallback notNil
+]
+
+{ #category : #'as yet unclassified' }
+GRTextFocus >> textAreaBottomCenter [
+
+	^ self textAreaCenter localTranslatedBy: 0 @ self textAreaExtent y
+]
+
+{ #category : #'as yet unclassified' }
+GRTextFocus >> textAreaCenter [
+
+	^ textAreaCenter
+]
+
+{ #category : #'as yet unclassified' }
+GRTextFocus >> textAreaCenter: aTransform [
+
+	textAreaCenter := aTransform
 ]
 
 { #category : #'as yet unclassified' }
@@ -63,13 +78,7 @@ GRTextFocus >> textAreaExtent: aPoint [
 { #category : #'as yet unclassified' }
 GRTextFocus >> textAreaTopLeft [
 
-	^ textAreaTopLeft
-]
-
-{ #category : #'as yet unclassified' }
-GRTextFocus >> textAreaTopLeft: aTransform [
-
-	textAreaTopLeft := aTransform
+	^ textAreaCenter localTranslatedBy: textAreaExtent / 2 @ 0
 ]
 
 { #category : #'as yet unclassified' }

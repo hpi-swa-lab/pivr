@@ -76,6 +76,14 @@ GRTestCase >> openComponentBlock: aBlockOrClass [
 ]
 
 { #category : #'as yet unclassified' }
+GRTestCase >> pointAndTrigger: aNode [
+
+	^ {
+		aNode signal: #'area_entered' with: {self pointerCollider: #right}.
+		(self controllerNode: #right) toggleTrigger: true}
+]
+
+{ #category : #'as yet unclassified' }
 GRTestCase >> pointerCollider: aSideSymbol [
 
 	^ GRObjectId new objectId: (self pointerNode: aSideSymbol) path

@@ -40,7 +40,7 @@ TextInputDworph >> render: props [
 					caretPosition: cursor get;
 					subscribeTo: #'rect_size' do: [:size |
 						extent set: size.
-						hasFocus ifTrue: [textFocus set: [:t | t copy textAreaExtent: size]]];
+						hasFocus ifTrue: [textFocus set: [:t | t copy textAreaExtent: size * self pixelToMeter]]];
 					call: (hasFocus ifTrue: ['grab_focus'] ifFalse: ['release_focus']) arguments: #());
 				meshDo: [:material |
 					GDMeshInstance new
@@ -48,5 +48,5 @@ TextInputDworph >> render: props [
 							size: extent get * self pixelToMeter;
 							material: material);
 						subscribeTo: #'global_transform'
-							do: (hasFocus ifTrue: [[:transform | textFocus set: [:t | t copy textAreaTopLeft: transform]]])]}
+							do: (hasFocus ifTrue: [[:transform | textFocus set: [:t | t copy textAreaCenter: transform]]])]}
 ]

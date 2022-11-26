@@ -123,6 +123,12 @@ GRMockNode >> firstNodeThat: aBlock [
 	self error: 'no node found'
 ]
 
+{ #category : #accessing }
+GRMockNode >> firstNodeWithProp: aString [
+
+	^ self firstNodeThat: [:n | n properties includesKey: aString]
+]
+
 { #category : #internal }
 GRMockNode >> getNodeForPath: aPath [
 
@@ -218,6 +224,12 @@ GRMockNode >> parent [
 GRMockNode >> parent: aNode [
 
 	parent := aNode
+]
+
+{ #category : #accessing }
+GRMockNode >> parentOfType: aSymbol [
+
+	^ self parent orParentOfType: aSymbol
 ]
 
 { #category : #accessing }

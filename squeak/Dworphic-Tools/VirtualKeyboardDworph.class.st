@@ -37,34 +37,13 @@ VirtualKeyboardDworph >> layout: aBool [
 { #category : #'as yet unclassified' }
 VirtualKeyboardDworph >> render: props [
 
-	| layout shiftPressed |
-	shiftPressed := self useState: false.
-	layout := self layout: shiftPressed get.
+	| focus |
+	focus := (self useProvided: #textFocus) get.
 	
-	^ GRGrabbableArea new children: {
-		(self
-			cubeOfSize: (layout collect: #size) max * self keySize @ (layout size * self keySize) @ 0.01
-			color: (Color r: 0.37 g: 0.37 b: 0.37)) children: {
-			GDSpatial new
-				translation: (layout collect: #size) max - 1 * self keySize / -2 @ (self keySize / -2 * (layout size + 1)) @ 0;
-				children: (layout withIndexCollect: [:row :rowIndex |
-					row asOrderedCollection withIndexCollect: [:letter :columnIndex | | keyCode |
-						keyCode := GDGlobalConstants perform: ('key{1}' format: {letter}) asSymbol.
-						(self methodAsComponent: #renderKey:)
-							key: letter;
-							letter: (self scancodeName: keyCode);
-							position: columnIndex - 1 @ (layout size - (rowIndex - 1));
-							onPressed: [
-								keyCode = GDGlobalConstants keyShift
-									ifTrue: [shiftPressed set: shiftPressed not]
-									ifFalse: [
-										self sendKeyEvent: [:ev |
-											ev
-												scancode: keyCode;
-												pressed: true;
-												shift: shiftPressed get].
-										shiftPressed set: false.
-										Transcript showln: letter]]]])}}
+	^ focus notNone ifTrue: [
+		(self methodAsComponent: #renderKeyboard:)
+			transform: focus textAreaBottomCenter;
+			onTextEntered: focus textEnteredCallback]
 ]
 
 { #category : #'as yet unclassified' }
@@ -89,6 +68,36 @@ VirtualKeyboardDworph >> renderKey: props [
 				pixelSize: 0.001.
 			GDCollisionShape new shape: (GDBoxShape new extents: self keySize asPoint / 2 @ 0.01)};
 		translation: (props at: #position) @ 0 * self keySize
+]
+
+{ #category : #'as yet unclassified' }
+VirtualKeyboardDworph >> renderKeyboard: props [
+
+	| layout shiftPressed |
+	shiftPressed := self useState: false.
+	layout := self layout: shiftPressed get.
+	
+	^ GRGrabbableArea new
+		transform: (props at: #transform);
+		children: {
+			(self
+				cubeOfSize: (layout collect: #size) max * self keySize @ (layout size * self keySize) @ 0.01
+				color: (Color r: 0.37 g: 0.37 b: 0.37)) children: {
+				GDSpatial new
+					translation: (layout collect: #size) max - 1 * self keySize / -2 @ (self keySize / -2 * (layout size + 1)) @ 0;
+					children: (layout withIndexCollect: [:row :rowIndex |
+						row asOrderedCollection withIndexCollect: [:letter :columnIndex | | keyCode |
+							keyCode := GDGlobalConstants perform: ('key{1}' format: {letter}) asSymbol.
+							(self methodAsComponent: #renderKey:)
+								key: letter;
+								letter: (self scancodeName: keyCode);
+								position: columnIndex - 1 @ (layout size - (rowIndex - 1));
+								onPressed: [
+									keyCode = GDGlobalConstants keyShift
+										ifTrue: [shiftPressed set: shiftPressed not]
+										ifFalse: [
+											(props at: #onTextEntered) get value: letter.
+											shiftPressed set: false]]]])}}
 ]
 
 { #category : #'as yet unclassified' }
