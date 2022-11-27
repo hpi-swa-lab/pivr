@@ -81,6 +81,14 @@ WorldDworph >> provideInteractivity [
 ]
 
 { #category : #rendering }
+WorldDworph >> provideResourceCache [
+
+	| cache |
+	cache := self useRef: Dictionary new.
+	^ {#resoureCache -> cache get}
+]
+
+{ #category : #rendering }
 WorldDworph >> provideTextFocus [
 	<provider>
 
@@ -127,5 +135,17 @@ WorldDworph >> render: props [
 				setRight: right setter;
 				setHead: head setter;
 				worldPortalRef: headPortalRef.
-			GDSpatial new ref: worldPortalRef}, children, (apps get collect: [:appDescription | appDescription buildComponent key: appDescription])
+			GDSpatial new ref: worldPortalRef}, children, (self renderApps: apps get)
+]
+
+{ #category : #rendering }
+WorldDworph >> renderApps: apps [
+
+	| environmentApp regularApps |
+	environmentApp := ((apps select: [:app | app rendersEnvironment]) detectMax: [:p | p priority])
+		ifNotNil: [:a | {a}]
+		ifNil: [{}].
+	regularApps := apps reject: [:app | app rendersEnvironment].
+	
+	^ regularApps, environmentApp collect: [:appDescription | appDescription buildComponent key: appDescription]
 ]

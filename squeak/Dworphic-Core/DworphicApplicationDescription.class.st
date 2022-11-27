@@ -9,7 +9,8 @@ Class {
 		'render',
 		'priority',
 		'renderHand',
-		'renderController'
+		'renderController',
+		'rendersEnvironment'
 	],
 	#classVars : [
 		'NextId'
@@ -39,7 +40,9 @@ DworphicApplicationDescription >> hasRenderHand [
 DworphicApplicationDescription >> initialize [
 
 	id := NextId ifNil: [NextId := 0] ifNotNil: [NextId := NextId + 1].
-	properties := Dictionary new
+	properties := Dictionary new.
+	priority := 0.
+	rendersEnvironment := false
 ]
 
 { #category : #'as yet unclassified' }
@@ -100,4 +103,22 @@ DworphicApplicationDescription >> renderHand [
 DworphicApplicationDescription >> renderHand: aBlock [
 
 	renderHand := aBlock
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> rendersEnvironment [
+
+	^ rendersEnvironment
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> rendersEnvironment: aBoolean [
+
+	rendersEnvironment := aBoolean
+]
+
+{ #category : #'as yet unclassified' }
+DworphicApplicationDescription >> toolPriority [
+
+	priority := -1
 ]

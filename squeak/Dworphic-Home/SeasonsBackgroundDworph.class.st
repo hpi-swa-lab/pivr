@@ -8,6 +8,15 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+SeasonsBackgroundDworph class >> appDescription [
+	<home>
+
+	^ super appDescription
+		toolPriority;
+		rendersEnvironment: true
+]
+
+{ #category : #'as yet unclassified' }
 SeasonsBackgroundDworph >> autumn [
 
 	| r |
