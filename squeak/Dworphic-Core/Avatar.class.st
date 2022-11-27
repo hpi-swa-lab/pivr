@@ -140,7 +140,7 @@ Avatar >> renderController: props [
 { #category : #'rendering - vr' }
 Avatar >> renderHand: props [
 
-	props extract: [:side :reset :setHandlers :handRef || handMesh eventReceivers |
+	props extract: [:side :setHandlers :handRef || handMesh eventReceivers |
 		handMesh := self useHandMesh.
 		eventReceivers := self useProvided: #eventReceivers.
 		self useEffect: [

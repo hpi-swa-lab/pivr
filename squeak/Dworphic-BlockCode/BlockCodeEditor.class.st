@@ -26,7 +26,7 @@ BlockCodeEditor >> render: props [
 	forceUpdate := self useForceUpdate.
 	
 	self
-		useEffect: [ | block |
+		useSingletonEffect: [ | block |
 			editor get openInWindow.
 			
 			"for testing purposes"
@@ -73,4 +73,27 @@ BlockCodeEditor >> render: props [
 								stream nextPut: (sandblock asCodeBlock
 									layoutParams: (props at: #layoutParams);
 									translation: Vector3 zero)]])})
+]
+
+{ #category : #'as yet unclassified' }
+BlockCodeEditor >> renderUpdater: props [
+
+	^ props extract: [:editor | | updating value |
+		updating := self useState: false.
+		self
+			useButtonPress: [:e | e isBY ifTrue: [updating set: true]]
+			release: [:e | e isBY ifTrue: [updating set: false]]
+			axisChange: [:e | ]
+			side: #right.
+		value := ((self useProvided: #rightControllerTransform) translation y
+			mapFromLow: 0
+			high: 2
+			toLow: 30
+			high: 100) asInteger.
+		self
+			useEffect: [
+				updating get ifTrue: [
+					editor selection contents: value asString.
+					editor save]]
+			dependencies: {editor selection. updating get. value}]
 ]

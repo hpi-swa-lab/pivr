@@ -52,6 +52,7 @@ CodeBlock >> renderBlock: props [
 				ifFalse: [Matrix4x4 withOffset: (self computeTranslationFrom: layoutParams block: sandblock)]);
 			onHover: [isHovered set: true];
 			onBlur: [isHovered set: false];
+			onButtonPress: [:e | e isTrigger ifTrue: [sandblock select]];
 			onGrab: [
 				do value: (SBCombinedCommand newWith: {
 					sandblock parentSandblock deleteCommandFor: sandblock.
