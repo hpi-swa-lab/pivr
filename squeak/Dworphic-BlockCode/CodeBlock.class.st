@@ -92,9 +92,39 @@ CodeBlock >> renderBlock: props [
 ]
 
 { #category : #'as yet unclassified' }
+CodeBlock >> renderPopoutArea: props [
+
+	| offset translation radius coneDiameterAndHeight |
+	translation := props at: #translation.
+	offset := 5cm.
+	radius := 2cm.
+
+	coneDiameterAndHeight := self useMemo: [ | coneAngle coneDiameter coneHeight coneSideLength |
+		coneSideLength := (offset squared - radius squared) sqrt.
+		coneAngle := (radius / offset) arcSin * 2.
+		coneDiameter := (2 * coneSideLength squared * (1 - (coneAngle cos))) sqrt.
+		coneHeight := (coneSideLength squared - (coneDiameter squared / 4)) sqrt.
+		{coneDiameter. coneHeight}]
+		dependencies: #(offset radius).
+	
+	^ {
+		(self sphereOfRadius: radius color: Color lightBlue)
+			translation: translation + (0 @ 0 @ offset).
+		GDMeshInstance new
+			mesh: (GDCylinderMesh new
+				bottomRadius: 0;
+				topRadius: coneDiameterAndHeight first / 2;
+				height: coneDiameterAndHeight second;
+				material: (GDSpatialMaterial new
+					albedoColor: Color lightBlue));
+			rotation: Float pi / 2 @ 0 @ 0;
+			translation: translation + (0 @ 0 @ (coneDiameterAndHeight second / 2))}
+]
+
+{ #category : #'as yet unclassified' }
 CodeBlock >> renderUnknown: props [
 
-	props extract: [:sandblock :layoutParams :translation | | areaRef registerDropArea unregisterDropArea | 
+	props extract: [:sandblock :layoutParams | | areaRef registerDropArea unregisterDropArea translation | 
 		registerDropArea := self useProvided: #registerDropArea.
 		unregisterDropArea := self useProvided: #unregisterDropArea.
 		areaRef := self useGodotRef.
@@ -102,6 +132,8 @@ CodeBlock >> renderUnknown: props [
 			registerDropArea value: areaRef value: sandblock.
 			[unregisterDropArea value: areaRef]]
 			dependencies: {sandblock}.
+
+		translation := self computeTranslationFrom: layoutParams block: sandblock.		
 		
 		^ GDArea new
 			ref: areaRef;
@@ -110,7 +142,9 @@ CodeBlock >> renderUnknown: props [
 			children: {
 				(self cubeOfSize: 1 color: Color blue)
 					scale: (self scale: props);
-					translation: (self computeTranslationFrom: layoutParams block: sandblock)}]
+					translation: translation.
+				(self methodAsComponent: #renderPopoutArea:)
+					translation: translation}]
 ]
 
 { #category : #'as yet unclassified' }

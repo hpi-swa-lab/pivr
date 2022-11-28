@@ -112,6 +112,23 @@ GRComponent >> sendKeyEvent: aBlock [
 		GDInput instance parseInputEvent: inputEvent]
 ]
 
+{ #category : #helpers }
+GRComponent >> sphereOfRadius: aNumber color: aColor [
+
+	^ GDCollisionShape new
+		shape: (GDSphereShape new radius: aNumber);
+		children: {self sphereVisualOfRadius: aNumber color: aColor}
+]
+
+{ #category : #helpers }
+GRComponent >> sphereVisualOfRadius: aNumber color: aColor [
+
+	^ GDMeshInstance new mesh: (GDSphereMesh new
+		radius: aNumber;
+		height: aNumber * 2;
+		material: (GDSpatialMaterial new albedoColor: aColor))
+]
+
 { #category : #hooks }
 GRComponent >> useActiveEventHandlersFor: areaRef side: aSymbol transform: aMatrix controller: controllerRef type: aTypeSymbol [
 
