@@ -19,14 +19,15 @@ AppControl >> render: props [
 	transform := self useState: (Matrix4x4 withOffset: 0 @ 1.2 @ -1.2).
 	head := self useProvidedRef: #headTransform.
 	
-	self useVoiceIntent: 'show' do: [
+	self useVoiceIntents: {
+		'show' -> [
 		shown set: true.
 		transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)].
-	
-	self useVoiceIntent: 'hide' do: [
+		'hide' -> [
 		shown set: false.
-		transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)].
-	
+		transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)]
+	} key: 'applications'.
+
 	self
 		useButtonPress: [:e |
 			e button = GDGlobalConstants joyOculusAx ifTrue: [
