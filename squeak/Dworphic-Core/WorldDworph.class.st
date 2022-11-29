@@ -149,3 +149,22 @@ WorldDworph >> renderApps: apps [
 	
 	^ regularApps, environmentApp collect: [:appDescription | appDescription buildComponent key: appDescription]
 ]
+
+{ #category : #rendering }
+WorldDworph >> renderSplitscreen: props [
+
+	" draft for enabling splitscreen rendering, for example when trying to show VR from both 1st and 3rd person on a PC "
+	| viewportRef |
+	viewportRef := self useGodotRef.
+	^ GDMarginContainer new anchorRight: 1; anchorBottom: 1; children: {GDGridContainer new columns: 2; children: {
+			GDViewportContainer new stretch: true; sizeFlagsHorizontal: GDControl sizeExpandFill; sizeFlagsVertical: GDControl sizeExpandFill; children: {
+				GDViewport new
+					ref: viewportRef;
+					size: 100 @ 100;
+					children: {
+						Avatar new
+							" ... "
+							viewportRef: viewportRef}.
+			GDViewportContainer new stretch: true; sizeFlagsHorizontal: GDControl sizeExpandFill; sizeFlagsVertical: GDControl sizeExpandFill; children:
+				{GDViewport new children: GDCamera new}}}}
+]
