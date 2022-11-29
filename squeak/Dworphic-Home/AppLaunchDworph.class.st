@@ -12,6 +12,10 @@ AppLaunchDworph >> render: props [
 	
 	openApplication := self useProvided: #openApplication.
 	
+	self useVoiceIntents: (apps withIndexCollect: [:app :index |
+			'start ', index -> [openApplication value: app copy]
+		]) key: 'applications'.
+	
 	^ {
 		GDLabel3D new
 			translation: 0.03 @ 0.02 @ 0;
