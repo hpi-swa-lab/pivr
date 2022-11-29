@@ -64,13 +64,14 @@ GRDraggableArea >> render: props [
 							transform: (isDragged ifTrue: [grabOffsetTransform get] ifFalse: [objectTransform]);
 							onButtonPress: [:event |
 								event isGrip ifTrue: [
-									grabOffsetTransform set: (objectTransform * event transform inverseTransformation).
+									grabOffsetTransform set: (event transform inverseTransformation * objectTransform).
 									startGrab value: event].
 								onButtonPress ifNotNil: [onButtonPress cull: event]];
 							onButtonRelease: [:event |
 								onButtonRelease ifNotNil: [onButtonRelease cull: event].
 								(event isGrip and: isDragged) ifTrue: [
-									currentTransform set: event transform.
+									currentTransform set: event transform * grabOffsetTransform get.
+									event transform: currentTransform get.
 									endGrab value: event]]}
 					in: (heldHandRef ifNil: [inPlaceRef])}]
 ]

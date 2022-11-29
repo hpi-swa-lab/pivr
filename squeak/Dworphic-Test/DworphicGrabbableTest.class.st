@@ -387,10 +387,12 @@ DworphicGrabbableTest >> testManualRelease [
 { #category : #tests }
 DworphicGrabbableTest >> testOffsetTransform [
 
-	self openComponent: [
+	self openComponent: [ | t |
+		t := CMFReact useState: (Matrix4x4 withOffset: 0 @ 1 @ 0).
 		WorldDworph new children: {
 			GRGrabbableArea new
-				transform: (Matrix4x4 withOffset: 0 @ 1 @ 0);
+				transform: t get;
+				onRelease: [:e | t set: e transform];
 				children: {
 					GDCollisionShape new
 						shape: GDBoxShape new;
@@ -407,6 +409,15 @@ DworphicGrabbableTest >> testOffsetTransform [
 		(self controllerNode: #left) toggleGrip: true}.
 	self
 		assert: (Matrix4x4 withOffset: 0 @ 0.25 @ 0)
+		equals: (godotTree firstNodeNamed: 'shape') parent transform.
+	
+	self tick: {
+		(self controllerNode: #left)
+			subscribe: #transform
+			set: (Matrix4x4 withOffset: 0 @ 1.75 @ 0)}.
+	self tick: {(self controllerNode: #left) toggleGrip: false}.
+	self
+		assert: (Matrix4x4 withOffset: 0 @ 2 @ 0)
 		equals: (godotTree firstNodeNamed: 'shape') parent transform
 ]
 
