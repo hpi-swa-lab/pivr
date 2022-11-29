@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
-	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake startGrab |
+	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake startGrab grabOffsetTransform objectTransform |
 		realReleaseCondition := releaseCondition ifNil: [#selfUnmount].
 		fallbackHandle := self useMemo: [GRReact nextGodotId] dependencies: #().
 		realHandle := handle ifNil: [
@@ -21,6 +21,7 @@ GRDraggableArea >> render: props [
 		releaseHandLock := self useProvided: #releaseHandLock.
 		registerHandleInContainer := self useProvided: #registerHandleInContainer.
 		currentTransform := self useState: Matrix4x4 identity.
+		grabOffsetTransform := self useState: Matrix4x4 identity.
 		
 		heldHandRef := handLocks get associations
 			detect: [:assoc | assoc value = realHandle]
@@ -47,7 +48,10 @@ GRDraggableArea >> render: props [
 		api ifNotNil: [
 			api
 				at: #endGrab put: endGrabFake;
-				at: #startGrab put: startGrab].
+				at: #startGrab put: startGrab;
+				at: #setGrabOffset put: grabOffsetTransform setter].
+		
+		objectTransform := transform ifNil: [currentTransform get].
 		
 		^ GDSpatial new
 			ref: inPlaceRef;
@@ -57,9 +61,11 @@ GRDraggableArea >> render: props [
 						GRInteractiveArea new
 							props: (props copyWithoutKeys: #(#handle api));
 							exclusiveHandRef: (heldHandRef ifNotNil: [heldHandRef get]);
-							transform: (isDragged ifTrue: [Matrix4x4 identity] ifFalse: [transform ifNil: [currentTransform get]]);
+							transform: (isDragged ifTrue: [grabOffsetTransform get] ifFalse: [objectTransform]);
 							onButtonPress: [:event |
-								event isGrip ifTrue: [startGrab value: event].
+								event isGrip ifTrue: [
+									grabOffsetTransform set: (objectTransform * event transform inverseTransformation).
+									startGrab value: event].
 								onButtonPress ifNotNil: [onButtonPress cull: event]];
 							onButtonRelease: [:event |
 								onButtonRelease ifNotNil: [onButtonRelease cull: event].

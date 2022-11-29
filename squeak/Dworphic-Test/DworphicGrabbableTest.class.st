@@ -385,6 +385,32 @@ DworphicGrabbableTest >> testManualRelease [
 ]
 
 { #category : #tests }
+DworphicGrabbableTest >> testOffsetTransform [
+
+	self openComponent: [
+		WorldDworph new children: {
+			GRGrabbableArea new
+				transform: (Matrix4x4 withOffset: 0 @ 1 @ 0);
+				children: {
+					GDCollisionShape new
+						shape: GDBoxShape new;
+						name: 'shape'}}].
+	
+	self tick: {
+		(self controllerNode: #left)
+			subscribe: #transform
+			set: (Matrix4x4 withOffset: 0 @ 0.75 @ 0)}.
+	self tick: {
+		(godotTree firstNodeNamed: 'shape') parent
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}.
+		(self controllerNode: #left) toggleGrip: true}.
+	self
+		assert: (Matrix4x4 withOffset: 0 @ 0.25 @ 0)
+		equals: (godotTree firstNodeNamed: 'shape') parent transform
+]
+
+{ #category : #tests }
 DworphicGrabbableTest >> testOnGrabBegin [
 
 	| grabbed |
