@@ -482,6 +482,27 @@ GRReactTest >> testReloadWithHooksChangeType [
 	self assert: 'change' equals: (godotTree firstNodeOfType: #Label) text
 ]
 
+{ #category : #'as yet unclassified' }
+GRReactTest >> testRenderUpdateBatched [
+
+	| renderCount doSetState |
+	renderCount := 0.
+	doSetState := false.
+	self openComponent: [
+		renderCount := renderCount + 1.
+		(1 to: 5) collect: [:i |
+			[ | s |
+				s := CMFReact useState: 0.
+				(self godot: #Timer) onTimeout: [doSetState ifTrue: [s set: [:c | c + 1]]]] asComponent]].
+	self assert: 1 equals: renderCount.
+	self tick: ((godotTree allNodesOfType: #Timer) collect: [:t | t signal: #onTimeout with: {}]).
+	self assert: 1 equals: renderCount.
+	
+	doSetState := true.
+	self tick: ((godotTree allNodesOfType: #Timer) collect: [:t | t signal: #onTimeout with: {}]).
+	self assert: 2 equals: renderCount
+]
+
 { #category : #tests }
 GRReactTest >> testSetStateInUseEffect [
 
