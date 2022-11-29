@@ -20,7 +20,7 @@ BlockCodeEditor class >> appDescription [
 { #category : #'as yet unclassified' }
 BlockCodeEditor >> render: props [
 
-	| editor blocks forceUpdate doCommand globalTransform dropAreas |
+	| editor blocks forceUpdate doCommand globalTransform dropAreas draggedSandblock |
 	editor := self useRef: SBEditor new.
 	blocks := self useState: {}.
 	forceUpdate := self useForceUpdate.
@@ -46,8 +46,8 @@ BlockCodeEditor >> render: props [
 		dependencies: {}.
 	
 	globalTransform := self useRef: Matrix4x4 identity.
-	
 	dropAreas := self useRef: Dictionary new.
+	draggedSandblock := self useState: nil. "TODO: this will break if you drag two blocks at the same time"
 	
 	^ ApplicationDworph new
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
@@ -60,7 +60,9 @@ BlockCodeEditor >> render: props [
 				#getDropAreaSandblock -> [:area |
 					(dropAreas get associations select: [:assoc | assoc key get = area])
 						ifEmpty: [nil]
-						ifNotEmpty: [:assocs | assocs first value]]}
+						ifNotEmpty: [:assocs | assocs first value]].
+				#draggedSandblock -> draggedSandblock get.
+				#setDraggedSandblock -> draggedSandblock setter}
 			children: {
 				GRDraggableAreaContainer new
 					children: {

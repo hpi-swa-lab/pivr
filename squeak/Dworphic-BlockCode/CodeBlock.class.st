@@ -34,7 +34,7 @@ CodeBlock >> render: props [
 { #category : #'as yet unclassified' }
 CodeBlock >> renderBlock: props [
 
-	props extract: [:sandblock :layoutParams :translation | | do editorTransform isHovered scale overlappingDropAreas getDropAreaSandblock |
+	props extract: [:sandblock :layoutParams :translation | | do editorTransform isHovered scale overlappingDropAreas getDropAreaSandblock draggedSandblock setDraggedSandblock insertPositions |
 		scale := self scale: props.
 		
 		isHovered := self useState: false.
@@ -43,6 +43,29 @@ CodeBlock >> renderBlock: props [
 		
 		overlappingDropAreas := self useState: #().
 		getDropAreaSandblock := self useProvided: #getDropAreaSandblock.
+		draggedSandblock := self useProvided: #draggedSandblock.
+		setDraggedSandblock := self useProvided: #setDraggedSandblock.
+
+		insertPositions := (draggedSandblock isNil or: [draggedSandblock = sandblock])
+			ifTrue: [#()]
+			ifFalse: [
+				Array streamContents: [:stream |
+					sandblock cursorPositionsDo: [:pos |
+						(sandblock = pos block) ifTrue: [
+							(pos isInsert and: [pos container isTSBlock]) ifTrue: [ | targetType bounds parentBounds |
+								targetType := pos command element.
+								bounds := pos bounds.
+								parentBounds := sandblock bounds.
+								((draggedSandblock adaptSlotFor: (SBTSSlot with: targetType) ifFailed: [nil]) ifNotNil: [:adaptedCopy |
+									stream nextPut: ((self methodAsComponent: #renderInsertArea:)
+										pos: pos;
+										translation: (bounds center - parentBounds center) asVector3 * layoutParams morphicScale;
+										scale: (bounds width * layoutParams morphicScale) @ (bounds height * layoutParams morphicScale) @ 10cm)
+										"(GDMeshInstance new
+										translation: (bounds center - parentBounds center) asVector3 * layoutParams morphicScale;
+										mesh: (GDCubeMesh new
+											material: (GDSpatialMaterial new albedoColor: Color red);
+											size: (bounds width * layoutParams morphicScale) @ (bounds height * layoutParams morphicScale) @ 10cm))"])]]]]].
 		
 		^ GRDraggableArea new
 			releaseCondition: #containerUnmount;
@@ -54,23 +77,28 @@ CodeBlock >> renderBlock: props [
 			onBlur: [isHovered set: false];
 			onButtonPress: [:e | e isTrigger ifTrue: [sandblock select]];
 			onGrab: [
+				setDraggedSandblock value: sandblock.
 				do value: (SBCombinedCommand newWith: {
 					sandblock parentSandblock deleteCommandFor: sandblock.
 					sandblock sandblockEditor insertCommandRequest: sandblock near: nil before: false})];
 			onRelease: [:event | | localTransform |
+				setDraggedSandblock value: nil.
 				(overlappingDropAreas get
 					collect: [:area | getDropAreaSandblock value: area]
 					thenSelect: #notNil)
 					ifEmpty: [
 						localTransform := editorTransform value inverseTransformation * event transform.
 						sandblock setProperty: #vrTransform toValue: localTransform]
-					ifNotEmpty: [:otherSandblocks | | otherSandblock |
+					ifNotEmpty: [:otherSandblocks | | otherSandblock command |
 						otherSandblock := otherSandblocks first.
-						do value: (SBCombinedCommand newWith: {
+						command := (otherSandblock isKindOf: SBCommand)
+							ifTrue: [otherSandblock]
+							ifFalse: [SBCombinedCommand newWith: {
 							sandblock parentSandblock deleteCommandFor: sandblock.
 							SBReplaceCommand new
 								target: otherSandblock
-								replacer: (sandblock copyBlock adaptSlotFor: otherSandblock slot)})]];
+								replacer: (sandblock copyBlock adaptSlotFor: otherSandblock slot)}].
+						do value: command]];
 			children: {
 				GDCollisionShape new
 					scale: scale;
@@ -88,7 +116,28 @@ CodeBlock >> renderBlock: props [
 					scale: scale;
 					mesh: (GDCubeMesh new
 						size: (Vector3 value: 1);
-						material: (GDSpatialMaterial new albedoColor: (isHovered get ifTrue: [Color green] ifFalse: [Color white])))}, (sandblock childrenAsCodeBlocks do: [:b | b layoutParams: layoutParams])]
+						material: (GDSpatialMaterial new albedoColor: (isHovered get ifTrue: [Color green] ifFalse: [Color white])))}, (sandblock childrenAsCodeBlocks do: [:b | b layoutParams: layoutParams]), insertPositions]
+]
+
+{ #category : #'as yet unclassified' }
+CodeBlock >> renderInsertArea: props [
+
+	props extract: [:pos :layoutParams :translation :scale | | areaRef registerDropArea unregisterDropArea | 
+		registerDropArea := self useProvided: #registerDropArea.
+		unregisterDropArea := self useProvided: #unregisterDropArea.
+		areaRef := self useGodotRef.
+		self useEffect: [
+			registerDropArea value: areaRef value: pos command.
+			[unregisterDropArea value: areaRef]]
+			dependencies: {pos command}.
+		
+		^ GDArea new
+			ref: areaRef;
+			translation: translation;
+			scale: scale;
+			collisionMask: 0;
+			collisionLayer: GRDropArea dropLayer;
+			children: {self cubeOfSize: 1 color: Color red}]
 ]
 
 { #category : #'as yet unclassified' }
