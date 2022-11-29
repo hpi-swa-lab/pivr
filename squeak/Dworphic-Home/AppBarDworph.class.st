@@ -10,6 +10,11 @@ AppBarDworph >> render: props [
 	| apps closeApplication |
 	apps := self useProvided: #applications.
 	closeApplication := self useProvided: #closeApplication.
+	
+	self useVoiceIntents: (apps withIndexCollect: [:app :index |
+			'close ', index -> [closeApplication value: app]
+		]) key: 'applications'.
+	
 	^ {
 		GDLabel3D new
 			translation: 0.03 @ 0.02 @ 0;
