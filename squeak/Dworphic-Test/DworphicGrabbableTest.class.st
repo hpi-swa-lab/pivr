@@ -7,7 +7,7 @@ Class {
 { #category : #failures }
 DworphicGrabbableTest >> expectedFailures [
 
-	^ #(testOnGrabEndUnmountContainer)
+	^ #(#testOnGrabEndUnmountContainer)
 ]
 
 { #category : #tests }
@@ -382,6 +382,49 @@ DworphicGrabbableTest >> testManualRelease [
 	self tick: {(self controllerNode: #left) toggleGrip: false}.
 			
 	self assert: 1 equals: timesCalled.
+]
+
+{ #category : #tests }
+DworphicGrabbableTest >> testOffsetRelativeTransform [
+
+	self openComponent: [ | t |
+		t := CMFReact useState: (Matrix4x4 withOffset: 0 @ 1 @ 0).
+		WorldDworph new children: {
+			GDSpatial new
+				transform: (Matrix4x4 withOffset: 0 @ 1 @ 0);
+				children: (GRGrabbableArea new
+					transform: t get;
+					onRelease: [:e | t set: e transform];
+					children: {
+						GDCollisionShape new
+							shape: GDBoxShape new;
+							name: 'shape'})}].
+	
+	self tick: {
+		(self controllerNode: #left)
+			subscribe: #transform
+			set: (Matrix4x4 withOffset: 0 @ 1.75 @ 0)}.
+	react hostConfig session
+		for: 'global_transform'
+		reply: (Matrix4x4 withOffset: 0 @ 1 @ 0).
+	
+	self tick: {
+		(godotTree firstNodeNamed: 'shape') parent
+			signal: #'area_entered'
+			with: {self controllerCollider: #left}.
+		(self controllerNode: #left) toggleGrip: true}.
+	self
+		assert: (Matrix4x4 withOffset: 0 @ 0.25 @ 0)
+		equals: (godotTree firstNodeNamed: 'shape') parent transform.
+	
+	self tick: {
+		(self controllerNode: #left)
+			subscribe: #transform
+			set: (Matrix4x4 withOffset: 0 @ 2.75 @ 0)}.
+	self tick: {(self controllerNode: #left) toggleGrip: false}.
+	self
+		assert: (Matrix4x4 withOffset: 0 @ 3 @ 0)
+		equals: (godotTree firstNodeNamed: 'shape') parent transform
 ]
 
 { #category : #tests }

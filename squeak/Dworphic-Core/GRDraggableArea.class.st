@@ -7,8 +7,9 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
-	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake startGrab grabOffsetTransform objectTransform |
+	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake startGrab grabOffsetTransform objectTransform parentRef |
 		realReleaseCondition := releaseCondition ifNil: [#selfUnmount].
+		parentRef := self useGodotRef.
 		fallbackHandle := self useMemo: [GRReact nextGodotId] dependencies: #().
 		realHandle := handle ifNil: [
 			realReleaseCondition = #selfUnmount
@@ -54,7 +55,9 @@ GRDraggableArea >> render: props [
 		objectTransform := transform ifNil: [currentTransform get].
 		
 		^ GDSpatial new
-			ref: inPlaceRef;
+			ref: [:val |
+				inPlaceRef value: val.
+				parentRef value: val];
 			children: {
 				CMFReactNodePortal
 					child: {
@@ -63,8 +66,9 @@ GRDraggableArea >> render: props [
 							exclusiveHandRef: (heldHandRef ifNotNil: [heldHandRef get]);
 							transform: (isDragged ifTrue: [grabOffsetTransform get] ifFalse: [objectTransform]);
 							onButtonPress: [:event |
-								event isGrip ifTrue: [
-									grabOffsetTransform set: (event transform inverseTransformation * objectTransform).
+								event isGrip ifTrue: [ | g |
+									g := parentRef get globalTransform.
+									grabOffsetTransform set: (event transform inverseTransformation * (g * objectTransform)).
 									startGrab value: event].
 								onButtonPress ifNotNil: [onButtonPress cull: event]];
 							onButtonRelease: [:event |
