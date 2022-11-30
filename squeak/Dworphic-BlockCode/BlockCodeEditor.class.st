@@ -27,7 +27,7 @@ BlockCodeEditor >> render: props [
 	
 	self
 		useSingletonEffect: [ | block |
-			editor get openInWindow.
+			self withoutAttachDo: [editor get openInWindow].
 			
 			"for testing purposes"
 			block := SBTSStMethod for: Dictionary >> #associationsDo:.
@@ -98,4 +98,13 @@ BlockCodeEditor >> renderUpdater: props [
 					editor selection contents: value asString.
 					editor save]]
 			dependencies: {editor selection. updating get. value}]
+]
+
+{ #category : #'as yet unclassified' }
+BlockCodeEditor >> withoutAttachDo: aBlock [
+
+	| attach |
+	attach := UIManager openToolsAttachedToMouseCursor.
+	[UIManager openToolsAttachedToMouseCursor: false. aBlock value]
+		ensure: [UIManager openToolsAttachedToMouseCursor: attach]
 ]
