@@ -93,7 +93,7 @@ RtMIDI >> noteOff: aNoteNumber velocity: aVelocityNumber channel: aChannelNumber
 	self assert: aChannelNumber < 16.
 	self assert: aVelocityNumber <= 127.
 	self assert: aNoteNumber <= 127.
-	self send: {(2r1000 bitShift: 4) bitOr: aChannelNumber. aNoteNumber. aVelocityNumber}
+	self send: {(8 bitShift: 4) bitOr: aChannelNumber. aNoteNumber. aVelocityNumber}
 ]
 
 { #category : #api }
@@ -102,7 +102,7 @@ RtMIDI >> noteOn: aNoteNumber velocity: aVelocityNumber channel: aChannelNumber 
 	self assert: aChannelNumber < 16.
 	self assert: aVelocityNumber <= 127.
 	self assert: aNoteNumber <= 127.
-	self send: {(2r1001 bitShift: 4) bitOr: aChannelNumber. aNoteNumber. aVelocityNumber}
+	self send: {(9 bitShift: 4) bitOr: aChannelNumber. aNoteNumber. aVelocityNumber}
 ]
 
 { #category : #api }
@@ -158,8 +158,7 @@ RtMIDI >> programChange: aProgramNumber channel: aChannelNumber [
 
 	self assert: aChannelNumber < 16.
 	self assert: aProgramNumber <= 127.
-	
-	self send: {(2r1100 bitShift: 4) bitOr: aChannelNumber. aProgramNumber}
+	self send: {(12 bitShift: 4) bitOr: aChannelNumber. aProgramNumber}
 ]
 
 { #category : #api }
