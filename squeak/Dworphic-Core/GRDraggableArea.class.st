@@ -7,7 +7,7 @@ Class {
 { #category : #'as yet unclassified' }
 GRDraggableArea >> render: props [
 
-	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake startGrab grabOffsetTransform objectTransform parentRef |
+	props extract: [:handle :onButtonPress :onButtonRelease :onGrab :onRelease :releaseCondition :transform :api | | inPlaceRef handLocks acquireHandLock heldHandRef releaseHandLock endGrab fallbackHandle isDragged realHandle realReleaseCondition registerHandleInContainer currentTransform endGrabFake startGrab grabOffsetTransform objectTransform parentRef originalParentTransform |
 		realReleaseCondition := releaseCondition ifNil: [#selfUnmount].
 		parentRef := self useGodotRef.
 		fallbackHandle := self useMemo: [GRReact nextGodotId] dependencies: #().
@@ -54,7 +54,14 @@ GRDraggableArea >> render: props [
 		
 		objectTransform := transform ifNil: [currentTransform get].
 		
-		^ GDSpatial new
+		originalParentTransform := self useState: Matrix4x4 identity.
+		
+		^ 
+		"dummy node to always get transform of the virtual parent"
+		GDSpatial new
+			subscribeTo: 'global_transform' do: [:t | originalParentTransform set: t];
+			children: {
+		GDSpatial new
 			ref: [:val |
 				inPlaceRef value: val.
 				parentRef value: val];
@@ -74,8 +81,9 @@ GRDraggableArea >> render: props [
 							onButtonRelease: [:event |
 								onButtonRelease ifNotNil: [onButtonRelease cull: event].
 								(event isGrip and: isDragged) ifTrue: [
-									currentTransform set: event transform * grabOffsetTransform get.
+									"currentTransform set: event transform * grabOffsetTransform get."
+									currentTransform set: originalParentTransform get inverseTransformation * event transform * grabOffsetTransform get.
 									event transform: currentTransform get.
 									endGrab value: event]]}
-					in: (heldHandRef ifNil: [inPlaceRef])}]
+					in: (heldHandRef ifNil: [inPlaceRef])}}]
 ]

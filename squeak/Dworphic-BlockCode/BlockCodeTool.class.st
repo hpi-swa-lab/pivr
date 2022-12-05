@@ -11,9 +11,13 @@ BlockCodeTool >> render: props [
 		touch: true;
 		point: false;
 		children: {
+			GDCollisionShape new
+				shape: (GDCylinderShape new
+					height: 20cm;
+					radius: 1cm).
 			GDMeshInstance new
 				mesh: (GDCylinderMesh new
-					height: 20 cm;
-					bottomRadius: 5 cm;
-					topRadius: 1 cm)}
+					height: 20cm;
+					bottomRadius: 2mm;
+					topRadius: 1cm)}
 ]
