@@ -57,7 +57,7 @@ BlockCodeEditor >> render: props [
 				#editorTransform -> [globalTransform get].
 				#registerDropArea -> [:area :sandblock | dropAreas get at: area put: sandblock].
 				#unregisterDropArea -> [:area | dropAreas get removeKey: area].
-				#getDropAreaSandblock -> [:area |
+				#getDropAreaCommandConstructor -> [:area |
 					(dropAreas get associations select: [:assoc | assoc key get = area])
 						ifEmpty: [nil]
 						ifNotEmpty: [:assocs | assocs first value]].

@@ -34,7 +34,7 @@ CodeBlock >> render: props [
 { #category : #'as yet unclassified' }
 CodeBlock >> renderBlock: props [
 
-	props extract: [:sandblock :layoutParams :translation | | do editorTransform isHovered scale overlappingDropAreas getDropAreaSandblock draggedSandblock setDraggedSandblock insertPositions |
+	props extract: [:sandblock :layoutParams :translation | | do editorTransform isHovered scale overlappingDropAreas draggedSandblock setDraggedSandblock insertPositions getDropAreaCommandConstructor |
 		scale := self scale: props.
 		
 		isHovered := self useState: false.
@@ -42,7 +42,7 @@ CodeBlock >> renderBlock: props [
 		editorTransform := self useProvided: #editorTransform.
 		
 		overlappingDropAreas := self useState: #().
-		getDropAreaSandblock := self useProvided: #getDropAreaSandblock.
+		getDropAreaCommandConstructor := self useProvided: #getDropAreaCommandConstructor.
 		draggedSandblock := self useProvided: #draggedSandblock.
 		setDraggedSandblock := self useProvided: #setDraggedSandblock.
 
@@ -57,15 +57,11 @@ CodeBlock >> renderBlock: props [
 								bounds := pos bounds.
 								parentBounds := sandblock bounds.
 								((draggedSandblock adaptSlotFor: (SBTSSlot with: targetType) ifFailed: [nil]) ifNotNil: [:adaptedCopy |
+									pos command morphs: {adaptedCopy}.
 									stream nextPut: ((self methodAsComponent: #renderInsertArea:)
 										pos: pos;
-										translation: (bounds center - parentBounds center) asVector3 * layoutParams morphicScale;
-										scale: (bounds width * layoutParams morphicScale) @ (bounds height * layoutParams morphicScale) @ 10cm)
-										"(GDMeshInstance new
-										translation: (bounds center - parentBounds center) asVector3 * layoutParams morphicScale;
-										mesh: (GDCubeMesh new
-											material: (GDSpatialMaterial new albedoColor: Color red);
-											size: (bounds width * layoutParams morphicScale) @ (bounds height * layoutParams morphicScale) @ 10cm))"])]]]]].
+										translation: (bounds center - parentBounds center) asVector3 * layoutParams morphicScale * (1 @ -1 @ 1);
+										scale: (bounds width * layoutParams morphicScale) @ (bounds height * layoutParams morphicScale) @ 10cm)])]]]]].
 		
 		^ GRDraggableArea new
 			releaseCondition: #containerUnmount;
@@ -84,21 +80,14 @@ CodeBlock >> renderBlock: props [
 			onRelease: [:event | | localTransform |
 				setDraggedSandblock value: nil.
 				(overlappingDropAreas get
-					collect: [:area | getDropAreaSandblock value: area]
+					collect: [:area | getDropAreaCommandConstructor value: area]
 					thenSelect: #notNil)
 					ifEmpty: [
 						localTransform := editorTransform value inverseTransformation * event transform.
 						sandblock setProperty: #vrTransform toValue: localTransform]
-					ifNotEmpty: [:otherSandblocks | | otherSandblock command |
-						otherSandblock := otherSandblocks first.
-						command := (otherSandblock isKindOf: SBCommand)
-							ifTrue: [otherSandblock]
-							ifFalse: [SBCombinedCommand newWith: {
-							sandblock parentSandblock deleteCommandFor: sandblock.
-							SBReplaceCommand new
-								target: otherSandblock
-								replacer: (sandblock copyBlock adaptSlotFor: otherSandblock slot)}].
-						do value: command]];
+					ifNotEmpty: [:commandConstructors | | constructor |
+						constructor := commandConstructors first.
+						do value: (constructor cull: sandblock)]];
 			children: {
 				GDCollisionShape new
 					scale: scale;
@@ -127,7 +116,7 @@ CodeBlock >> renderInsertArea: props [
 		unregisterDropArea := self useProvided: #unregisterDropArea.
 		areaRef := self useGodotRef.
 		self useEffect: [
-			registerDropArea value: areaRef value: pos command.
+			registerDropArea value: areaRef value: [pos command].
 			[unregisterDropArea value: areaRef]]
 			dependencies: {pos command}.
 		
@@ -178,7 +167,12 @@ CodeBlock >> renderUnknown: props [
 		unregisterDropArea := self useProvided: #unregisterDropArea.
 		areaRef := self useGodotRef.
 		self useEffect: [
-			registerDropArea value: areaRef value: sandblock.
+			registerDropArea value: areaRef value: [:insertedSandblock |
+				SBCombinedCommand newWith: {
+					insertedSandblock parentSandblock deleteCommandFor: insertedSandblock.
+					SBReplaceCommand new
+						target: sandblock
+						replacer: (insertedSandblock copyBlock adaptSlotFor: sandblock slot)}].
 			[unregisterDropArea value: areaRef]]
 			dependencies: {sandblock}.
 
