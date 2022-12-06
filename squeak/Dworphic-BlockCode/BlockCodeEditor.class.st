@@ -64,9 +64,9 @@ BlockCodeEditor >> render: props [
 				#draggedSandblock -> draggedSandblock get.
 				#setDraggedSandblock -> draggedSandblock setter}
 			children: {
-				BlockCodeTool new.
+				BlockCodeTool new
+					transform: (Matrix4x4 withOffset: 0 @ 0 @ 20cm).
 				GRDraggableAreaContainer new
-					visible: false;
 					children: {
 						GRRerenderEnforcer new.
 						"dummy for retrieving global transform"

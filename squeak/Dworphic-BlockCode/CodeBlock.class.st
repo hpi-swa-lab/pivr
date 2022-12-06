@@ -46,7 +46,7 @@ CodeBlock >> renderBlock: props [
 		draggedSandblock := self useProvided: #draggedSandblock.
 		setDraggedSandblock := self useProvided: #setDraggedSandblock.
 
-		insertPositions := (draggedSandblock isNil or: [draggedSandblock = sandblock])
+		insertPositions := (draggedSandblock isNil or: [draggedSandblock = sandblock] or: [draggedSandblock isMethod])
 			ifTrue: [#()]
 			ifFalse: [
 				Array streamContents: [:stream |
@@ -77,14 +77,13 @@ CodeBlock >> renderBlock: props [
 				do value: (SBCombinedCommand newWith: {
 					sandblock parentSandblock deleteCommandFor: sandblock.
 					sandblock sandblockEditor insertCommandRequest: sandblock near: nil before: false})];
-			onRelease: [:event | | localTransform |
+			onRelease: [:event | 
 				setDraggedSandblock value: nil.
 				(overlappingDropAreas get
 					collect: [:area | getDropAreaCommandConstructor value: area]
 					thenSelect: #notNil)
 					ifEmpty: [
-						localTransform := editorTransform value inverseTransformation * event transform.
-						sandblock setProperty: #vrTransform toValue: localTransform]
+						sandblock setProperty: #vrTransform toValue: event transform]
 					ifNotEmpty: [:commandConstructors | | constructor |
 						constructor := commandConstructors first.
 						do value: (constructor cull: sandblock)]];
