@@ -90,12 +90,31 @@ GRComponent >> directionFromScancode: aNumber [
 	^ dir
 ]
 
+{ #category : #helpers }
+GRComponent >> every: aNumberInSeconds do: aBlock [
+
+	^ GDTimer new
+		autostart: true;
+		waitTime: aNumberInSeconds;
+		onTimeout: aBlock
+]
+
 { #category : #constructors }
 GRComponent >> godot: aClassName [
 
 	^ GRReactNodeGodot new
 		godotClass: aClassName;
 		yourself
+]
+
+{ #category : #helpers }
+GRComponent >> in: aNumberInSeconds do: aBlock [
+
+	^ GDTimer new
+		autostart: true;
+		oneShot: true;
+		waitTime: aNumberInSeconds;
+		onTimeout: aBlock
 ]
 
 { #category : #helpers }
