@@ -252,6 +252,33 @@ GRComponent >> useButtonPress: aPressBlock release: aReleaseBlock axisChange: an
 ]
 
 { #category : #hooks }
+GRComponent >> useControlledState: aBlock default: aCollection [
+"TODO extract params name automatically by implementing wrapper around useState"
+
+	| argumentNames states |
+	argumentNames := aBlock method propertyValueAt: #cmfArgumentNames ifAbsent: [ | node |
+		node := Parser new
+			parse: aBlock sourceString
+			class: UndefinedObject
+			noPattern: true
+			notifying: nil
+			ifFail: nil.
+		aBlock method propertyValueAt: #cmfArgumentNames put: (node body statements first expr arguments
+			collect: #name
+			as: Array)].
+	
+	states := argumentNames collect: [:name | self useState: (aCollection at: name)].
+	
+	self
+		useVoiceIntents: (states
+			with: argumentNames
+			collect: [:state :name | {'set ', name, ' (?P<arg>.*)' -> [:params | state set: (params at: 'arg')]}])
+		key: self className.
+	
+	^ aBlock valueWithArguments: states
+]
+
+{ #category : #hooks }
 GRComponent >> useForceUpdate [
 
 	| n |
