@@ -80,7 +80,6 @@ VirtualKeyboardDworph >> renderKeyboard: props [
 	^ GRGrabbableArea new
 		transform: (props at: #transform);
 		children: {
-			self findMe.
 			(self
 				cubeOfSize: (layout collect: #size) max * self keySize @ (layout size * self keySize) @ 0.01
 				color: (Color r: 0.37 g: 0.37 b: 0.37)) children: {

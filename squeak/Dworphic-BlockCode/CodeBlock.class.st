@@ -42,7 +42,7 @@ CodeBlock >> renderBlock: props [
 			ifTrue: [
 				layoutParams copy
 					rootGlobalTransform: globalTransform get;
-					rootGlobalExtent: scale x @ scale y]
+					rootGlobalExtent: (scale x @ scale y) / 2]
 			ifFalse: [layoutParams].
 		
 		isHovered := self useState: false.

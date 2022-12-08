@@ -48,7 +48,7 @@ GRTextFocus >> notNone [
 { #category : #'as yet unclassified' }
 GRTextFocus >> textAreaBottomCenter [
 
-	^ self textAreaCenter localTranslatedBy: 0 @ self textAreaExtent y
+	^ self textAreaCenter localTranslatedBy: 0 @ (self textAreaExtent y * -1)
 ]
 
 { #category : #'as yet unclassified' }
