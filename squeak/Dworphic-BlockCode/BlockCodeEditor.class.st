@@ -53,6 +53,7 @@ BlockCodeEditor >> render: props [
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
 		children: (
 			GRProvider values: {
+				#sandblocksEditor -> editor get.
 				#doSandblocksCommand -> doCommand.
 				#editorTransform -> [globalTransform get].
 				#registerDropArea -> [:area :sandblock | dropAreas get at: area put: sandblock].

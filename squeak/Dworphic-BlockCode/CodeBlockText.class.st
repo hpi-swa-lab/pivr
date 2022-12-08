@@ -32,11 +32,13 @@ CodeBlockText >> render: props [
 { #category : #'as yet unclassified' }
 CodeBlockText >> renderCursor: props [
 
-	props extract: [:morph :layoutParams | | cursorPosition parentBounds callback textFocus extents hasFocus |
+	props extract: [:morph :layoutParams | | cursorPosition parentBounds callback textFocus extents hasFocus editor |
 		cursorPosition := morph cursorPosition.
 		parentBounds := morph bounds.
 		textFocus := self useProvided: #textFocus.
-		callback := self useUpdatingRef: [:text | Transcript showln: text].
+		editor := self useProvided: #sandblocksEditor.
+		callback := self useUpdatingRef: [:text |
+			text do: [:char | editor handle: (SBTest keyboardEvent: char)]].
 		extents := 2mm @ (parentBounds height * layoutParams morphicScale / 2).
 		hasFocus := textFocus get textEnteredCallback = callback.
 		
