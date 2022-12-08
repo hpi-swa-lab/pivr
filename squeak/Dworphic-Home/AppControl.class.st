@@ -30,9 +30,12 @@ AppControl >> render: props [
 
 	self
 		useButtonPress: [:e |
-			e button = GDGlobalConstants joyOculusAx ifTrue: [
+			e button = GDGlobalConstants joyOculusAx ifTrue: [ | newTransform at from |
 				shown set: [:o | o not].
-				transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)]]
+				at := head get translation.
+				from := ((head get orientation transform: 0 @ 0 @ -1) y: 0) normalize + at.
+				newTransform := (Matrix4x4 lookAt: at from: from up: 0 @ 1 @ 0) addRotationAroundY: 180.
+				transform set: newTransform]]
 		release: [:e | ]
 		axisChange: [:e | ]
 		side: #right.

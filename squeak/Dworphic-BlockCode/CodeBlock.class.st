@@ -34,8 +34,16 @@ CodeBlock >> render: props [
 { #category : #'as yet unclassified' }
 CodeBlock >> renderBlock: props [
 
-	props extract: [:sandblock :layoutParams :translation | | do editorTransform isHovered scale overlappingDropAreas draggedSandblock setDraggedSandblock insertPositions getDropAreaCommandConstructor |
+	props extract: [:sandblock :layoutParams :translation | | do editorTransform isHovered scale overlappingDropAreas draggedSandblock setDraggedSandblock insertPositions getDropAreaCommandConstructor childLayoutParams globalTransform |
 		scale := self scale: props.
+		
+		globalTransform := self useState: Matrix4x4 identity.
+		childLayoutParams := sandblock floating
+			ifTrue: [
+				layoutParams copy
+					rootGlobalTransform: globalTransform get;
+					rootGlobalExtent: scale x @ scale y]
+			ifFalse: [layoutParams].
 		
 		isHovered := self useState: false.
 		do := self useProvided: #doSandblocksCommand.
@@ -88,6 +96,9 @@ CodeBlock >> renderBlock: props [
 						constructor := commandConstructors first.
 						do value: (constructor cull: sandblock)]];
 			children: {
+				sandblock floating ifTrue: [
+					GDSpatial new
+						subscribeTo: 'global_transform' do: [:t | globalTransform set: t]].
 				GDCollisionShape new
 					scale: scale;
 					shape: (GDBoxShape new extents: 0.5 asVector3).
@@ -104,7 +115,7 @@ CodeBlock >> renderBlock: props [
 					scale: scale;
 					mesh: (GDCubeMesh new
 						size: (Vector3 value: 1);
-						material: (GDSpatialMaterial new albedoColor: (isHovered get ifTrue: [Color green] ifFalse: [Color white])))}, (sandblock childrenAsCodeBlocks do: [:b | b layoutParams: layoutParams]), insertPositions]
+						material: (GDSpatialMaterial new albedoColor: (isHovered get ifTrue: [Color green] ifFalse: [Color white])))}, (sandblock childrenAsCodeBlocks do: [:b | b layoutParams: childLayoutParams]), insertPositions]
 ]
 
 { #category : #'as yet unclassified' }

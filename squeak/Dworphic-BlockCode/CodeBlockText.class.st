@@ -32,12 +32,35 @@ CodeBlockText >> render: props [
 { #category : #'as yet unclassified' }
 CodeBlockText >> renderCursor: props [
 
-	props extract: [:morph :layoutParams | | cursorPosition parentBounds |
+	props extract: [:morph :layoutParams | | cursorPosition parentBounds callback textFocus extents hasFocus |
 		cursorPosition := morph cursorPosition.
 		parentBounds := morph bounds.
-		self useEffect: [Transcript showln: parentBounds height * layoutParams morphicScale] dependencies: {parentBounds height}.
+		textFocus := self useProvided: #textFocus.
+		callback := self useUpdatingRef: [:text | Transcript showln: text].
+		extents := 2mm @ (parentBounds height * layoutParams morphicScale / 2).
+		hasFocus := textFocus get textEnteredCallback = callback.
+		
+		self useEffect: [
+			morph hasCursor
+				ifTrue: [
+					textFocus set: (GRTextFocus new
+						textEnteredCallback: callback;
+						textAreaExtent: layoutParams rootGlobalExtent;
+						textAreaCenter: layoutParams rootGlobalTransform)].
+				[hasFocus ifTrue: [
+					textFocus set: GRTextFocus none]]]
+			dependencies: {morph hasCursor}.
+		
+		self useEffect: [
+			hasFocus ifTrue: [
+				textFocus set: [:old | old copy textAreaCenter: layoutParams rootGlobalTransform]]]
+			dependencies: {layoutParams rootGlobalTransform}.
+		"self useEffect: [
+			hasFocus ifTrue: [
+				textFocus set: [:old | old copy textAreaExtent: layoutParams rootGlobalExtent]]]
+			dependencies: {layoutParams rootGlobalExtent}."
 		
 		^ (self cubeVisualOfSize: 2m color: Color magenta)
 			translation: ((cursorPosition x - parentBounds center x) * layoutParams morphicScale) @ 0 @ (layoutParams blockDepth / 2);
-			scale: 2mm @ (parentBounds height * layoutParams morphicScale / 2) @ 2mm]
+			scale: extents @ 2mm]
 ]
