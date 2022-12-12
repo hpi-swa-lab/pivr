@@ -280,6 +280,12 @@ func deserialize_args(args):
 	for arg in args:
 		if arg is EncodedObjectAsID:
 			args[i] = instance_from_id(arg.object_id)
+		# TODO: this a quick bandaid for arrays of objects.
+		# a proper solution would recursively convert objects in arrays and dictionaries
+		if typeof(arg) == TYPE_ARRAY:
+			for j in range(arg.size()):
+				if arg[j] is EncodedObjectAsID:
+					arg[j] = instance_from_id(arg[j].object_id)
 		i += 1
 	return args
 
