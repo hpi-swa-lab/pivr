@@ -25,7 +25,9 @@ GRInteractiveArea >> render: props [
 		
 		isOverlappingHand := [:handRef |
 			overlappingActingAreas get anySatisfy: [:actingAreaRef | 
-				(actingAreaRefToHandRef get at: actingAreaRef) get = handRef]].
+				actingAreaRefToHandRef get at: actingAreaRef
+					ifPresent: [:actingAreaHandRef | actingAreaHandRef get = handRef]
+					ifAbsent: ["allowing absence might be dangerous :)" false]]].
 		
 		eventIsRelevant := [:event |
 			exclusiveHandRef
@@ -49,17 +51,18 @@ GRInteractiveArea >> render: props [
 			collisionLayer:
 				(((touch ifNil: [true]) ifTrue: [self class touchLayer] ifFalse: [0])
 				bitOr: ((point ifNil: [false]) ifTrue: [self class pointLayer] ifFalse: [0]));
-			onAreaEntered: [:area | | areaHandRef |
-				areaHandRef := actingAreaRefToHandRef get at: area.
-				(onHover ifNotNil: [:block |
-					(isOverlappingHand value: areaHandRef)
-						ifFalse: [
-							block cull: (GRInteractiveAreaEvent new
-								side: #nyi;
-								handRef: areaHandRef)]]).
-				overlappingActingAreas set: [:old | old copyWith: area]];
+			onAreaEntered: [:area |
+				actingAreaRefToHandRef get at: area
+					ifPresent: [:areaHandRef | 
+						(onHover ifNotNil: [:block |
+							(isOverlappingHand value: areaHandRef)
+								ifFalse: [
+									block cull: (GRInteractiveAreaEvent new
+										side: #nyi;
+										handRef: areaHandRef)]]).
+						overlappingActingAreas set: [:old | old copyWith: area]]];
 			onAreaExited: [:area |
-				actingAreaRefToHandRef get at: area ifPresent: [:areaHandRef |
+				(actingAreaRefToHandRef get at: area ifAbsent: [(overlappingActingAreas get includes: area) ifTrue: [#gone]]) ifNotNil: [:areaHandRef |
 					overlappingActingAreas set: [:old | old copyWithout: area].
 					(onBlur ifNotNil: [:block |
 						(isOverlappingHand value: areaHandRef)

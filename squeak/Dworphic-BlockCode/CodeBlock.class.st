@@ -5,6 +5,12 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+CodeBlock class >> blockLayer [
+
+	^ 1 bitShift: 28
+]
+
+{ #category : #'as yet unclassified' }
 CodeBlock >> computeDefaultTransform [
 
 	^ Matrix4x4 identity
@@ -103,8 +109,8 @@ CodeBlock >> renderBlock: props [
 					scale: scale;
 					shape: (GDBoxShape new extents: 0.5 asVector3).
 				GDArea new
-					collisionMask: GRDropArea dropLayer;
-					collisionLayer: 0;
+					collisionMask: (GRDropArea dropLayer bitOr: CodeBlock blockLayer);
+					collisionLayer: CodeBlock blockLayer;
 					onAreaEntered: [:area | overlappingDropAreas set: [:old | old copyWith: area]];
 					onAreaExited: [:area | overlappingDropAreas set: [:old | old copyWithout: area]];
 					children: {
