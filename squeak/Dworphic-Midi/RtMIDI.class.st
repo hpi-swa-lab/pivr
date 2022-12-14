@@ -10,7 +10,7 @@ Class {
 { #category : #'as yet unclassified' }
 RtMIDI class >> moduleName [
 
-	^ 'rtmidi'
+	^ '/usr/lib/x86_64-linux-gnu/librtmidi.so.6'
 ]
 
 { #category : #private }

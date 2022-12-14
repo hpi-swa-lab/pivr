@@ -18,6 +18,12 @@ MIDIComponent class >> generateNoteMethods [
 ]
 
 { #category : #'as yet unclassified' }
+MIDIComponent class >> instrumentsMethods [
+
+	^ self methodDict values select: [:m | (m selector beginsWith: 'render') and: [m selector size > 7]]
+]
+
+{ #category : #'as yet unclassified' }
 MIDIComponent class >> start [
 
 	| react |

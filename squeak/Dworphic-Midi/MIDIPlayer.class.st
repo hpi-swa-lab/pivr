@@ -6,7 +6,8 @@ Class {
 		'process',
 		'bpm',
 		'beat',
-		'lastMeasureStart'
+		'lastMeasureStart',
+		'channelMapping'
 	],
 	#category : #'Dworphic-Midi'
 }
@@ -49,6 +50,20 @@ MIDIPlayer >> bpm: aNumber [
 ]
 
 { #category : #'as yet unclassified' }
+MIDIPlayer >> channel: anObject do: aBlock [
+
+	^ anObject isNumber
+		ifTrue: [aBlock value: anObject]
+		ifFalse: [(channelMapping value: anObject) ifNotNil: [:c | aBlock value: c]]
+]
+
+{ #category : #'as yet unclassified' }
+MIDIPlayer >> channelMapping: aBlock [
+
+	channelMapping := aBlock
+]
+
+{ #category : #'as yet unclassified' }
 MIDIPlayer >> initialize [
 
 	super initialize.
@@ -66,13 +81,17 @@ MIDIPlayer >> measureLengthMilliseconds [
 { #category : #'as yet unclassified' }
 MIDIPlayer >> noteOff: aNoteNumber velocity: aVelocityNumber channel: aChannelNumber [
 
-	midi noteOff: aNoteNumber velocity: aVelocityNumber channel: aChannelNumber
+	self
+		channel: aChannelNumber
+		do: [:channel | midi noteOff: aNoteNumber velocity: aVelocityNumber channel: channel]
 ]
 
 { #category : #'as yet unclassified' }
 MIDIPlayer >> noteOn: aNoteNumber velocity: aVelocityNumber channel: aChannelNumber [
 
-	midi noteOn: aNoteNumber velocity: aVelocityNumber channel: aChannelNumber
+	self
+		channel: aChannelNumber
+		do: [:channel | midi noteOn: aNoteNumber velocity: aVelocityNumber channel: channel]
 ]
 
 { #category : #'as yet unclassified' }
@@ -84,7 +103,7 @@ MIDIPlayer >> player [
 { #category : #'as yet unclassified' }
 MIDIPlayer >> programChange: aProgramNumber channel: aChannelNumber [
 
-	midi programChange: aProgramNumber channel: aChannelNumber
+	self channel: aChannelNumber do: [:channel | midi programChange: aProgramNumber channel: channel]
 ]
 
 { #category : #'as yet unclassified' }

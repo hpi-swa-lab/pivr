@@ -60,7 +60,7 @@ MIDILoop >> step [
 { #category : #'as yet unclassified' }
 MIDILoop >> stepDownBeat: aTimeInMilliseconds delta: aDeltaNumber [
 
-	(SBWatch report: completed for: 992557222) ifFalse: [^ self].
+	completed ifFalse: [^ self].
 	startTime := aTimeInMilliseconds.
 	lastCheck := aDeltaNumber negated
 ]

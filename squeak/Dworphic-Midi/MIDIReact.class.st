@@ -3,13 +3,17 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'player',
-		'react'
+		'react',
+		'component',
+		'channelMapping'
 	],
 	#category : #'Dworphic-Midi'
 }
 
 { #category : #'as yet unclassified' }
 MIDIReact >> channelMapping: aDictionary [
+
+	channelMapping := aDictionary
 ]
 
 { #category : #'as yet unclassified' }
@@ -21,9 +25,16 @@ MIDIReact >> codeChanged: event [
 ]
 
 { #category : #'as yet unclassified' }
+MIDIReact >> component [
+
+	^ component
+]
+
+{ #category : #'as yet unclassified' }
 MIDIReact >> component: aComponent [
 
-	player := MIDIPlayer new.
+	player := MIDIPlayer new channelMapping: [:key | channelMapping at: key ifAbsent: [nil]].
+	component := aComponent.
 	react := CMFReactWithFibers new
 		hostConfig: CMFHostConfigMidi new;
 		renderRoot: (aComponent player: player) in: player

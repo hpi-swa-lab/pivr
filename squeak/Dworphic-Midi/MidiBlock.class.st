@@ -16,38 +16,37 @@ MidiBlock >> render: props [
 	setChannelMapping := self useProvided: #setChannelMapping.
 	ref := self useGodotRef.
 	instrument := props at: #instrument.
-
+	
 	^ GDRigidBody new
 		ref: ref;
 		globalTransform: globalTransform get;
-		mode: (grabbed get ifTrue: [GDRigidBody modeStatic]  ifFalse: [GDRigidBody modeRigid]);
+		mode: (grabbed get ifTrue: [GDRigidBody modeStatic] ifFalse: [GDRigidBody modeRigid]);
 		children: {
-			GDCollisionShape new
-				shape: (
-					GDBoxShape new
-						extents: 5cm asVector3).
+			GDCollisionShape new shape: (GDBoxShape new extents: 5 cm asVector3).
 			GRGrabbableArea new
+				point: true;
+				touch: true;
 				transform: Matrix4x4 identity;
 				onGrab: [grabbed set: true];
 				onRelease: [:event |
 					grabbed set: false.
 					globalTransform set: event transform];
 				children: {
-					(self cubeOfSize: 10cm color: Color blue).
+					self cubeOfSize: 10 cm color: (Color r: 0.0 g: 0.0 b: 1).
 					GDArea new
-						onAreaEntered: [:area | | foundAreas |
-							foundAreas := channelAreas associations select: [:assoc |
-								assoc key get = area].
-							foundAreas ifNotEmpty: [ | channel |
-								channel := foundAreas first value.
-								setChannelMapping value: [:old | old copy at: instrument put: channel; yourself].
-								currentChannel set: channel.]];
+						onAreaEntered: [:area |
+							channelAreas associations detect: [:assoc | assoc key get = area] ifFound: [:assoc | | channel |
+								channel := assoc value.
+								setChannelMapping value: [:old |
+									old copy
+										at: instrument put: channel;
+										yourself].
+								currentChannel set: channel]];
 						onAreaExited: [:area |
-							setChannelMapping value: [:old | old copy at: instrument put: nil; yourself].
+							setChannelMapping value: [:old |
+								old copy
+									at: instrument put: nil;
+									yourself].
 							currentChannel set: nil];
-						children: {
-							GDCollisionShape new
-								shape: (
-									GDBoxShape new
-										extents: 5cm asVector3)}}}
+						children: {GDCollisionShape new shape: (GDBoxShape new extents: 5 cm asVector3)}}}
 ]
