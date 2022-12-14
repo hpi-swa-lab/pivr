@@ -9,6 +9,10 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+MIDIReact >> channelMapping: aDictionary [
+]
+
+{ #category : #'as yet unclassified' }
 MIDIReact >> codeChanged: event [
 
 	event isDoIt ifTrue: [^ self].
@@ -23,6 +27,10 @@ MIDIReact >> component: aComponent [
 	react := CMFReactWithFibers new
 		hostConfig: CMFHostConfigMidi new;
 		renderRoot: (aComponent player: player) in: player
+]
+
+{ #category : #'as yet unclassified' }
+MIDIReact >> onMidiEvent: aBlock [
 ]
 
 { #category : #'as yet unclassified' }
