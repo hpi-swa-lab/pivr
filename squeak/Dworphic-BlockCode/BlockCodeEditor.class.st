@@ -20,40 +20,45 @@ BlockCodeEditor class >> appDescription [
 { #category : #'as yet unclassified' }
 BlockCodeEditor >> render: props [
 
-	| editor blocks forceUpdate doCommand globalTransform dropAreas draggedSandblock |
-	editor := self useRef: SBEditor new.
+	| editor blocks forceUpdate doCommand globalTransform dropAreas draggedSandblock builtInEditor |
+	builtInEditor := self useMemo: [SBEditor new] dependencies: {}.
+	editor := props at: #editor ifAbsent: [builtInEditor].
 	blocks := self useState: {}.
 	forceUpdate := self useForceUpdate.
 	
 	self
-		useSingletonEffect: [ | block |
-			self withoutAttachDo: [editor get openInWindow].
+		useSingletonEffect: [
+			self withoutAttachDo: [editor openInWindow].
 			
-			"for testing purposes"
-			block := SBTSStMethod for: Dictionary >> #associationsDo:.
-			editor get openMorph: block.
+			SBToggledCode comment: '' active: 0 do: {
+				[ | block |
+					"for testing purposes"
+					block := SBTSStMethod for: Dictionary >> #associationsDo:.
+					editor get openMorph: block]}.
 			"World doOneCycle."
 			forceUpdate value.
 			
-			[[editor get containingWindow ifNotNil: #delete]
-				valueSupplyingAnswer: true]]
+			[[editor containingWindow ifNotNil: #delete] valueSupplyingAnswer: true]]
 		dependencies: #().
 	
 	doCommand := self
 		useCallback: [:command |
-			Project current addDeferredUIMessage: [Transcript showln: 'doing ', command asString.editor get do: command].
-			"editor get world doOneCycle."]
+			Project current addDeferredUIMessage: [
+				Transcript showln: 'doing ', command asString.
+				editor do: command
+				"editor get world doOneCycle."]]
 		dependencies: {}.
 	
 	globalTransform := self useRef: Matrix4x4 identity.
 	dropAreas := self useRef: Dictionary new.
-	draggedSandblock := self useState: nil. "TODO: this will break if you drag two blocks at the same time"
+	draggedSandblock := self useState: nil.
+	"TODO: this will break if you drag two blocks at the same time"
 	
 	^ ApplicationDworph new
 		translation: (props at: #translation ifAbsent: [Vector3 value: 0]);
-		children: (
-			GRProvider values: {
-				#sandblocksEditor -> editor get.
+		children: (GRProvider
+			values: {
+				#sandblocksEditor -> editor.
 				#doSandblocksCommand -> doCommand.
 				#editorTransform -> [globalTransform get].
 				#registerDropArea -> [:area :sandblock | dropAreas get at: area put: sandblock].
@@ -65,19 +70,15 @@ BlockCodeEditor >> render: props [
 				#draggedSandblock -> draggedSandblock get.
 				#setDraggedSandblock -> draggedSandblock setter}
 			children: {
-				BlockCodeTool new
-					transform: (Matrix4x4 withOffset: 0 @ 0 @ 20cm).
-				GRDraggableAreaContainer new
-					children: {
-						GRRerenderEnforcer new.
-						"dummy for retrieving global transform"
-						GDSpatial new
-							subscribeTo: 'global_transform' do: [:t | globalTransform set: t]},
-						(Array streamContents: [:stream |
-							editor get childSandblocksDo: [:sandblock |
-								stream nextPut: (sandblock asCodeBlock
-									layoutParams: (props at: #layoutParams);
-									translation: Vector3 zero)]])})
+				BlockCodeTool new transform: (Matrix4x4 withOffset: 0 @ 0 @ 20 cm).
+				GRDraggableAreaContainer new children: {
+					GRRerenderEnforcer new.
+					GDSpatial new subscribeTo: 'global_transform' do: [:t | "dummy for retrieving global transform"
+					globalTransform set: t]}, (Array streamContents: [:stream |
+					editor childSandblocksDo: [:sandblock |
+						stream nextPut: (sandblock asCodeBlock
+							layoutParams: (props at: #layoutParams);
+							translation: Vector3 zero)]])})
 ]
 
 { #category : #'as yet unclassified' }

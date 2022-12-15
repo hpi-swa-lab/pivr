@@ -13,11 +13,14 @@ MidiWorld >> channelCount [
 { #category : #'as yet unclassified' }
 MidiWorld >> render: props [
 
-	| midiReact channelMapping instruments channelAreas |
+	| midiReact channelMapping instruments channelAreas layoutParams editor |
 	channelAreas := self useRef: Dictionary new.
 	midiReact := self useState: [MIDIExample start].
 	channelMapping := self useState: Dictionary new.
 	instruments := self useState: Dictionary new.
+	layoutParams := CodeBlockLayoutParamters new
+		blockDepth: 0.01;
+		morphicScale: 0.003.
 	
 	self useSingletonEffect: [[midiReact get stop]] dependencies: #().
 	
@@ -35,6 +38,19 @@ MidiWorld >> render: props [
 						at: name put: (Matrix4x4 withOffset: 0 @ 1 @ 0);
 						yourself]]]].
 	
+	editor := self useMemo: [SBEditor new] dependencies: {}.
+	
+	self
+		useEffect: [instruments get keys do: [:i | editor openMorph: (SBTSStMethod for: MIDIExample >> i)]]
+		dependencies: {instruments get size}.
+	self
+		useEffect: [
+			instruments get keysAndValuesDo: [:instrument :transform |
+				editor childSandblocks
+					detect: [:c | c selector = instrument]
+					ifFound: [:c | c setProperty: #vrTransform toValue: transform]]]
+		dependencies: {instruments get}.
+	
 	^ ApplicationDworph new children: {
 		GRProvider values: {#channelAreas -> channelAreas get} children: {
 			GDStaticBody new
@@ -44,7 +60,10 @@ MidiWorld >> render: props [
 					pointXY := Point r: 2 degrees: angle.
 					MidiChannelArea new
 						translation: pointXY x @ 0 @ pointXY y;
-						channel: channel]), (instruments get associations collect: [:instrument |
+						channel: channel]), {
+					BlockCodeEditor new
+						editor: editor;
+						layoutParams: layoutParams}, (instruments get associations collect: [:instrument |
 					MidiBlock new
 						instrument: instrument key;
 						globalTransform: instrument value;
