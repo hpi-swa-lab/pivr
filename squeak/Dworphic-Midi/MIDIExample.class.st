@@ -21,6 +21,22 @@ MIDIExample >> render: props [
 ]
 
 { #category : #'as yet unclassified' }
+MIDIExample >> renderArpeggio: props [
+
+	| base |
+	base := self useState: self c4.
+	^ (self
+		loop: {
+			self note: base get + 0 for: 1 / 8.
+			self note: base get + 4 for: 1 / 8.
+			self note: base get + 7 for: 1 / 8.
+			self note: base get + 12 for: 1 / 8.
+			self note: base get + 7 for: 1 / 8.
+			self note: base get + 4 for: 1 / 8}
+		channel: (props at: #channel)) onMeasureStart: [base set: [:previous | previous + 1]]
+]
+
+{ #category : #'as yet unclassified' }
 MIDIExample >> renderBass: props [
 
 	^ self loop: 4 of: (MIDIScale pentatonic: self a3) for: 1 / 4 channel: (props at: #channel)
@@ -42,4 +58,16 @@ MIDIExample >> renderDrums: props [
 MIDIExample >> renderMelody: props [
 
 	^ self loop: 4 of: (MIDIScale pentatonic: self a5) * 2 for: 1 / 8 channel: (props at: #channel)
+]
+
+{ #category : #'as yet unclassified' }
+MIDIExample >> renderSbahn: props [
+
+	^ self
+		loop: {
+			self note: self c4 for: 1 / 4.
+			self note: self c5 for: 1 / 4.
+			self note: self c4 for: 1 / 4.
+			self restFor: 1 / 4}
+		channel: (props at: #channel)
 ]

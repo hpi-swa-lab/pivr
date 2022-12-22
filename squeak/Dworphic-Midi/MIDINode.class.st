@@ -3,7 +3,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'children',
-		'parent'
+		'parent',
+		'onMeasureStart'
 	],
 	#category : #'Dworphic-Midi'
 }
@@ -41,6 +42,12 @@ MIDINode >> initialize [
 	super initialize.
 	
 	children := OrderedCollection new
+]
+
+{ #category : #'as yet unclassified' }
+MIDINode >> onMeasureStart: aBlock [
+
+	onMeasureStart := aBlock
 ]
 
 { #category : #'as yet unclassified' }
@@ -83,5 +90,5 @@ MIDINode >> step [
 { #category : #'as yet unclassified' }
 MIDINode >> stepDownBeat: aTimeInMilliseconds delta: aNumberInMilliseconds [
 
-	
+	onMeasureStart ifNotNil: [:c | c value]
 ]

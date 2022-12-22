@@ -5,6 +5,12 @@ Class {
 }
 
 { #category : #'as yet unclassified' }
+GRExternalEvents >> controlsAtPosition: aPoint [
+
+	^ self callOnVariant: 'controls_at_position' with: {aPoint} return: #GDArray
+]
+
+{ #category : #'as yet unclassified' }
 GRExternalEvents >> godotClass [
 
 	^ #GREvents

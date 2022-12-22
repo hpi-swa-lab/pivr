@@ -14,6 +14,7 @@ Class {
 		'AutoStartApplications',
 		'CurrentGodotId',
 		'DebugCollisionShapes',
+		'EnableCodeMapping',
 		'GodotPath',
 		'InvertSimulatorCamera',
 		'LogCommunication',
@@ -42,6 +43,19 @@ GRReact class >> debugCollisionShapes [
 GRReact class >> debugCollisionShapes: aBoolean [
 
 	DebugCollisionShapes := aBoolean
+]
+
+{ #category : #preferences }
+GRReact class >> enableCodeMapping [
+	<preference: 'Enable Code Mapping' category: 'GReaSe' description: 'Track where in the code host components are created to allow tools to navigate or modify these.' type: #Boolean>
+
+	^ EnableCodeMapping ifNil: [false]
+]
+
+{ #category : #preferences }
+GRReact class >> enableCodeMapping: aBoolean [
+
+	EnableCodeMapping := aBoolean
 ]
 
 { #category : #setup }

@@ -13,6 +13,12 @@ GRObjectId >> = anObject [
 	^ (anObject respondsTo: #objectId) and: [anObject objectId = self objectId]
 ]
 
+{ #category : #'as yet unclassified' }
+GRObjectId >> autoCast [
+
+	^ self grAsClass: (GDApiObjectsGenerator squeakClassName: (self grAsClass: #GDObject) getClass)
+]
+
 { #category : #converting }
 GRObjectId >> grAsClass: aSymbol [
 

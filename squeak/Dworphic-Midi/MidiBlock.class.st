@@ -13,7 +13,7 @@ MidiBlock >> render: props [
 		
 		GDRigidBody new
 			globalTransform: globalTransform;
-			mode: (grabbed get ifTrue: [GDRigidBody modeStatic] ifFalse: [GDRigidBody modeRigid]);
+			mode: GDRigidBody modeStatic;
 			children: {
 				GDCollisionShape new shape: (GDBoxShape new extents: 5 cm asVector3).
 				GRGrabbableArea new

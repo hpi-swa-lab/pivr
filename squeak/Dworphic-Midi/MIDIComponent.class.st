@@ -11,9 +11,9 @@ MIDIComponent class >> generateNoteMethods [
 	names := #(#c #cs #d #ds #e #f #fs #g #gs #a #as #b).
 	order := 1.
 	12 to: 119 by: names size do: [:midi |
-		names do: [:name | self compile: ('{1}{2}
+		names withIndexDo: [:name :index | self compile: ('{1}{2}
 
-	^ {3}' format: {name. order. midi}) classified: 'notes'].
+	^ {3}' format: {name. order. midi + (index - 1)}) classified: 'notes'].
 		order := order + 1]
 ]
 
@@ -35,55 +35,55 @@ MIDIComponent class >> start [
 { #category : #notes }
 MIDIComponent >> a1 [
 
-	^ 12
+	^ 21
 ]
 
 { #category : #notes }
 MIDIComponent >> a2 [
 
-	^ 24
+	^ 33
 ]
 
 { #category : #notes }
 MIDIComponent >> a3 [
 
-	^ 36
+	^ 45
 ]
 
 { #category : #notes }
 MIDIComponent >> a4 [
 
-	^ 48
+	^ 57
 ]
 
 { #category : #notes }
 MIDIComponent >> a5 [
 
-	^ 60
+	^ 69
 ]
 
 { #category : #notes }
 MIDIComponent >> a6 [
 
-	^ 72
+	^ 81
 ]
 
 { #category : #notes }
 MIDIComponent >> a7 [
 
-	^ 84
+	^ 93
 ]
 
 { #category : #notes }
 MIDIComponent >> a8 [
 
-	^ 96
+	^ 105
 ]
 
 { #category : #notes }
 MIDIComponent >> a9 [
 
-	^ 108
+	^ 117
 ]
 
 { #category : #drums }
@@ -101,109 +101,109 @@ MIDIComponent >> accousticSnareFor: aNumber [
 { #category : #notes }
 MIDIComponent >> as1 [
 
-	^ 12
+	^ 22
 ]
 
 { #category : #notes }
 MIDIComponent >> as2 [
 
-	^ 24
+	^ 34
 ]
 
 { #category : #notes }
 MIDIComponent >> as3 [
 
-	^ 36
+	^ 46
 ]
 
 { #category : #notes }
 MIDIComponent >> as4 [
 
-	^ 48
+	^ 58
 ]
 
 { #category : #notes }
 MIDIComponent >> as5 [
 
-	^ 60
+	^ 70
 ]
 
 { #category : #notes }
 MIDIComponent >> as6 [
 
-	^ 72
+	^ 82
 ]
 
 { #category : #notes }
 MIDIComponent >> as7 [
 
-	^ 84
+	^ 94
 ]
 
 { #category : #notes }
 MIDIComponent >> as8 [
 
-	^ 96
+	^ 106
 ]
 
 { #category : #notes }
 MIDIComponent >> as9 [
 
-	^ 108
+	^ 118
 ]
 
 { #category : #notes }
 MIDIComponent >> b1 [
 
-	^ 12
+	^ 23
 ]
 
 { #category : #notes }
 MIDIComponent >> b2 [
 
-	^ 24
+	^ 35
 ]
 
 { #category : #notes }
 MIDIComponent >> b3 [
 
-	^ 36
+	^ 47
 ]
 
 { #category : #notes }
 MIDIComponent >> b4 [
 
-	^ 48
+	^ 59
 ]
 
 { #category : #notes }
 MIDIComponent >> b5 [
 
-	^ 60
+	^ 71
 ]
 
 { #category : #notes }
 MIDIComponent >> b6 [
 
-	^ 72
+	^ 83
 ]
 
 { #category : #notes }
 MIDIComponent >> b7 [
 
-	^ 84
+	^ 95
 ]
 
 { #category : #notes }
 MIDIComponent >> b8 [
 
-	^ 96
+	^ 107
 ]
 
 { #category : #notes }
 MIDIComponent >> b9 [
 
-	^ 108
+	^ 119
 ]
 
 { #category : #drums }
@@ -281,433 +281,433 @@ MIDIComponent >> cowbellFor: aNumber [
 { #category : #notes }
 MIDIComponent >> cs1 [
 
-	^ 12
+	^ 13
 ]
 
 { #category : #notes }
 MIDIComponent >> cs2 [
 
-	^ 24
+	^ 25
 ]
 
 { #category : #notes }
 MIDIComponent >> cs3 [
 
-	^ 36
+	^ 37
 ]
 
 { #category : #notes }
 MIDIComponent >> cs4 [
 
-	^ 48
+	^ 49
 ]
 
 { #category : #notes }
 MIDIComponent >> cs5 [
 
-	^ 60
+	^ 61
 ]
 
 { #category : #notes }
 MIDIComponent >> cs6 [
 
-	^ 72
+	^ 73
 ]
 
 { #category : #notes }
 MIDIComponent >> cs7 [
 
-	^ 84
+	^ 85
 ]
 
 { #category : #notes }
 MIDIComponent >> cs8 [
 
-	^ 96
+	^ 97
 ]
 
 { #category : #notes }
 MIDIComponent >> cs9 [
 
-	^ 108
+	^ 109
 ]
 
 { #category : #notes }
 MIDIComponent >> d1 [
 
-	^ 12
+	^ 14
 ]
 
 { #category : #notes }
 MIDIComponent >> d2 [
 
-	^ 24
+	^ 26
 ]
 
 { #category : #notes }
 MIDIComponent >> d3 [
 
-	^ 36
+	^ 38
 ]
 
 { #category : #notes }
 MIDIComponent >> d4 [
 
-	^ 48
+	^ 50
 ]
 
 { #category : #notes }
 MIDIComponent >> d5 [
 
-	^ 60
+	^ 62
 ]
 
 { #category : #notes }
 MIDIComponent >> d6 [
 
-	^ 72
+	^ 74
 ]
 
 { #category : #notes }
 MIDIComponent >> d7 [
 
-	^ 84
+	^ 86
 ]
 
 { #category : #notes }
 MIDIComponent >> d8 [
 
-	^ 96
+	^ 98
 ]
 
 { #category : #notes }
 MIDIComponent >> d9 [
 
-	^ 108
+	^ 110
 ]
 
 { #category : #notes }
 MIDIComponent >> ds1 [
 
-	^ 12
+	^ 15
 ]
 
 { #category : #notes }
 MIDIComponent >> ds2 [
 
-	^ 24
+	^ 27
 ]
 
 { #category : #notes }
 MIDIComponent >> ds3 [
 
-	^ 36
+	^ 39
 ]
 
 { #category : #notes }
 MIDIComponent >> ds4 [
 
-	^ 48
+	^ 51
 ]
 
 { #category : #notes }
 MIDIComponent >> ds5 [
 
-	^ 60
+	^ 63
 ]
 
 { #category : #notes }
 MIDIComponent >> ds6 [
 
-	^ 72
+	^ 75
 ]
 
 { #category : #notes }
 MIDIComponent >> ds7 [
 
-	^ 84
+	^ 87
 ]
 
 { #category : #notes }
 MIDIComponent >> ds8 [
 
-	^ 96
+	^ 99
 ]
 
 { #category : #notes }
 MIDIComponent >> ds9 [
 
-	^ 108
+	^ 111
 ]
 
 { #category : #notes }
 MIDIComponent >> e1 [
 
-	^ 12
+	^ 16
 ]
 
 { #category : #notes }
 MIDIComponent >> e2 [
 
-	^ 24
+	^ 28
 ]
 
 { #category : #notes }
 MIDIComponent >> e3 [
 
-	^ 36
+	^ 40
 ]
 
 { #category : #notes }
 MIDIComponent >> e4 [
 
-	^ 48
+	^ 52
 ]
 
 { #category : #notes }
 MIDIComponent >> e5 [
 
-	^ 60
+	^ 64
 ]
 
 { #category : #notes }
 MIDIComponent >> e6 [
 
-	^ 72
+	^ 76
 ]
 
 { #category : #notes }
 MIDIComponent >> e7 [
 
-	^ 84
+	^ 88
 ]
 
 { #category : #notes }
 MIDIComponent >> e8 [
 
-	^ 96
+	^ 100
 ]
 
 { #category : #notes }
 MIDIComponent >> e9 [
 
-	^ 108
+	^ 112
 ]
 
 { #category : #notes }
 MIDIComponent >> f1 [
 
-	^ 12
+	^ 17
 ]
 
 { #category : #notes }
 MIDIComponent >> f2 [
 
-	^ 24
+	^ 29
 ]
 
 { #category : #notes }
 MIDIComponent >> f3 [
 
-	^ 36
+	^ 41
 ]
 
 { #category : #notes }
 MIDIComponent >> f4 [
 
-	^ 48
+	^ 53
 ]
 
 { #category : #notes }
 MIDIComponent >> f5 [
 
-	^ 60
+	^ 65
 ]
 
 { #category : #notes }
 MIDIComponent >> f6 [
 
-	^ 72
+	^ 77
 ]
 
 { #category : #notes }
 MIDIComponent >> f7 [
 
-	^ 84
+	^ 89
 ]
 
 { #category : #notes }
 MIDIComponent >> f8 [
 
-	^ 96
+	^ 101
 ]
 
 { #category : #notes }
 MIDIComponent >> f9 [
 
-	^ 108
+	^ 113
 ]
 
 { #category : #notes }
 MIDIComponent >> fs1 [
 
-	^ 12
+	^ 18
 ]
 
 { #category : #notes }
 MIDIComponent >> fs2 [
 
-	^ 24
+	^ 30
 ]
 
 { #category : #notes }
 MIDIComponent >> fs3 [
 
-	^ 36
+	^ 42
 ]
 
 { #category : #notes }
 MIDIComponent >> fs4 [
 
-	^ 48
+	^ 54
 ]
 
 { #category : #notes }
 MIDIComponent >> fs5 [
 
-	^ 60
+	^ 66
 ]
 
 { #category : #notes }
 MIDIComponent >> fs6 [
 
-	^ 72
+	^ 78
 ]
 
 { #category : #notes }
 MIDIComponent >> fs7 [
 
-	^ 84
+	^ 90
 ]
 
 { #category : #notes }
 MIDIComponent >> fs8 [
 
-	^ 96
+	^ 102
 ]
 
 { #category : #notes }
 MIDIComponent >> fs9 [
 
-	^ 108
+	^ 114
 ]
 
 { #category : #notes }
 MIDIComponent >> g1 [
 
-	^ 12
+	^ 19
 ]
 
 { #category : #notes }
 MIDIComponent >> g2 [
 
-	^ 24
+	^ 31
 ]
 
 { #category : #notes }
 MIDIComponent >> g3 [
 
-	^ 36
+	^ 43
 ]
 
 { #category : #notes }
 MIDIComponent >> g4 [
 
-	^ 48
+	^ 55
 ]
 
 { #category : #notes }
 MIDIComponent >> g5 [
 
-	^ 60
+	^ 67
 ]
 
 { #category : #notes }
 MIDIComponent >> g6 [
 
-	^ 72
+	^ 79
 ]
 
 { #category : #notes }
 MIDIComponent >> g7 [
 
-	^ 84
+	^ 91
 ]
 
 { #category : #notes }
 MIDIComponent >> g8 [
 
-	^ 96
+	^ 103
 ]
 
 { #category : #notes }
 MIDIComponent >> g9 [
 
-	^ 108
+	^ 115
 ]
 
 { #category : #notes }
 MIDIComponent >> gs1 [
 
-	^ 12
+	^ 20
 ]
 
 { #category : #notes }
 MIDIComponent >> gs2 [
 
-	^ 24
+	^ 32
 ]
 
 { #category : #notes }
 MIDIComponent >> gs3 [
 
-	^ 36
+	^ 44
 ]
 
 { #category : #notes }
 MIDIComponent >> gs4 [
 
-	^ 48
+	^ 56
 ]
 
 { #category : #notes }
 MIDIComponent >> gs5 [
 
-	^ 60
+	^ 68
 ]
 
 { #category : #notes }
 MIDIComponent >> gs6 [
 
-	^ 72
+	^ 80
 ]
 
 { #category : #notes }
 MIDIComponent >> gs7 [
 
-	^ 84
+	^ 92
 ]
 
 { #category : #notes }
 MIDIComponent >> gs8 [
 
-	^ 96
+	^ 104
 ]
 
 { #category : #notes }
 MIDIComponent >> gs9 [
 
-	^ 108
+	^ 116
 ]
 
 { #category : #'as yet unclassified' }

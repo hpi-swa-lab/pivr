@@ -76,6 +76,45 @@ GDBaseObject >> doesNotUnderstand: aMessage [
 ]
 
 { #category : #'as yet unclassified' }
+GDBaseObject >> explorerContents [
+
+	^ self explorerContentsChildren, self explorerContentsSceneTree, super explorerContents, self explorerContentsProperties
+]
+
+{ #category : #'as yet unclassified' }
+GDBaseObject >> explorerContentsChildren [
+
+	^ (self respondsTo: #getChildren)
+		ifTrue: [{ObjectExplorerWrapper with: self getChildren name: 'Children' model: self}]
+		ifFalse: [{}]
+]
+
+{ #category : #'as yet unclassified' }
+GDBaseObject >> explorerContentsGodotProperties [
+
+	^ self getPropertyList collect: [:name | | value |
+		value := [self getProperty: name]
+			on: Error
+			do: [:error | 'Failed to fetch property: ', error].
+		ObjectExplorerWrapper with: value name: '#', name model: self]
+]
+
+{ #category : #'as yet unclassified' }
+GDBaseObject >> explorerContentsProperties [
+
+	"self explorerContentsScriptProperties."
+	^ self explorerContentsGodotProperties
+]
+
+{ #category : #'as yet unclassified' }
+GDBaseObject >> explorerContentsSceneTree [
+
+	^ (self respondsTo: #getTree)
+		ifTrue: [{ObjectExplorerWrapper with: self getTree name: 'Scene Tree' model: self}]
+		ifFalse: [{}]
+]
+
+{ #category : #'as yet unclassified' }
 GDBaseObject >> get: aSymbol return: aClassNameSymbol [
 
 	self assert: objectId notNil.

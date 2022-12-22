@@ -51,6 +51,8 @@ GRReactNodeGodot >> children: aCollection [
 GRReactNodeGodot >> computeChildrenAndUpdate: aFiber for: aState caughtError: anErrorOrNil [
 
 	aFiber output ifNil: [aFiber output: (aState hostConfig create: self)].
+	aState reifyCodeLocation: self with: aFiber output.
+	
 	^ (Array streamContents: [:stream | properties do: [:value | value isGodotNode ifTrue: [stream nextPut: value]]]), (self children ifNotNil: [:c | c isCollection ifTrue: [c] ifFalse: [{c}]] ifNil: [#()])
 ]
 
@@ -117,7 +119,9 @@ GRReactNodeGodot >> initialize [
 
 	super initialize.
 	isResource := false.
-	properties := Dictionary new
+	properties := Dictionary new.
+	
+	GRReact enableCodeMapping ifTrue: [CMFCurrentReact value reportCodeLocation: thisContext sender sender for: self]
 ]
 
 { #category : #testing }

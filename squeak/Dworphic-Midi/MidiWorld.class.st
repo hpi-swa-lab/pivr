@@ -50,7 +50,7 @@ MidiWorld >> render: props [
 						globalTransform: instrument value;
 						onAssignChannel: [:channel | channelMapping set: [:old | old copyAt: instrument key put: channel]];
 						onTransform: [:transform | instruments set: [:i | i copyAt: instrument key put: transform]];
-						key: instrument key])}}
+						key: instrument key asSymbol])}}
 ]
 
 { #category : #'as yet unclassified' }
