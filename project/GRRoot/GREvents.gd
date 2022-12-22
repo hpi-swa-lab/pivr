@@ -19,3 +19,16 @@ func _input(event):
 		emit_signal("button", event.pressed, event.button_index, event.global_position)
 	if event is InputEventKey:
 		emit_signal("keyboard", event.pressed, event.scancode, event.unicode)
+
+# sadly, Viewport::_gui_find_control is private :(
+func controls_at_position(position: Vector2):
+	var result = []
+	_controls_at_position(get_tree().get_root(), position, result)
+	return result
+
+func _controls_at_position(parent: Node, position: Vector2, result: Array):
+	for child in parent.get_children():
+		# TODO no support for rotated controls. Also consider using CanvasItem instead
+		if child is Control and child.get_global_rect().has_point(position):
+			result.append(child)
+		_controls_at_position(child, position, result)
