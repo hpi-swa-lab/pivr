@@ -56,5 +56,32 @@ GRControlInspector >> render: props [
 					anchorBottom: 1;
 					children: (GDGridContainer new
 						columns: 2;
-						children: (properties gather: [:pair | {GDLabel new text: pair key. GDLabel new text: pair value printString}])))]}
+						children: (properties gather: [:pair |
+							{
+								GDLabel new text: pair key.
+								(pair value isKindOf: GDBaseObject)
+									ifTrue: [GDLabel new text: pair value printString]
+									ifFalse: [
+										GDLineEdit new
+											text: pair value storeString;
+											onTextEntered: [:text | self saveProperty: pair key of: selected get withString: text]]}])))]}
+]
+
+{ #category : #'as yet unclassified' }
+GRControlInspector >> saveProperty: aSymbol of: anObject withString: aString [
+
+	SBToggledCode comment: '' active: 1 do: {
+		[ | location method constructor send |
+			location := CMFCurrentReact value codeLocationForNode: anObject.
+			method := location second asSandblock.
+			constructor := method blockForPC: location first.
+			
+			send := SBStMessageSend new.
+			constructor replaceBy: send.
+			send
+				receiver: constructor
+				selector: (GDApiObjectsGenerator squeakIdentifierName: aSymbol) asSimpleSetter
+				arguments: {aString parseAsSandblock}.
+			method saveTryFixing: false quick: false].
+		[anObject setProperty: aSymbol value: (Compiler evaluate: aString)]}
 ]
