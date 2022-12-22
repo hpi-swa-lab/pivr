@@ -186,6 +186,20 @@ GRSocketListener class >> readVariantFrom: aStream [
 				a34: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
 				a44: 1;
 				yourself].
+		[14] -> [
+			Color
+				r: (is64Bit
+					ifTrue: [Float fromIEEE64Bit: (aStream nextLittleEndianNumber: 8)]
+					ifFalse: [Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)])
+				g: (is64Bit
+					ifTrue: [Float fromIEEE64Bit: (aStream nextLittleEndianNumber: 8)]
+					ifFalse: [Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)])
+				b: (is64Bit
+					ifTrue: [Float fromIEEE64Bit: (aStream nextLittleEndianNumber: 8)]
+					ifFalse: [Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)])
+				alpha: (is64Bit
+					ifTrue: [Float fromIEEE64Bit: (aStream nextLittleEndianNumber: 8)]
+					ifFalse: [Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)])].
 		[15] -> [ | nameCount subnameCount flags isAbsolute |
 			nameCount := (aStream nextLittleEndianNumber: 4) bitAnd: 2147483647.
 			subnameCount := aStream nextLittleEndianNumber: 4.

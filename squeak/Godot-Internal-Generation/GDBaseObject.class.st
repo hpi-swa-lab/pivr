@@ -78,6 +78,9 @@ GDBaseObject >> doesNotUnderstand: aMessage [
 { #category : #'as yet unclassified' }
 GDBaseObject >> explorerContents [
 
+	true ifTrue: ["for now, we cannot ask Godot from a different thread for info, so we cannot use the more sophisticated display yet"
+	^ super explorerContents].
+	
 	^ self explorerContentsChildren, self explorerContentsSceneTree, super explorerContents, self explorerContentsProperties
 ]
 

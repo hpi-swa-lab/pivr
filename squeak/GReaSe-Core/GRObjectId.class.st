@@ -22,6 +22,8 @@ GRObjectId >> autoCast [
 { #category : #converting }
 GRObjectId >> grAsClass: aSymbol [
 
+	aSymbol = #GDVariant ifTrue: [^ GDObject basicNew objectId: self objectId].
+	
 	^ (Smalltalk classNamed: aSymbol) basicNew objectId: self objectId
 ]
 
