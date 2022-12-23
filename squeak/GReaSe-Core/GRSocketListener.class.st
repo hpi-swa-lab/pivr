@@ -165,6 +165,10 @@ GRSocketListener class >> readVariantFrom: aStream [
 			Vector2
 				x: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
 				y: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))].
+		[6] -> [
+			Rectangle
+				origin: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)) @ (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
+				corner: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)) @ (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))].
 		[7] -> [
 			Vector3
 				x: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
