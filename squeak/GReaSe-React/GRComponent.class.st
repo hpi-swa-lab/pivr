@@ -61,6 +61,16 @@ GRComponent class >> toolIcon [
 ]
 
 { #category : #helpers }
+GRComponent >> animate: aSymbol of: anObject to: aValue [
+	"can specifiy duration, transition, and ease on the returned object"
+
+	^ GRAnimation new
+		object: anObject;
+		value: aValue;
+		property: aSymbol
+]
+
+{ #category : #helpers }
 GRComponent >> cubeOfSize: aVector3OrNumber color: aColor [
 
 	^ GDCollisionShape new
