@@ -7,14 +7,20 @@ Class {
 { #category : #'as yet unclassified' }
 AppLaunchDworph >> render: props [
 
-	| apps openApplication |
+	| apps openApplication closeApplication |
 	apps := Array streamContents: [:stream | GRComponent allSubclassesDo: [:cls | (Pragma allNamed: #home in: cls class) ifNotEmpty: [stream nextPut: cls appDescription]]].
 	
 	openApplication := self useProvided: #openApplication.
+	closeApplication := self useProvided: #closeApplication.
 	
-	self useVoiceIntents: (apps withIndexCollect: [:app :index |
-			'start ', index -> [openApplication value: app copy]
-		]) key: 'applications'.
+	self useVoiceIntents: ((apps withIndexCollect: [:app :index |
+			{
+				'start ', app name -> [openApplication value: app copy].
+				'open ', app name -> [openApplication value: app copy].
+				"wip: triggers but closeApplication doesnt actually close"
+				'close ', app name -> [closeApplication value: app copy].
+			}
+		]) flatten) key: 'apps'.
 	
 	^ {
 		GDLabel3D new

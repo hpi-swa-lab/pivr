@@ -26,7 +26,7 @@ AppControl >> render: props [
 		'hide' -> [
 		shown set: false.
 		transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)]
-	} key: 'applications'.
+	} key: 'apps'.
 
 	self
 		useButtonPress: [:e |
