@@ -17,8 +17,7 @@ AppLaunchDworph >> render: props [
 			{
 				'start ', app name -> [openApplication value: app copy].
 				'open ', app name -> [openApplication value: app copy].
-				"wip: triggers but closeApplication doesnt actually close"
-				'close ', app name -> [closeApplication value: app copy].
+				'close ', app name -> [closeApplication value: app].
 			}
 		]) flatten) key: 'apps'.
 	
