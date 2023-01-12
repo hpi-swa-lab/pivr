@@ -324,8 +324,10 @@ func _delete_sub_rec(instance, toDelete):
 	for sub in subscriptions:
 		if sub.instance == instance:
 			toDelete.append(sub)
-	for child in instance.get_children():
-		_delete_sub_rec(child, toDelete)
+	# FIXME: what happens with Resources here that have nested subs?
+	if instance is Node:
+		for child in instance.get_children():
+			_delete_sub_rec(child, toDelete)
 
 func apply_prop(instance, key, value):
 	if key == 'groups':
