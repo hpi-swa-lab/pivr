@@ -121,7 +121,7 @@ GRReactNodeGodot >> initialize [
 	isResource := false.
 	properties := Dictionary new.
 	
-	GRReact enableCodeMapping ifTrue: [CMFCurrentReact value reportCodeLocation: thisContext sender sender for: self]
+	GRReact enableCodeMapping ifTrue: [CMFCurrentReact value ifNotNil: [:r | r reportCodeLocation: thisContext sender sender for: self]]
 ]
 
 { #category : #testing }

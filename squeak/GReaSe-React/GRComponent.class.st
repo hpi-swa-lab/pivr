@@ -309,6 +309,18 @@ GRComponent >> useHeadTransform [
 ]
 
 { #category : #hooks }
+GRComponent >> useId [
+
+	^ self useMemo: [self nextGodotId] dependencies: {}
+]
+
+{ #category : #hooks }
+GRComponent >> useNewGodot: aClass [
+
+	^ self useResource: [aClass externalNew] cleanup: [:obj | obj unreference]
+]
+
+{ #category : #hooks }
 GRComponent >> useProvided: aSymbol [
 
 	^ CMFCurrentReact value useProvided: aSymbol
@@ -365,6 +377,15 @@ GRComponent >> useRegisterHandArea: areaRef grabbed: grabbedHandlers create: cre
 			[removeHandAreaHandlers value: areaRef get]]
 		dependencies: #().
 	^ activeEventHandlers
+]
+
+{ #category : #hooks }
+GRComponent >> useResource: aBlock cleanup: anotherBlock [
+
+	| resource |
+	resource := self useState: [aBlock value].
+	self useEffect: [[anotherBlock value: resource]] dependencies: {}.
+	^ resource
 ]
 
 { #category : #hooks }

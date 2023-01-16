@@ -33,6 +33,8 @@ GRSocketSession >> callOn: anObject method: aString arguments: aCollection [
 		putVariant: {GRSocketListener messageTypeCallFromSqueak. anObject. aString. aCollection}
 		on: stream.
 	
+	GRReact logCommunication ifTrue: [Transcript showln: {'Call'. anObject. aString. aCollection}].
+	
 	response := GRSocketListener readMessageFrom: stream.
 	self assert: response first = GRSocketListener messageTypeResponseToCallFromGodot.
 	self assert: response second = sessionId.
@@ -238,6 +240,8 @@ GRSocketSession >> set: aString of: anObject to: aValueObject [
 	GRSocketListener
 		putVariant: {GRSocketListener messageTypePropertySetFromSqueak. anObject. aString. aValueObject}
 		on: stream.
+	
+	GRReact logCommunication ifTrue: [Transcript showln: {'Call'. anObject. aString. aValueObject}].
 	
 	response := GRSocketListener readMessageFrom: stream.
 	self assert: response first = GRSocketListener messageTypeResponseToCallFromGodot.

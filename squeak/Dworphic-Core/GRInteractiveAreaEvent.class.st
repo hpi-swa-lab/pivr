@@ -10,7 +10,8 @@ Class {
 		'grabRelease',
 		'type',
 		'handRef',
-		'handRef2'
+		'handRef2',
+		'handle'
 	],
 	#category : #'Dworphic-Core'
 }
@@ -82,6 +83,18 @@ GRInteractiveAreaEvent >> handRef2: aRef [
 GRInteractiveAreaEvent >> handRef: anObject [
 
 	handRef := anObject
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> handle [
+
+	^ handle
+]
+
+{ #category : #'as yet unclassified' }
+GRInteractiveAreaEvent >> handle: anObject [
+
+	handle := anObject
 ]
 
 { #category : #'as yet unclassified' }

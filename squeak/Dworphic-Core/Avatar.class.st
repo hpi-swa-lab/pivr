@@ -202,11 +202,10 @@ Avatar >> renderSimulated: props [
 { #category : #'rendering - simulated' }
 Avatar >> renderSimulatedController: props [
 
-	| handPortal controllerRef handIsFree pressedButtons axes handlers renderHand |
+	| controllerRef handIsFree pressedButtons axes handlers renderHand |
 	handIsFree := self useState: true.
 	pressedButtons := self useState: {}.
-	handPortal := self useRef: nil.
-	controllerRef := self useGodotRef.
+	controllerRef := self useRef: nil.
 	axes := {
 		{GDGlobalConstants joyVrTrigger. #trigger}.
 		{GDGlobalConstants joyVrGrip. #grip}.
