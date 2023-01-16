@@ -1,0 +1,12 @@
+# Blender 3.4.0 MTL File: 'hollowcylinder.blend'
+# www.blender.org
+
+newmtl Material.001
+Ns 651.388794
+Ka 0.559055 0.559055 0.559055
+Kd 0.800000 0.720000 0.720039
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.450000
+d 1.000000
+illum 3
