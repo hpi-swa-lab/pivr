@@ -1,3 +1,7 @@
+"
+A GRInteractiveAreaEvent groups information about an occurrence with a hand. For example, it knows what transform the hand was in when the event occurred.
+Note that the event allows you to request to ""grab"" something with the event that caused the event. As such, storing the event if you want to later grab something with that hand is a legitimate use case.
+"
 Class {
 	#name : #GRInteractiveAreaEvent,
 	#superclass : #Object,
