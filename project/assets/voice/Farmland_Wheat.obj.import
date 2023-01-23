@@ -1,0 +1,20 @@
+[remap]
+
+importer="wavefront_obj"
+type="Mesh"
+path="res://.import/Farmland_Wheat.obj-6e0802630646a232a620bb5fd071553b.mesh"
+
+[deps]
+
+files=[ "res://.import/Farmland_Wheat.obj-6e0802630646a232a620bb5fd071553b.mesh" ]
+
+source_file="res://assets/voice/Farmland_Wheat.obj"
+dest_files=[ "res://.import/Farmland_Wheat.obj-6e0802630646a232a620bb5fd071553b.mesh", "res://.import/Farmland_Wheat.obj-6e0802630646a232a620bb5fd071553b.mesh" ]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3( 1, 1, 1 )
+offset_mesh=Vector3( 0, 0, 0 )
+octahedral_compression=true
+optimize_mesh_flags=4286
