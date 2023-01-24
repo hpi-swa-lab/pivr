@@ -13,13 +13,13 @@ AppLaunchDworph >> render: props [
 	openApplication := self useProvided: #openApplication.
 	closeApplication := self useProvided: #closeApplication.
 	
-	self useVoiceIntents: ((apps withIndexCollect: [:app :index |
+	"self useVoiceIntents: ((apps withIndexCollect: [:app :index |
 			{
 				'start ', app name -> [openApplication value: app copy].
 				'open ', app name -> [openApplication value: app copy].
 				'close ', app name -> [closeApplication value: app].
 			}
-		]) flatten) key: 'apps'.
+		]) flatten) key: 'apps'."
 	
 	^ {
 		GDLabel3D new

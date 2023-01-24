@@ -174,6 +174,10 @@ GRSocketListener class >> readVariantFrom: aStream [
 				x: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
 				y: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
 				z: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))].
+		[11] -> [
+			GRAABB
+				position: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)) @ (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)) @ (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))
+				size: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)) @ (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4)) @ (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4))].
 		[13] -> [
 			Matrix4x4 new
 				a11: (Float fromIEEE32Bit: (aStream nextLittleEndianNumber: 4));
