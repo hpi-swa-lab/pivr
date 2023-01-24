@@ -100,12 +100,13 @@ WorldDworph >> provideTextFocus [
 { #category : #rendering }
 WorldDworph >> render: props [
 
-	| apps worldPortalRef head left right children provided headPortalRef |
+	| apps worldPortalRef head left right children provided headPortalRef headRef |
 	apps := self useState: OrderedCollection new.
 	head := self useState: Matrix4x4 identity.
 	left := self useState: Matrix4x4 identity.
 	right := self useState: Matrix4x4 identity.
 	
+	headRef := self useGodotRef.
 	worldPortalRef := self useRef: nil.
 	headPortalRef := self useRef: nil.
 	
@@ -122,6 +123,7 @@ WorldDworph >> render: props [
 			#closeApplication -> [:appDescription | apps set: [:old | old copyWithout: appDescription]].
 			#applications -> apps get.
 			#worldPortal -> worldPortalRef.
+			#headRef -> headRef.
 			#headTransform -> head get.
 			#leftControllerTransform -> left get.
 			#rightControllerTransform -> right get.
@@ -134,7 +136,8 @@ WorldDworph >> render: props [
 				setLeft: left setter;
 				setRight: right setter;
 				setHead: head setter;
-				worldPortalRef: headPortalRef.
+				headRef: headRef;
+				headPortalRef: headPortalRef.
 			GDSpatial new ref: worldPortalRef}, children, (self renderApps: apps get)
 ]
 

@@ -44,7 +44,9 @@ OrbitCameraDworph >> render: props [
 						autostart: true;
 						waitTime: 0.01;
 						onTimeout: timer] asComponent].
-			GDCamera new transform: transform};
+			GDCamera new
+				transform: transform;
+				ref: (props at: #cameraRef ifAbsent: [nil])};
 		subscribeToRelativeMouseMotion: [:delta |
 			mouseMoving ifTrue: [ | pitch yaw |
 				pitch := (delta y clampLow: -90 - totalPitch get high: 90 - totalPitch get) * self mouseSensitivity.
