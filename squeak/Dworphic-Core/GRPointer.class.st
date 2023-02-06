@@ -13,7 +13,7 @@ GRPointer class >> detectorRadius [
 { #category : #'as yet unclassified' }
 GRPointer class >> laserLength [
 
-	^ 10
+	^ 100
 ]
 
 { #category : #'as yet unclassified' }

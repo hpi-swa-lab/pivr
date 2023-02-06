@@ -26,7 +26,7 @@ GRHookUseGodotRef >> printOn: aStream [
 
 	super printOn: aStream.
 	aStream nextPut: $(.
-	state objectId printOn: aStream.
+	state ifNil: [aStream nextPutAll: '<nil>'] ifNotNil: [state objectId printOn: aStream].
 	aStream nextPut: $).
 ]
 
