@@ -26,6 +26,24 @@ WorldDworph >> provideAreaHandlers [
 		#buttonHandlers -> buttonHandlers}
 ]
 
+{ #category : #rendering }
+WorldDworph >> provideDejaVuSans [
+	<provider>
+
+	| font outlineFont |
+	font := self
+		useMemo: [GDDynamicFont new fontData: (GDResourceLoader instance loadPath: 'res://assets/fonts/DejaVuSans.ttf')]
+		dependencies: #().
+	outlineFont := self
+		useMemo: [
+			GDDynamicFont new
+				fontData: (GDResourceLoader instance loadPath: 'res://assets/fonts/DejaVuSans.ttf');
+				outlineColor: Color black;
+				outlineSize: 3]
+		dependencies: #().
+	^ {#dejaVuSans -> font. #dejaVuSansOutline -> outlineFont}
+]
+
 { #category : #'drag and drop' }
 WorldDworph >> provideDragAndDropHandlers [
 	<provider>
