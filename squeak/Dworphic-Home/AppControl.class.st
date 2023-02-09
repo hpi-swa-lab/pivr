@@ -19,14 +19,14 @@ AppControl >> render: props [
 	transform := self useState: (Matrix4x4 withOffset: 0 @ 1.2 @ -1.2).
 	head := self useProvidedRef: #headTransform.
 	
-	"self useVoiceIntents: {
+	self useVoiceIntents: {
 		'show' -> [
 		shown set: true.
 		transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)].
 		'hide' -> [
 		shown set: false.
 		transform set: (head get localTranslatedBy: 0 @ 0 @ -0.5)]
-	} key: 'apps'."
+	} key: 'apps'.
 
 	self
 		useButtonPress: [:e |
