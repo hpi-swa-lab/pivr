@@ -61,10 +61,12 @@ Avatar >> render: props [
 	
 	vrSupported get ifNil: [^ nil].
 	
-	^ props extract: [:left :setLeft :right :setRight :head :setHead |
+	^ props extract: [:left :setLeft :right :setRight :head :setHead :headPortalRef :headRef |
 		vrSupported get
 			ifTrue: [ | camera |
-				camera := GDARVRCamera new children: {GDSpatial new ref: (props at: #worldPortalRef)}.
+				camera := GDARVRCamera new
+					children: {GDSpatial new ref: headPortalRef};
+					ref: headRef.
 				GRReact syncHeadAndControllerTransform ifTrue: [camera subscribeTo: #'global_transform' do: [:t | setHead value: t]].
 				
 				GDARVROrigin new children: {
@@ -79,6 +81,7 @@ Avatar >> render: props [
 						setTransform: setRight}]
 			ifFalse: [
 				(self methodAsComponent: #renderSimulated:)
+					headRef: headRef;
 					head: head;
 					setHead: setHead;
 					left: left;
@@ -179,6 +182,7 @@ Avatar >> renderSimulated: props [
 	
 	^ {
 		OrbitCameraDworph new
+			cameraRef: (props at: #headRef);
 			inverted: GRReact invertSimulatorCamera;
 			active: controlling get = #headset;
 			transform: (props at: #head);
