@@ -1,10 +1,17 @@
 #!/bin/bash
 
+mkdir -p deps
+cd deps
+wget -nc http://files.squeak.org/trunk/Squeak6.1alpha-22446-64bit/Squeak6.1alpha-22446-64bit-All-in-One.zip
+wget -nc https://downloads.tuxfamily.org/godotengine/3.5.1/Godot_v3.5.1-stable_x11.64.zip
+wget -nc https://downloads.tuxfamily.org/godotengine/3.5.1/Godot_v3.5.1-stable_win64.exe.zip
+cd ..
+
 rm -rf build
 mkdir build
 cd build
 
-unzip ~/Downloads/Squeak6.1alpha-22185-64bit-All-in-One.zip
+unzip ../deps/Squeak6.1alpha-22446-64bit-All-in-One.zip
 git clone git@github.com:hpi-swa-lab/pivr.git # --filter=blob:limit=1k 
 git clone git@github.com:hpi-swa-lab/pivr-tools.git
 
@@ -14,11 +21,15 @@ popd
 
 mkdir godot
 cd godot
-unzip ~/Downloads/Godot_v3.5.1-stable_win64.exe.zip
-unzip ~/Downloads/Godot_v3.5.1-stable_x11.64.zip
+unzip ../../deps/Godot_v3.5.1-stable_win64.exe.zip
+unzip ../../deps/Godot_v3.5.1-stable_x11.64.zip
 cd ..
 
 cat << EOF
+=*=*=*=*=*=*=*=*=*= COPY AND RUN THIS =*=*=*=*=*=*=*=*=*=
+
+
+
 "general setup that would happen in the wizard"
 Utilities setAuthorInitials: 'generated'.
 MCConfiguration ensureOpenTranscript: false.
@@ -42,8 +53,8 @@ Installer installGitInfrastructure.
 
 "grease"
 Metacello new
-	baseline: 'GReaSe';
-	repository: 'github://hpi-swa-lab/pivr:master/squeak';
+	baseline: 'ReactMidi';
+	repository: 'github://hpi-swa-lab/react-midi:main/packages';
 	load: #all.
 
 "modifications to standard settings and adding shortcuts"
@@ -103,12 +114,29 @@ SystemWindow compile: 'openAsTool
 Workspace open contents: '" 1. Run: "
 GRReact findRepos.
 " 2. if on mac, download Godot: https://godotengine.org/download/osx and extract to the pivr-bundle/godot folder "
-" 3. run the below: "
-GRExample2D start.
+" 3. let''s go! "
 
-"later, you can update the GReaSe framework via:"
-GRReact update.'.
+" run the (simulated) midi vr world "
+GRReact autoStartApplications: ''AppControl,MidiWorld''.
+HomeDworph start.
+
+" start the MIDIExample without VR and assign some channels to the instruments "
+" you can change the channel assignment at any time via do-it "
+channels := Dictionary new.
+m := MIDIExample start channelMapping: channels.
+channels at: #renderBass: put: 1.
+channels at: #renderArpeggio: put: 2.
+channels at: #renderDrums: put: 10.
+
+" stop the midi output. always do this before starting a new instance "
+m stop.
+
+'.
 Smalltalk snapshot: true andQuit: true.
+
+
+
+=*=*=*=*=*=*=*=*=*= COPY AND RUN THE ABOVE =*=*=*=*=*=*=*=*=*=
 EOF
 ./squeak.sh
 rm -r Squeak6.1alpha-22185-64bit-All-in-One.app/Contents/Resources/github-cache
