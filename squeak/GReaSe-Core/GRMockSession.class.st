@@ -5,7 +5,7 @@ Class {
 		'replies',
 		'calls'
 	],
-	#category : #'GReaSe-Test'
+	#category : #'GReaSe-Core'
 }
 
 { #category : #'as yet unclassified' }
