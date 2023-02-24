@@ -41,6 +41,7 @@ class Subscription:
 
 var tcp: StreamPeerTCP
 var pending_signal_handlers = []
+var pending_signal_refs = []
 var subscriptions = []
 var session_id: int
 var quit = false
@@ -95,7 +96,7 @@ func _process(_delta):
 	for subscription in subscriptions:
 		var update = subscription.update()
 		if update:
-			pending_signal_handlers.append(var2bytes(update))
+			add_pending_signal(update[0], [update[1]])
 	
 	if code_changed or not pending_signal_handlers.empty() or Input.is_action_just_pressed("ui_cancel"):
 		update()
@@ -103,6 +104,7 @@ func _process(_delta):
 func update():
 	tcp.put_var([MessageType.tick_from_godot, session_id, pending_signal_handlers])
 	pending_signal_handlers.clear()
+	
 	while true:
 		var response = tcp.get_var(true)
 		if response:
@@ -113,6 +115,7 @@ func update():
 						tcp.put_var([MessageType.tick_from_godot, session_id, pending_signal_handlers])
 						pending_signal_handlers.clear()
 					else:
+						clear_pending_signal_refs()
 						return
 				MessageType.tick_update_from_squeak:
 					apply_updates(response[1][0])
@@ -462,22 +465,38 @@ func default_for_type(type):
 		_:
 			push_error("Trying to reset unknown type: " + str(type))
 
+func add_pending_signal(id, args):
+	var data = [id]
+	data.append_array(args)
+	# similar to the below: objects may be freed while being referenced only by
+	# squeak. so we ref the args (that we can) and unref after the tick.
+	for arg in args:
+		if arg is Reference:
+			arg.reference()
+			pending_signal_refs.append(arg)
+	# serialize objects immediately; otherwise, if an object is explicitly freed while
+	# waiting to be sent its objectId will be null
+	pending_signal_handlers.append(var2bytes(data))
+
+func clear_pending_signal_refs():
+	for ref in pending_signal_refs:
+		ref.unreference()
+	pending_signal_refs.clear()
+
 # no variadic arguments, so have one signature per needed count of arguments...
 func note_signal0(callback_id):
-	# serialize objects immediately; otherwise, objects may get deleted while
-	# waiting to be sent (leading to objectIds being set to null)
-	pending_signal_handlers.append(var2bytes([callback_id]))
+	add_pending_signal(callback_id, [])
 func note_signal1(arg1, callback_id):
-	pending_signal_handlers.append(var2bytes([callback_id, arg1]))
+	add_pending_signal(callback_id, [arg1])
 func note_signal2(arg1, arg2, callback_id):
-	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2]))
+	add_pending_signal(callback_id, [arg1, arg2])
 func note_signal3(arg1, arg2, arg3, callback_id):
-	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3]))
+	add_pending_signal(callback_id, [arg1, arg2, arg3])
 func note_signal4(arg1, arg2, arg3, arg4, callback_id):
-	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4]))
+	add_pending_signal(callback_id, [arg1, arg2, arg3, arg4])
 func note_signal5(arg1, arg2, arg3, arg4, arg5, callback_id):
-	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4, arg5]))
+	add_pending_signal(callback_id, [arg1, arg2, arg3, arg4, arg5])
 func note_signal6(arg1, arg2, arg3, arg4, arg5, arg6, callback_id):
-	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4, arg5, arg6]))
+	add_pending_signal(callback_id, [arg1, arg2, arg3, arg4, arg5, arg6])
 func note_signal7(arg1, arg2, arg3, arg4, arg5, arg6, arg7, callback_id):
-	pending_signal_handlers.append(var2bytes([callback_id, arg1, arg2, arg3, arg4, arg5, arg6, arg7]))
+	add_pending_signal(callback_id, [arg1, arg2, arg3, arg4, arg5, arg6, arg7])
