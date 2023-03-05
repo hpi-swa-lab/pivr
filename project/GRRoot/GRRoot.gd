@@ -1,6 +1,9 @@
 extends Node
 
-const root_path = '/root/GRRoot/'
+onready var root_path = str(get_path())
+
+export var port = 8292
+export var host = '127.0.0.1'
 
 var resource_cache = {}
 
@@ -47,10 +50,10 @@ var session_id: int
 var quit = false
 
 func port():
-	return 8292
+	return port
 
 func ip():
-	return '127.0.0.1'
+	return host
 
 func debug_print_bytes(obj):
 	var squeak_bytes = '#['
