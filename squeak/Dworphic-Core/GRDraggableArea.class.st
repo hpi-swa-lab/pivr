@@ -42,7 +42,7 @@ GRDraggableArea >> render: props [
 		endGrab := [:eventOrNil |
 			releaseHandLock value: realHandle.
 			onRelease ifNotNil: [onRelease cull: eventOrNil]].
-		endGrabFake := [endGrab value: GRInteractiveAreaEvent fake].
+		endGrabFake := [isDragged ifTrue: [endGrab value: GRInteractiveAreaEvent fake]].
 		self
 			useEffect: [
 				realReleaseCondition = #containerUnmount ifTrue: [registerHandleInContainer value: realHandle].
