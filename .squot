@@ -11,5 +11,6 @@ OrderedDictionary {
 	'squeak/Dworphic-Example' : #SquotTonelSerializer,
 	'squeak/Dworphic-Tools' : #SquotTonelSerializer,
 	'squeak/Dworphic-BlockCode' : #SquotTonelSerializer,
-	'squeak/Dworphic-Home' : #SquotTonelSerializer
+	'squeak/Dworphic-Home' : #SquotTonelSerializer,
+	'GReaSe-Tools' : #SquotTonelSerializer
 }
