@@ -1,8 +1,18 @@
 Class {
 	#name : #ComponentBrowser,
 	#superclass : #Model,
+	#instVars : [
+		'currentSelection',
+		'rootFiber'
+	],
 	#category : #'GReaSe-Tools'
 }
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser class >> openForFiber: aFiber [
+
+	^ self new rootFiber: aFiber; build
+]
 
 { #category : #'as yet unclassified' }
 ComponentBrowser >> build [
@@ -29,7 +39,12 @@ ComponentBrowser >> buildWith: builder [
 	"Top half tree"
 	treeSpec := builder pluggableTreeSpec new.
 	treeSpec
-		model: self; "Why always model self?"
+		model: self;
+		getSelected: #currentSelection;
+		setSelected: #currentSelection:;
+		getChildren: #getChildrenOfFiber:;
+		roots: #rootFiber;
+		label: #getLabelOfFiber:;
 		frame: (0@0 corner: 1@0.65).
 	windowSpec children add: treeSpec.
 	
@@ -46,28 +61,51 @@ ComponentBrowser >> buildWith: builder [
 ]
 
 { #category : #'as yet unclassified' }
-ComponentBrowser >> getList [
-	"The Object explorer just returns the root value here. I don't really know why"
-	
-	^ {self root}
+ComponentBrowser >> currentSelection [
+
+	^ currentSelection
 ]
 
 { #category : #'as yet unclassified' }
-ComponentBrowser >> rootObject [
+ComponentBrowser >> currentSelection: anItem [
 
-	^ self root value
+	currentSelection := anItem.
+	self changed: #currentSelection
 ]
 
 { #category : #'as yet unclassified' }
-ComponentBrowser >> rootObject: aCMFReactWithFibers [
+ComponentBrowser >> getChildrenOfFiber: aFiber [
+"Return a collection of children of an object. If empty, there are no children (so there wont be an arrow). We start by asking for a direct child. If child exists, we also need to ask it for its next sibling, then that sibling for it's siblings etc."
 
-	self root value: aCMFReactWithFibers.
+	^ aFiber child ifNil: {} ifNotNil: [:child | self getSiblingsOfFiber: child]
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser >> getLabelOfFiber: aFiber [
+
+	^ aFiber node asString
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser >> getSiblingsOfFiber: aFiber [
+"return a collection of aFiber and all of its siblings"
+
+	^ {aFiber} , (aFiber sibling ifNil: {} ifNotNil: [:sibling | self getSiblingsOfFiber: sibling] )
 	
-	"I think: Set up Tree view as a list component"
-	self changed: #getList.
-	"I think: Expand the current root"
-	self changed: #expandRootsRequested.
+"{aFiber} , {} -> {aFiber}"
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser >> rootFiber [
+
+	^ { rootFiber }
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser >> rootFiber: aFiber [
+
+	rootFiber := aFiber.
 	
-	"I think: Select the first element in the List (that we fake as a tree) as a default object to not select something invalid"
-	self currentSelection: self getList first.
+	"I changed my root fiber, therefore I need to tell me dependents that they need to re-request it with #rootFiber"
+	self changed: #rootFiber.
 ]
