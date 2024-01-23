@@ -7,10 +7,16 @@ Class {
 { #category : #'as yet unclassified' }
 GRViewportTexture >> render: props [
 
-	^ props extract: [:extent :children :meshDo | | viewportTex |
+	^ props extract: [:extent :children :meshDo :getViewport | | viewportTex viewport |
 		viewportTex := self useState: nil.
-		{
+		viewport := self useGodotRef.
+		self useEffect: [
+				getViewport ifNotNil: [getViewport cull: viewport]]
+			dependencies: {viewport get ifNotNil: #objectId}.
+		
+		 {
 			GDViewport new
+				ref: viewport;
 				size: extent;
 				renderTargetVFlip: true;
 				renderTargetUpdateMode: GDViewport updateAlways;

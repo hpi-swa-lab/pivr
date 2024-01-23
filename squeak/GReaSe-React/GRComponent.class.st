@@ -405,7 +405,7 @@ GRComponent >> useState: default [
 
 	"Check if target is already cached. If not, try to associate the call with a temp name for debugging in the Component Explorer."
 	
-	self halt.
+	"self halt."
 	^ super useState: default.
 ]
 
