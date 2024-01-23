@@ -400,6 +400,15 @@ GRComponent >> useSceneInstance: aScenePath [
 	^ GDNode new call: 'add_child' arguments: {scene}
 ]
 
+{ #category : #'as yet unclassified' }
+GRComponent >> useState: default [
+
+	"Check if target is already cached. If not, try to associate the call with a temp name for debugging in the Component Explorer."
+	
+	self halt.
+	^ super useState: default.
+]
+
 { #category : #hooks }
 GRComponent >> useUpdatingRef: anObject [
 
