@@ -88,7 +88,7 @@ ComponentBrowserDworph >> render: props [
 									buttonMask: 1.
 									
 							"@TODO find out why this does not work"
-							"viewport get inputLocalEvent: inputEvent."
+							(viewport get) inputLocalEvent: inputEvent.
 							]]
 						].
 				GDMeshInstance new

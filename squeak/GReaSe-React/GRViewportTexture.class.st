@@ -11,7 +11,7 @@ GRViewportTexture >> render: props [
 		viewportTex := self useState: nil.
 		viewport := self useGodotRef.
 		self useEffect: [
-				getViewport ifNotNil: [getViewport cull: viewport]]
+				getViewport ifNotNil: [getViewport cull: viewport get]]
 			dependencies: {viewport get ifNotNil: #objectId}.
 		
 		 {
