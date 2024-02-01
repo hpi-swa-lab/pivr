@@ -41,7 +41,7 @@ ComponentBrowserDworph >> render: props [
 			GDButton new
 				text: 'Test';
 				rectSize: 100@100;
-				onButtonDown: [Transcript showln: 'Button pressed.']; 
+				onButtonDown: [Transcript showln: 'Button pressed.', DateAndTime now asString]; 
 				ref: movingButton.
 				});
 		meshDo: [:material |
@@ -89,8 +89,42 @@ ComponentBrowserDworph >> render: props [
 									viewport get inputLocalEvent: mouseEvent.
 								] .
 							
-							movingButton get setPosition: viewportCoord2D.
-							]]
+							"movingButton get setPosition: viewportCoord2D.		"					]]
+						];
+					onButtonRelease: [:event || raycastResult |
+						"Raycast from event-hand transform with distance of hand object to find intersection coordinate"
+						raycastResult := spatial get getWorld directSpaceState
+							intersectRayFrom: event transform translation
+							to: (event transform localPointToGlobal: (0 @ 0 @ GRPointer laserLength negated))
+							exclude: {}
+							collisionMask: 2147483647
+							collideWithBodies: true
+							collideWithAreas: true.
+						raycastPosStart set: event transform translation.
+						raycastPosEnd set: (event transform localPointToGlobal: (0 @ 0 @ GRPointer laserLength negated)).
+						"Convert intersection coordinate to coordinate in viewport"
+						raycastResult ifNotNil: [
+							
+							(raycastResult at: #position ifAbsent: nil) ifNotNil: [ |viewportCoord3D viewportCoord2D |
+							raycastPosStart set: (viewportTransform get globalPointToLocal: (0@0@0)).
+							raycastPosEnd set: (raycastResult at: #position).
+							viewportCoord3D := viewportTransform get globalPointToLocal: (raycastResult at: #position).
+							viewportCoord2D := Point
+								x: ((viewportCoord3D x / 1.5) + 0.5) * self resolution x
+								y: ((viewportCoord3D y negated/ 1) + 0.5) * self resolution y.
+							
+							"Generate viewport click event"
+							GDInputEventMouseButton externalNewDuring: [ :mouseEvent |
+								mouseEvent 
+									buttonIndex: 1;
+									pressed: false;
+									position: viewportCoord2D;
+									globalPosition: viewportCoord2D;
+									buttonMask: 1.
+									viewport get inputLocalEvent: mouseEvent.
+								] .
+							
+							"movingButton get setPosition: viewportCoord2D.		"					]]
 						].
 				GDMeshInstance new
 				translation: 0@0@0;
