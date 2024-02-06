@@ -23,8 +23,10 @@ ComponentBrowserDworph >> generateUIForFiber: aCMFFiber inTree: aGDTree withRoot
 	| currentItem |
 	
 	aGDTreeItem ifNil: [currentItem := aGDTree createItem] ifNotNil: [currentItem := aGDTree createItemParent: aGDTreeItem].
-	currentItem
-		setTextColumn: 0 text: (aCMFFiber node asString copyWithRegex: '[\<\/\>]' matchesReplacedWith: '').
+	[currentItem
+		setTextColumn: 0 text: (aCMFFiber node asStringOrText copyWithRegex: '[\<\/\>]' matchesReplacedWith: '')] ifError:
+	[currentItem
+		setTextColumn: 0 text: 'Parsing failed'].
 
 	^ {
 		currentItem.
@@ -60,9 +62,15 @@ ComponentBrowserDworph >> render: props [
 	rootFiber := (((GRReact current instVarNamed: #sessions) associations first value) instVarNamed: #react) currentRoot.
 	treeRef := self useGodotRef.
 	self useEffect: [
-		treeRef get ifNotNil: [:tree | 
+		treeRef get ifNotNil: [:tree | | test testChild |
 			tree clear.
-			self generateUIForFiber: rootFiber inTree: tree withRoot: nil]]
+			self generateUIForFiber: rootFiber inTree: tree withRoot: nil.
+			"test := tree createItem.
+			test setTextColumn: 0 text: 'Test'.
+			testChild := tree createItemParent: test.
+			testChild setTextColumn: 0 text: 'Child Test'."
+			"tree inspect."
+			]]
 	dependencies: {treeRef get ifNotNil: [:node | node objectId]. self hashTree: rootFiber }.
 	
 	^ GRViewportTexture new
@@ -72,7 +80,8 @@ ComponentBrowserDworph >> render: props [
 			rectSize: self resolution;
 			children: {
 			GDTree new
-			   ref: treeRef
+			   ref: treeRef;
+			rectSize: self resolution
 				});
 		meshDo: [:material |
 			GRGrabbableArea new children: {
