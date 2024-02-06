@@ -26,7 +26,7 @@ ComponentBrowserDworph >> generateUIForFiber: aCMFFiber inTree: aGDTree withRoot
 	[currentItem
 		setTextColumn: 0 text: (aCMFFiber node asStringOrText copyWithRegex: '[\<\/\>]' matchesReplacedWith: '')] ifError:
 	[currentItem
-		setTextColumn: 0 text: 'Parsing failed'].
+		setTextColumn: 0 text: 'Parsing node failed'].
 
 	^ {
 		currentItem.
@@ -48,28 +48,17 @@ ComponentBrowserDworph >> hashTree: aCMFFiber [
 { #category : #'as yet unclassified' }
 ComponentBrowserDworph >> render: props [
 
-	| viewportTransform viewport spatial raycastPosStart raycastPosEnd world movingButton rootFiber treeRef |
+	| viewportTransform viewport spatial rootFiber treeRef |
 	
-	"---Only needed for debug---"
-	world := self useWorldPortal.
-	raycastPosStart := self useState: Vector3 new.
-	raycastPosEnd := self useState: Vector3 new.
-	movingButton := self useGodotRef.
-	"---"
 	viewportTransform := self useState: nil.
 	viewport := self useGodotRef.
 	spatial := self useGodotRef.
 	rootFiber := (((GRReact current instVarNamed: #sessions) associations first value) instVarNamed: #react) currentRoot.
 	treeRef := self useGodotRef.
 	self useEffect: [
-		treeRef get ifNotNil: [:tree | | test testChild |
+		treeRef get ifNotNil: [:tree |
 			tree clear.
 			self generateUIForFiber: rootFiber inTree: tree withRoot: nil.
-			"test := tree createItem.
-			test setTextColumn: 0 text: 'Test'.
-			testChild := tree createItemParent: test.
-			testChild setTextColumn: 0 text: 'Child Test'."
-			"tree inspect."
 			]]
 	dependencies: {treeRef get ifNotNil: [:node | node objectId]. self hashTree: rootFiber }.
 	
@@ -104,14 +93,10 @@ ComponentBrowserDworph >> render: props [
 							collisionMask: 2147483647
 							collideWithBodies: true
 							collideWithAreas: true.
-						raycastPosStart set: event transform translation.
-						raycastPosEnd set: (event transform localPointToGlobal: (0 @ 0 @ GRPointer laserLength negated)).
 						"Convert intersection coordinate to coordinate in viewport"
 						raycastResult ifNotNil: [
 							
 							(raycastResult at: #position ifAbsent: nil) ifNotNil: [ |viewportCoord3D viewportCoord2D |
-							raycastPosStart set: (viewportTransform get globalPointToLocal: (0@0@0)).
-							raycastPosEnd set: (raycastResult at: #position).
 							viewportCoord3D := viewportTransform get globalPointToLocal: (raycastResult at: #position).
 							viewportCoord2D := Point
 								x: ((viewportCoord3D x / 1.5) + 0.5) * self resolution x
@@ -127,8 +112,7 @@ ComponentBrowserDworph >> render: props [
 									buttonMask: 1.
 									viewport get inputLocalEvent: mouseEvent.
 								] .
-							
-							"movingButton get setPosition: viewportCoord2D.		"					]]
+							]]
 						];
 					onButtonRelease: [:event || raycastResult |
 						"Raycast from event-hand transform with distance of hand object to find intersection coordinate"
@@ -139,14 +123,10 @@ ComponentBrowserDworph >> render: props [
 							collisionMask: 2147483647
 							collideWithBodies: true
 							collideWithAreas: true.
-						raycastPosStart set: event transform translation.
-						raycastPosEnd set: (event transform localPointToGlobal: (0 @ 0 @ GRPointer laserLength negated)).
 						"Convert intersection coordinate to coordinate in viewport"
 						raycastResult ifNotNil: [
 							
 							(raycastResult at: #position ifAbsent: nil) ifNotNil: [ |viewportCoord3D viewportCoord2D |
-							raycastPosStart set: (viewportTransform get globalPointToLocal: (0@0@0)).
-							raycastPosEnd set: (raycastResult at: #position).
 							viewportCoord3D := viewportTransform get globalPointToLocal: (raycastResult at: #position).
 							viewportCoord2D := Point
 								x: ((viewportCoord3D x / 1.5) + 0.5) * self resolution x
@@ -163,18 +143,13 @@ ComponentBrowserDworph >> render: props [
 									viewport get inputLocalEvent: mouseEvent.
 								] .
 							
-							"movingButton get setPosition: viewportCoord2D.		"					]]
+							]]
 						].
 				GDMeshInstance new
 				translation: 0@0@0;
 					mesh: (GDQuadMesh new
 						 size: 1.5 @ 1;
 						material: material).
-						
-				
-				CMFReactNodePortal child: {AttentionDworph new target: raycastPosStart get} in: world.
-				CMFReactNodePortal child: {AttentionDworph new target: raycastPosEnd get} in: world.
-				
 				}]
 ]
 
