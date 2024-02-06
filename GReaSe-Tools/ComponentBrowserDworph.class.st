@@ -18,9 +18,35 @@ ComponentBrowserDworph >> fontSize [
 ]
 
 { #category : #'as yet unclassified' }
+ComponentBrowserDworph >> generateUIForFiber: aCMFFiber inTree: aGDTree withRoot: aGDTreeItem [
+
+	| currentItem |
+	
+	aGDTreeItem ifNil: [currentItem := aGDTree createItem] ifNotNil: [currentItem := aGDTree createItemParent: aGDTreeItem].
+	currentItem
+		setTextColumn: 0 text: (aCMFFiber node asString copyWithRegex: '[\<\/\>]' matchesReplacedWith: '').
+
+	^ {
+		currentItem.
+		aCMFFiber sibling ifNotNil: [self generateUIForFiber: aCMFFiber sibling inTree: aGDTree withRoot: aGDTreeItem].
+		aCMFFiber child ifNotNil: [self generateUIForFiber: aCMFFiber child inTree: aGDTree withRoot: currentItem].
+	}
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowserDworph >> hashTree: aCMFFiber [
+
+	| sum |
+	
+	sum := 0.
+
+	 ^ sum
+]
+
+{ #category : #'as yet unclassified' }
 ComponentBrowserDworph >> render: props [
 
-	| viewportTransform viewport spatial raycastPosStart raycastPosEnd world movingButton |
+	| viewportTransform viewport spatial raycastPosStart raycastPosEnd world movingButton rootFiber treeRef |
 	
 	"---Only needed for debug---"
 	world := self useWorldPortal.
@@ -31,6 +57,13 @@ ComponentBrowserDworph >> render: props [
 	viewportTransform := self useState: nil.
 	viewport := self useGodotRef.
 	spatial := self useGodotRef.
+	rootFiber := (((GRReact current instVarNamed: #sessions) associations first value) instVarNamed: #react) currentRoot.
+	treeRef := self useGodotRef.
+	self useEffect: [
+		treeRef get ifNotNil: [:tree | 
+			tree clear.
+			self generateUIForFiber: rootFiber inTree: tree withRoot: nil]]
+	dependencies: {treeRef get ifNotNil: [:node | node objectId]. self hashTree: rootFiber }.
 	
 	^ GRViewportTexture new
 		getViewport: [:vp | viewport set: vp];
@@ -38,11 +71,8 @@ ComponentBrowserDworph >> render: props [
 		children: (GDControl new
 			rectSize: self resolution;
 			children: {
-			GDButton new
-				text: 'Test';
-				rectSize: 100@100;
-				onButtonDown: [Transcript showln: 'Button pressed.', DateAndTime now asString]; 
-				ref: movingButton.
+			GDTree new
+			   ref: treeRef
 				});
 		meshDo: [:material |
 			GRGrabbableArea new children: {
@@ -137,39 +167,6 @@ ComponentBrowserDworph >> render: props [
 				CMFReactNodePortal child: {AttentionDworph new target: raycastPosEnd get} in: world.
 				
 				}]
-]
-
-{ #category : #'as yet unclassified' }
-ComponentBrowserDworph >> renderTreeUI [
-
-"
-generateUIForFiber: aCMFFiber inTree: aGDTree withRoot: aGDTreeItem
-
-	| currentItem |
-	
-	currentItem := aGDTree createItemParent: aGDTreeItem.
-	currentItem
-		setTextColumn: 0 text: (aCMFFiber node asString copyWithRegex: '[\<\/\>]' matchesReplacedWith: '').
-
-	^ {
-		currentItem.
-		aCMFFiber sibling ifNotNil: [self generateUIForFiber: aCMFFiber sibling inTree: aGDTree withRoot: aGDTreeItem].
-		aCMFFiber child ifNotNil: [self generateUIForFiber: aCMFFiber child inTree: aGDTree withRoot: aCMFFiber].
-	}
-	
-	render: props
-
-	| rootFiber tree |
-	rootFiber := ((GRReact current instVarNamed: #sessions) associations first) react currentRoot node.
-	tree := GDTree new.
-	self generateUIForFiber: rootFiber inTree: tree withRoot: nil.
-	
-	^ GDControl new
-			rectSize: (1500@1000);
-			children: {
-				tree
-			}
-"
 ]
 
 { #category : #'as yet unclassified' }
