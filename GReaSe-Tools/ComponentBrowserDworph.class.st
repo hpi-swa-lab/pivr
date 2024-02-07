@@ -24,7 +24,7 @@ ComponentBrowserDworph >> generateUIForFiber: aCMFFiber inTree: aGDTree withRoot
 	
 	aGDTreeItem ifNil: [currentItem := aGDTree createItem] ifNotNil: [currentItem := aGDTree createItemParent: aGDTreeItem].
 	[currentItem
-		setTextColumn: 0 text: (aCMFFiber node asStringOrText copyWithRegex: '[\<\/\>]' matchesReplacedWith: '')] ifError:
+		setTextColumn: 0 text: (aCMFFiber node asStringOrText)] ifError:
 	[currentItem
 		setTextColumn: 0 text: 'Parsing node failed'].
 
@@ -48,13 +48,14 @@ ComponentBrowserDworph >> hashTree: aCMFFiber [
 { #category : #'as yet unclassified' }
 ComponentBrowserDworph >> render: props [
 
-	| viewportTransform viewport spatial rootFiber treeRef |
+	| viewportTransform viewport spatial rootFiber treeRef listRef |
 	
 	viewportTransform := self useState: nil.
 	viewport := self useGodotRef.
 	spatial := self useGodotRef.
 	rootFiber := (((GRReact current instVarNamed: #sessions) associations first value) instVarNamed: #react) currentRoot.
 	treeRef := self useGodotRef.
+	listRef := self useGodotRef.
 	self useEffect: [
 		treeRef get ifNotNil: [:tree |
 			tree clear.
@@ -70,7 +71,19 @@ ComponentBrowserDworph >> render: props [
 			children: {
 			GDTree new
 			   ref: treeRef;
-			rectSize: self resolution
+			rectSize: (1000@1000);
+			onItemSelected: [listRef get ifNotNil: [:listNode | 
+					treeRef get ifNotNil: [:treeNode |
+							treeNode getSelected ifNotNil: [:treeItem |
+								listNode clear.
+								listNode addItemText: (treeItem getTextColumn: 0).
+								]
+						]					
+					]].
+			GDItemList new
+				ref: listRef;
+				rectPosition: (1000@0);
+				rectSize: (500@1000).
 				});
 		meshDo: [:material |
 			GRGrabbableArea new children: {

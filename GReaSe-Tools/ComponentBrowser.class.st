@@ -129,7 +129,7 @@ ComponentBrowser >> getDataOfCurrentSelection [
 { #category : #'as yet unclassified' }
 ComponentBrowser >> getLabelOfFiber: aFiber [
 
-	^ aFiber node asString copyWithRegex: '[\<\/\>]' matchesReplacedWith: ''
+	^ aFiber node asStringOrText
 ]
 
 { #category : #'as yet unclassified' }
