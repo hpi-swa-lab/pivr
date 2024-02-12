@@ -12,6 +12,32 @@ ComponentBrowserDworph class >> appDescription [
 ]
 
 { #category : #'as yet unclassified' }
+ComponentBrowserDworph >> displayStateOfTreeNode: aTreeNode onItemList: anItemList [
+
+	aTreeNode getSelected ifNotNil: [:treeItem |
+		anItemList clear.
+		anItemList addItemText: 'TEMPS'.
+		(treeItem getMetaName: 'reactTemps') ifNotNil: [:temps | 
+			temps do: [:tempString |
+				anItemList addItemText: tempString.
+			]
+		].							
+		anItemList addItemText: 'HOOKS'.
+		(treeItem getMetaName: 'reactHooks') ifNotNil: [:hooks | 
+			hooks do: [:hookString |
+				anItemList addItemText: hookString.
+			]
+		].
+		anItemList addItemText: 'PROPS'.
+		(treeItem getMetaName: 'reactProps') ifNotNil: [:props | 
+			props do: [:propString |
+				anItemList addItemText: propString.
+			]
+		].
+	]
+]
+
+{ #category : #'as yet unclassified' }
 ComponentBrowserDworph >> fontSize [
 
 	^ 30
@@ -22,11 +48,15 @@ ComponentBrowserDworph >> generateUIForFiber: aCMFFiber inTree: aGDTree withRoot
 
 	| currentItem |
 	
-	aGDTreeItem ifNil: [currentItem := aGDTree createItem] ifNotNil: [currentItem := aGDTree createItemParent: aGDTreeItem].
-	[currentItem
-		setTextColumn: 0 text: (aCMFFiber node asStringOrText)] ifError:
-	[currentItem
-		setTextColumn: 0 text: 'Parsing node failed'].
+	aGDTreeItem
+		ifNil: [currentItem := aGDTree createItem]
+		ifNotNil: [currentItem := aGDTree createItemParent: aGDTreeItem].
+	[currentItem setTextColumn: 0 text: (aCMFFiber node asStringOrText)]
+		ifError: [currentItem setTextColumn: 0 text: 'Parsing node failed'].
+		
+	currentItem setMetaName: 'reactTemps' value: (ComponentBrowser displayTempsForFiber: aCMFFiber).
+	currentItem setMetaName: 'reactHooks' value: (ComponentBrowser displayHooksForFiber: aCMFFiber).
+	currentItem setMetaName: 'reactProps' value: (ComponentBrowser displayPropsForFiber: aCMFFiber).
 
 	^ {
 		currentItem.
@@ -36,32 +66,75 @@ ComponentBrowserDworph >> generateUIForFiber: aCMFFiber inTree: aGDTree withRoot
 ]
 
 { #category : #'as yet unclassified' }
-ComponentBrowserDworph >> hashTree: aCMFFiber [
+ComponentBrowserDworph >> hashFiber: aCMFFiber [
 
 	| sum |
 	
-	sum := 0.
+	"TODO Make use of Squeak's object ID system."
+	sum := aCMFFiber index asInteger.
+	aCMFFiber sibling ifNotNil: [sum := (sum asInteger) + ((self hashFiber: (aCMFFiber sibling)) asInteger)].
+	aCMFFiber child ifNotNil: [sum := (sum asInteger) + ((self hashFiber: (aCMFFiber child)) asInteger)].
 
 	 ^ sum
 ]
 
 { #category : #'as yet unclassified' }
+ComponentBrowserDworph >> raycastMouseEvent: anEvent onSpatial: spatialRef forViewport: viewportRef withTransform: viewportTransform isMouseDown: down [
+	"Raycast a mouse event on a 3D plane to a certain coordinate of a related 2D viewport and input such."
+	
+	| raycastResult |
+		
+	"Raycast from event-hand transform with distance of hand object to find intersection coordinate"
+	raycastResult := spatialRef get getWorld directSpaceState
+		intersectRayFrom: anEvent transform translation
+		to: (anEvent transform localPointToGlobal: (0 @ 0 @ GRPointer laserLength negated))
+		exclude: {}
+		collisionMask: 2147483647
+		collideWithBodies: true
+		collideWithAreas: true.
+		
+	"Convert intersection coordinate to coordinate in viewport"
+	raycastResult ifNotNil: [
+		(raycastResult at: #position ifAbsent: nil) ifNotNil: [
+			| viewportCoord3D viewportCoord2D |
+		
+			viewportCoord3D := viewportTransform get globalPointToLocal: (raycastResult at: #position).
+			viewportCoord2D := Point
+				x: ((viewportCoord3D x / 1.5) + 0.5) * self resolution x
+				y: ((viewportCoord3D y negated/ 1) + 0.5) * self resolution y.
+	
+	"Generate viewport click event"
+	GDInputEventMouseButton externalNewDuring: [ :mouseEvent |
+		mouseEvent 
+			buttonIndex: 1;
+			pressed: down;
+			position: viewportCoord2D;
+			globalPosition: viewportCoord2D;
+			buttonMask: 1.
+			viewportRef get inputLocalEvent: mouseEvent.
+		] .
+	]]
+]
+
+{ #category : #'as yet unclassified' }
 ComponentBrowserDworph >> render: props [
 
-	| viewportTransform viewport spatial rootFiber treeRef listRef |
+	| viewportTransform viewport spatial treeRef listRef |
 	
 	viewportTransform := self useState: nil.
 	viewport := self useGodotRef.
 	spatial := self useGodotRef.
-	rootFiber := (((GRReact current instVarNamed: #sessions) associations first value) instVarNamed: #react) currentRoot.
 	treeRef := self useGodotRef.
 	listRef := self useGodotRef.
-	self useEffect: [
-		treeRef get ifNotNil: [:tree |
-			tree clear.
-			self generateUIForFiber: rootFiber inTree: tree withRoot: nil.
+	
+	self
+		useEffect: [
+			treeRef get ifNotNil: [:tree |
+				tree clear.
+				listRef get ifNotNil: [:listNode | listNode clear].
+				self generateUIForFiber: (ComponentBrowser getCurrentRoot) inTree: tree withRoot: nil.
 			]]
-	dependencies: {treeRef get ifNotNil: [:node | node objectId]. self hashTree: rootFiber }.
+		dependencies: {treeRef get ifNotNil: [:node | node objectId]. self hashFiber: ComponentBrowser getCurrentRoot }.
 	
 	^ GRViewportTexture new
 		getViewport: [:vp | viewport set: vp];
@@ -71,13 +144,10 @@ ComponentBrowserDworph >> render: props [
 			children: {
 			GDTree new
 			   ref: treeRef;
-			rectSize: (1000@1000);
-			onItemSelected: [listRef get ifNotNil: [:listNode | 
+				rectSize: (1000@1000);
+				onItemSelected: [listRef get ifNotNil: [:listNode | 
 					treeRef get ifNotNil: [:treeNode |
-							treeNode getSelected ifNotNil: [:treeItem |
-								listNode clear.
-								listNode addItemText: (treeItem getTextColumn: 0).
-								]
+							self displayStateOfTreeNode: treeNode onItemList: listNode.
 						]					
 					]].
 			GDItemList new
@@ -97,66 +167,11 @@ ComponentBrowserDworph >> render: props [
 							subscribeTo: #global_transform do: [ :transform | viewportTransform set: transform].
 						GDCollisionShape new shape: (GDBoxShape new extents: 0.75 @ 0.5 @ 0.001); translation: 0 @ 0 @ 0.001.
 					};
-					onButtonPress: [:event || raycastResult |
-						"Raycast from event-hand transform with distance of hand object to find intersection coordinate"
-						raycastResult := spatial get getWorld directSpaceState
-							intersectRayFrom: event transform translation
-							to: (event transform localPointToGlobal: (0 @ 0 @ GRPointer laserLength negated))
-							exclude: {}
-							collisionMask: 2147483647
-							collideWithBodies: true
-							collideWithAreas: true.
-						"Convert intersection coordinate to coordinate in viewport"
-						raycastResult ifNotNil: [
-							
-							(raycastResult at: #position ifAbsent: nil) ifNotNil: [ |viewportCoord3D viewportCoord2D |
-							viewportCoord3D := viewportTransform get globalPointToLocal: (raycastResult at: #position).
-							viewportCoord2D := Point
-								x: ((viewportCoord3D x / 1.5) + 0.5) * self resolution x
-								y: ((viewportCoord3D y negated/ 1) + 0.5) * self resolution y.
-							
-							"Generate viewport click event"
-							GDInputEventMouseButton externalNewDuring: [ :mouseEvent |
-								mouseEvent 
-									buttonIndex: 1;
-									pressed: true;
-									position: viewportCoord2D;
-									globalPosition: viewportCoord2D;
-									buttonMask: 1.
-									viewport get inputLocalEvent: mouseEvent.
-								] .
-							]]
+					onButtonPress: [:event |
+							self raycastMouseEvent: event onSpatial: spatial forViewport: viewport withTransform: viewportTransform isMouseDown: true.
 						];
-					onButtonRelease: [:event || raycastResult |
-						"Raycast from event-hand transform with distance of hand object to find intersection coordinate"
-						raycastResult := spatial get getWorld directSpaceState
-							intersectRayFrom: event transform translation
-							to: (event transform localPointToGlobal: (0 @ 0 @ GRPointer laserLength negated))
-							exclude: {}
-							collisionMask: 2147483647
-							collideWithBodies: true
-							collideWithAreas: true.
-						"Convert intersection coordinate to coordinate in viewport"
-						raycastResult ifNotNil: [
-							
-							(raycastResult at: #position ifAbsent: nil) ifNotNil: [ |viewportCoord3D viewportCoord2D |
-							viewportCoord3D := viewportTransform get globalPointToLocal: (raycastResult at: #position).
-							viewportCoord2D := Point
-								x: ((viewportCoord3D x / 1.5) + 0.5) * self resolution x
-								y: ((viewportCoord3D y negated/ 1) + 0.5) * self resolution y.
-							
-							"Generate viewport click event"
-							GDInputEventMouseButton externalNewDuring: [ :mouseEvent |
-								mouseEvent 
-									buttonIndex: 1;
-									pressed: false;
-									position: viewportCoord2D;
-									globalPosition: viewportCoord2D;
-									buttonMask: 1.
-									viewport get inputLocalEvent: mouseEvent.
-								] .
-							
-							]]
+					onButtonRelease: [:event |
+							self raycastMouseEvent: event onSpatial: spatial forViewport: viewport withTransform: viewportTransform isMouseDown: false.
 						].
 				GDMeshInstance new
 				translation: 0@0@0;

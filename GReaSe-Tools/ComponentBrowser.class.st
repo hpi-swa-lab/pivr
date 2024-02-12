@@ -3,11 +3,62 @@ Class {
 	#superclass : #Model,
 	#instVars : [
 		'currentSelection',
-		'rootFiber',
-		'currentDataSelection'
+		'rootFiber'
 	],
 	#category : #'GReaSe-Tools'
 }
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser class >> displayHooksForFiber: aCMFFiber [
+
+	^ aCMFFiber hooks collect: [:hook | | hookString |
+			hookString := (hook className) copyReplaceAll: 'CMFReactHook' with: '' asTokens: false.
+			(hook instVarNamed: 'hookName') ifNotNil: [hookString := hookString , ' ', (hook instVarNamed: 'hookName') asString].
+			[(hook instVarNamed: 'state') ifNotNil: [hookString := hookString , ': ', (hook instVarNamed: 'state') asString]] ifError: [hookString := hookString , ''].
+			]
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser class >> displayPropsForFiber: aCMFFiber [
+
+	^ aCMFFiber node isGodotNode
+			ifTrue: [aCMFFiber node properties associations collect: [:assoc | assoc asString]]
+			ifFalse: {'<>'}
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser class >> displayTempsForFiber: aCMFFiber [
+
+	^ (aCMFFiber node isGodotNode
+			ifTrue: {'<is Godot node>' }
+			ifFalse: [ 
+				(aCMFFiber node isKindOf: CMFRootNode) ifTrue: {'<is root node>'} ifFalse: [
+					[
+					| parser |
+					parser := PPParser new
+							parse: (aCMFFiber node elementClass>>#render:) getSource
+							class: UndefinedObject
+							noPattern: false
+							notifying: nil
+							ifFail: nil.
+						parser temporaries collect: [:temp | temp asString]
+					] ifError: [{'<could not parse node>'}]
+				].
+			]
+		).
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser class >> getCurrentRoot [
+
+	^ (((GRReact current instVarNamed: #sessions) associations first value) instVarNamed: #react) currentRoot.
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser class >> openCurrent [
+
+	^ self openForFiber: self getCurrentRoot.
+]
 
 { #category : #'as yet unclassified' }
 ComponentBrowser class >> openForFiber: aFiber [
@@ -28,7 +79,7 @@ ComponentBrowser >> build [
 { #category : #'as yet unclassified' }
 ComponentBrowser >> buildWith: builder [
 
-	| windowSpec treeSpec listSpecLeft listSpecRight listSpecProps |
+	| windowSpec treeSpec listSpecTemps listSpecHooks listSpecProps |
 	
 	"Base window spec"
 	windowSpec := builder pluggableWindowSpec new.
@@ -37,7 +88,7 @@ ComponentBrowser >> buildWith: builder [
 		label: 'Component Browser';
 		children: OrderedCollection new.
 	
-	"Top half tree"
+	"Top half: React scene tree"
 	treeSpec := builder pluggableTreeSpec new.
 	treeSpec
 		model: self;
@@ -49,28 +100,26 @@ ComponentBrowser >> buildWith: builder [
 		frame: (0@0 corner: 1@0.65).
 	windowSpec children add: treeSpec.
 	
-	"Bottom half: state"
-	"Left"
-	listSpecLeft := builder pluggableListSpec new.
-	listSpecLeft
+	"Left list: temps (in Squeak)"
+	listSpecTemps := builder pluggableListSpec new.
+	listSpecTemps
 		model: self;
 		frame: (0@0.65 corner: 0.25@1);
-		list: #getStateOfCurrentSelection.
+		list: #getTempsOfCurrentSelection.
 		
-	windowSpec children add: listSpecLeft.
+	windowSpec children add: listSpecTemps.
 	
-	"Right"
-	listSpecRight := builder pluggableListSpec new.
-	listSpecRight
+	"Middle list: hooks"
+	listSpecHooks := builder pluggableListSpec new.
+	listSpecHooks
 		model: self;
-		getSelected: #currentDataSelection;
-		setSelected: #currentDataSelection:;
 		listItem: #getLabelOfState;
 		frame: (0.25@0.65 corner: 0.6@1);
-		list: #getDataOfCurrentSelection.
+		list: #getHooksOfCurrentSelection.
 		
-	windowSpec children add: listSpecRight.
+	windowSpec children add: listSpecHooks.
 	
+	"Right list: props"
 	listSpecProps := builder pluggableListSpec new.
 	listSpecProps
 		model: self;
@@ -80,20 +129,6 @@ ComponentBrowser >> buildWith: builder [
 	windowSpec children add: listSpecProps.
 	
 	^ windowSpec
-]
-
-{ #category : #nil }
-ComponentBrowser >> currentDataSelection [
-
-	^ currentDataSelection
-]
-
-{ #category : #'as yet unclassified' }
-ComponentBrowser >> currentDataSelection: anItem [
-
-	currentDataSelection := anItem.
-	self changed: #currentDataSelection.
-	
 ]
 
 { #category : #'as yet unclassified' }
@@ -112,17 +147,17 @@ ComponentBrowser >> currentSelection: anItem [
 
 { #category : #'as yet unclassified' }
 ComponentBrowser >> getChildrenOfFiber: aFiber [
-"Return a collection of children of an object. If empty, there are no children (so there wont be an arrow). We start by asking for a direct child. If child exists, we also need to ask it for its next sibling, then that sibling for it's siblings etc."
+	"Return a collection of children of an object."
 
 	^ aFiber child ifNil: {} ifNotNil: [:child | self getSiblingsOfFiber: child]
 ]
 
 { #category : #'as yet unclassified' }
-ComponentBrowser >> getDataOfCurrentSelection [
+ComponentBrowser >> getHooksOfCurrentSelection [
 
 	"Return the list of strings that should fill the data section."
-	 ^ self currentSelection ifNil: #() ifNotNil: [:currentSelected | 
-		currentSelected hooks
+	 ^ self currentSelection ifNil: #() ifNotNil: [:currentSelection | 
+			self class displayHooksForFiber: currentSelection
 		]
 ]
 
@@ -136,47 +171,36 @@ ComponentBrowser >> getLabelOfFiber: aFiber [
 ComponentBrowser >> getPropsOfCurrentSelection [
 
 	"Return the list of props that should fill the data section."
-	 ^ self currentSelection ifNil: #() ifNotNil: [:currentSelected | 
-		currentSelected node isGodotNode
-			ifTrue: [currentSelected node properties associations]
-			ifFalse: {'<>'}
+	 ^ self currentSelection ifNil: #() ifNotNil: [:currentSelection | 
+			self class displayPropsForFiber: currentSelection
 		]
 ]
 
 { #category : #'as yet unclassified' }
 ComponentBrowser >> getSiblingsOfFiber: aFiber [
-"return a collection of aFiber and all of its siblings"
+	"Return a collection of aFiber and all of its siblings."
 
 	^ {aFiber} , (aFiber sibling ifNil: {} ifNotNil: [:sibling | self getSiblingsOfFiber: sibling] )
 	
-"{aFiber} , {} -> {aFiber}"
+
 ]
 
 { #category : #'as yet unclassified' }
 ComponentBrowser >> getStateOfCurrentSelection [
 
-	| parser |
+	"Return the list of strings that should fill the data section."
+	 ^ self currentSelection ifNil: #() ifNotNil: [:currentSelection | 
+			self class displayStateForFiber: currentSelection
+		]
+]
+
+{ #category : #'as yet unclassified' }
+ComponentBrowser >> getTempsOfCurrentSelection [
 
 	"Return the list of strings that should fill the props section."
 	 ^ self currentSelection ifNil: #() ifNotNil: [:currentSelection | 
-		"Find out what currentSelection is. A GreASe-node or a Godot node?"
-		self currentSelection node isGodotNode
-			ifTrue: {'<is Godot>' }
-			ifFalse: [
-				(self currentSelection node isKindOf: CMFRootNode) ifTrue: {'<is root node>'} ifFalse: [
-				parser := PPParser new
-					parse: (self currentSelection node elementClass>>#render:) getSource
-					class: UndefinedObject
-					noPattern: false
-					notifying: nil
-					ifFail: nil.
-				parser temporaries
-				]
-			]
+			self class displayTempsForFiber: currentSelection.
 		]
-	"Plan: For Grease-stuff, we put hooks, for Godot-stuff we put subscribed callbacks"
-	"Issue: State can have info, but no used name?"
-	"Todo: What are the dependencies for memos about?"
 ]
 
 { #category : #'as yet unclassified' }
@@ -197,7 +221,7 @@ ComponentBrowser >> rootFiber: aFiber [
 { #category : #'as yet unclassified' }
 ComponentBrowser >> updateStateList [
 
-	self changed: #getStateOfCurrentSelection.
-	self changed: #getDataOfCurrentSelection.
+	self changed: #getTempsOfCurrentSelection.
+	self changed: #getHooksOfCurrentSelection.
 	self changed: #getPropsOfCurrentSelection.
 ]
